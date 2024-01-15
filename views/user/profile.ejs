@@ -1,0 +1,64 @@
+<!-- views/user/profile.ejs -->
+
+<%- include('../partials/header') %>
+
+
+
+<style>
+    /* Add custom styles for padding */
+    .bor8 input,
+    .bor8 textarea {
+        padding: 10px;
+    }
+</style>
+
+<section class="bg0 p-t-104 p-b-116">
+    <div class="container flex-w flex-tr ">
+        
+        <% if (messages.success) { %>
+            <h5 class="success-message text-success"><%= messages.success %></h5>
+        <% } %>
+
+        <!-- Right side: Form for modifying user details and adding shipping address -->
+        <div class="size-210 bor10 p-lr-15-lg w-full-md">
+             <!-- Display success message if exists -->
+           
+            <h4 class="mtext-105 cl2 txt-center p-b-30">
+                Update Your Details
+            </h4>
+            <form action="/user/profile/edit" method="post">
+                <!-- Form fields for modifying user details -->
+                <div class="bor8 m-b-20 how-pos4-parent">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" value="<%= user.username %>" required>
+                </div>
+                <div class="bor8 m-b-20 how-pos4-parent">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" value="<%= user.email %>" required>
+                </div>
+                <div class="bor8 m-b-20 how-pos4-parent">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" value="<%= user.name %>" required>
+                </div>
+                <div class="bor8 m-b-20 how-pos4-parent">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" name="phone" value="<%= user.phone %>" required>
+                </div>
+                <div class="bor8 m-b-20 how-pos4-parent">
+                    <label for="address">Address:</label>
+                    <input type="text" name="address" value="<%= user.address %>" required>
+                </div>
+
+                <!-- Additional fields for modification (e.g., password, shipping address) -->
+                
+               
+
+                <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<%- include('../partials/footer') %>

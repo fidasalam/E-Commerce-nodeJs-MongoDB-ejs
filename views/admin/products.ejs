@@ -1,0 +1,74 @@
+<%- include('../partials/adminheader') %>
+
+
+
+
+
+<div class="container mt-5">
+  <div class="row tm-content-row">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
+      <div class="tm-bg-primary-dark tm-block tm-block-products">
+        <!-- This is the new category filter checkbox -->
+        
+
+        <form id="deleteProductsForm" action="/admin/delete-products" method="POST">
+
+        <div class="tm-product-table-container">
+          <table class="table table-hover tm-table-small tm-product-table">
+            <thead>
+              <tr>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">PRODUCT NAME</th>
+                <th scope="col">CATEGORY</th>
+                <th scope="col">UNIT SOLD</th>
+                <th scope="col">IN STOCK</th>
+                <th scope="col">&nbsp;</th>
+                <select id="categorySelect" class="form-control form-control-sm" onchange="filterByCategory(this.value)">
+                  <option value="All">Select Categories</option>
+                  <option value="All">All Categories</option>
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Kids">Kids</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Loop through products and generate table rows -->
+              <% products.forEach(product => { %>
+                <tr>
+                  <th scope="row"><input type="checkbox" name="productIds" value="<%= product._id %>"/></th>
+                  <% if (product.images && product.images.length > 0) { %>
+                    <td><img src="<%= product.images[0] %>" alt="<%= product.name %>" width="50" height="50"></td>
+                  <% } else { %>
+                    <td>No image available</td>
+                  <% } %>
+                  <td class="tm-product-name"><%= product.name %></td>
+                  <td><%= product.category.name %></td>
+                  <td><%= product.unitsSold %></td>
+                  <td><%= product.inStock %></td>
+                  <td>
+                    <a href="/admin/edit-product/<%= product._id %>" class="tm-product-delete-link">
+                      <i class="far fa-edit tm-product-delete-icon"></i>
+                    </a>
+                   <a href="#" onclick="confirmAndDelete('<%= product._id %>')" class="tm-product-delete-link">
+                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                   </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <a href="/admin/add-product" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
+        <a href="/admin/delete-product" onclick="deleteSelectedProducts()" class="btn btn-danger btn-block text-uppercase">Delete selected products</a>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/adminfooter') %>

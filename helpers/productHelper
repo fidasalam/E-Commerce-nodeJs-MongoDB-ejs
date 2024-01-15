@@ -1,0 +1,148 @@
+const Product = require('../models/product');
+const Category= require('../models/category')
+const User = require('../models/usermodel');
+const fs = require('fs').promises;
+const path = require('path');
+const bcrypt = require('bcryptjs');
+
+module.exports = {
+
+  getAllProducts: async () => {
+    try {
+      const result = await Product.find({}).populate('category').lean();
+      return result;
+    } catch (error) {
+      throw new Error('Error fetching all products');
+    }
+  },
+  getAllCategories : async () => {
+    try {
+      const categories = await Category.find({}).lean();
+      return categories;
+    } catch (error) {
+      throw new Error('Error fetching all categories');
+    }
+  },
+  getProductsByCategoryName: async (categoryName) => {
+    try {
+      const selectedCategory = await Category.findOne({ name: categoryName });
+
+      if (!selectedCategory) {
+        return [];
+      }
+
+      const products = await Product.find({ category: selectedCategory._id }).populate('category').lean();
+      return products;
+    } catch (error) {
+      throw new Error('Error fetching products by category');
+    }
+  },
+
+
+  addProduct: async (productData) => {
+    try {
+      const product = new Product(productData);
+      await product.save();
+    } catch (error) {
+      throw new Error('Error adding product');
+    }
+  },
+  
+  getProductById: async (productId) => {
+    try {
+      const product = await Product.findById(productId);
+      return product;
+    } catch (error) {
+      console.error('Error retrieving product by ID:', error);
+      throw new Error('Error retrieving product by ID');
+    }
+  },
+
+  
+
+
+
+  updateProductById: async (productId, updatedData, file) => {
+    try {
+      // Check if a new image is being uploaded
+      if (file) {
+        // Delete the existing image file (optional, depending on your requirements)
+        const existingProduct = await Product.findById(productId);
+        if (existingProduct && existingProduct.image) {
+          const imagePath = path.join(__dirname, '../public', existingProduct.image);
+          fs.unlinkSync(imagePath);
+        }
+
+        // Update the image path in the database
+        updatedData.image = `/uploads/product-images/${file.filename}`;
+      }
+
+      // Use findByIdAndUpdate to find the product by ID and update its data
+      const updatedProduct = await Product.findByIdAndUpdate(productId, updatedData, { new: true });
+
+      if (updatedProduct) {
+        console.log('Product updated successfully:', updatedProduct);
+        return updatedProduct;
+      } else {
+        console.log('Product not found');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error updating product:', error.message);
+      throw new Error('Error updating product');
+    }
+  },
+
+
+  deleteProductById: async (productId) => {
+    try {
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        throw new Error('Product not found');
+      }
+
+      const imagePath = './public/' + product.image; // Manually construct the path
+      console.log('Deleting file at path:', imagePath);
+      try {
+        await fs.unlink(imagePath);
+        console.log('File deleted successfully:', imagePath);
+      } catch (unlinkError) {
+        console.error('Error deleting file:', unlinkError.message);
+      }
+
+      await Product.deleteOne({ _id: productId });
+    } catch (error) {
+      console.error('Error deleting product:', error.message);
+      throw new Error('Error deleting product');
+    }
+  },
+  
+  registerAdmin: async (adminData) => {
+    const { name, username, email, password, phone } = adminData;
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new User instance with the 'admin' role
+    const newAdmin = new User({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      phone,
+      role: 'admin',
+    });
+
+    // Save the new admin to the database
+    await newAdmin.save();
+  },
+
+     
+};
+
+
+
+  
+
+
