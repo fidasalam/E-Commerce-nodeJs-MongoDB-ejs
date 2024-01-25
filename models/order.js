@@ -1,47 +1,71 @@
 const mongoose = require('mongoose');
 
+const orderItemSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 1
+  },
+  // size: {
+  //   type: String,
+  //   enum: ['small', 'medium', 'large']
+  // },
+  // itemPrice: {
+  //   type: Number,
+  //   required: true
+  // },
+});
+
 const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  products: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
-      },
-      quantity: {
-        type: Number,
-        required: true,
-        default: 1
-      },
-      price: {
-        type: Number,
-        required: true
-      }
-    }
-  ],
-  status: {
-    type: String,
-    enum: ['pending', 'confirmed', 'shipped', 'delivered'],
-    default: 'pending'
+  items: {
+    type: [orderItemSchema],
+    required: true
   },
-  totalPrice: {
+  subtotal: {
     type: Number,
     required: true
   },
-  // Other fields related to the order
-  createdAt: {
-    type: Date,
-    default: Date.now
+  total: {
+    type: Number,
+    required: true
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+  appliedCoupon: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Coupon', 
+    default: null
+   },
+
+  shippingAddress: {
+    street: {
+      type: String,
+      required: true
+    },
+    city: {
+      type: String,
+      required: true
+    },
+    state: {
+      type: String,
+      required: true
+    },
+    postalCode: {
+      type: String,
+      required: true
+    },
+    // Add more address fields as needed
+  },
+  // Add more fields as needed
 });
 
 const Order = mongoose.model('Order', orderSchema);

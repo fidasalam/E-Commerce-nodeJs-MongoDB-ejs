@@ -3,116 +3,90 @@
 
 <div class="container tm-mt-big tm-mb-big">
     <div class="row">
-      <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
-        <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
-          <div class="row">
-            <div class="col-12">
-              <h2 class="tm-block-title d-inline-block">Edit Product</h2>
-            </div>
-          </div>
-          <div class="row tm-edit-product-row">
-            <div class="col-xl-6 col-lg-6 col-md-12">
-              <form action="/admin/edit-product/<%= productId %>" method="post"  class="tm-edit-product-form"  enctype="multipart/form-data">
-                <!-- Render existing product details using EJS syntax -->
-                <div class="form-group mb-3">
-                  <label for="name">Product Name</label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value="<%= existingProduct.name %>"
-                    class="form-control validate"
-                  />
-                </div>
-                <div class="form-group mb-3">
-                  <label for="description">Description</label>
-                  <textarea class="form-control validate tm-small" name="description" rows="5" required><%= existingProduct.description %></textarea>
-                </div>
-                
-                <div class="form-group mb-3">
-                  <label for="category">Category</label>
-                  <select id="category" name="category" class="custom-select tm-select-accounts">
-                    <option selected>Select category</option>
-                    <option value="659e4ec292b59af0e79ed5fb">Men</option>
-                    <option value="659e4eeb92b59af0e79ed5fc">Women</option>
-                    <option value="659e4eff92b59af0e79ed5fd">Kids</option>
-                    <option value="659e4f1c92b59af0e79ed5fe">Accessories</option>
-                  </select>
-                
-                
-                </div>
-                <!-- Add more fields for other properties -->
-
-                <!-- Continue rendering existing product details -->
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
                 <div class="row">
-                    <div class="form-group mb-3 col-xs-12 col-sm-6">
-                      <label for="price">Price</label>
-                      <input id="price" name="price" type="text" value="<%= existingProduct.price %>" class="form-control validate" required />
-                    
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Edit Product</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-xl-6 col-lg-6 col-md-12">
+                        <form action="/admin/edit-product/<%= productId %>" method="post" class="tm-edit-product-form">
+                            <!-- Render existing product details using EJS syntax -->
+                            <div class="form-group mb-3">
+                                <label for="name">Product Name</label>
+                                <input id="name" name="name" type="text" value="<%= existingProduct.name %>" class="form-control validate" />
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="description">Description</label>
+                                <textarea class="form-control validate tm-small" name="description" rows="5" required><%= existingProduct.description %></textarea>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" class="custom-select tm-select-accounts ">
+                                  <option value="659e4ec292b59af0e79ed5fb" <%= existingProduct.category === "Men" ? "selected" : "" %>>Men</option>
+                                  <option value="659e4eeb92b59af0e79ed5fc" <%= existingProduct.category === "Women" ? "selected" : "" %>>Women</option>
+                                  <option value="659e4eff92b59af0e79ed5fd" <%= existingProduct.category === "Kids" ? "selected" : "" %>>Kids</option>
+                                  <option value="659e4f1c92b59af0e79ed5fe" <%= existingProduct.category === "Accessories" ? "selected" : "" %>>Accessories</option>
+                                </select>
+                            </div>
+                            <!-- Add more fields for other properties -->
+                            <div class="row">
+                                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                    <label for="price">Price</label>
+                                    <input id="price" name="price" type="text" value="<%= existingProduct.price %>" class="form-control validate" required />
+                                </div>
+                                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                    <label for="stock">Units In Stock</label>
+                                    <input id="inStock" name="inStock" type="text" value="<%= existingProduct.inStock %>" class="form-control validate" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add more fields for other properties -->
+                        <!-- Render existing product image -->
+                        <div class="col-xl-4 col-lg-4 col-md-12 mx-auto mb-2 ">
+                            <div class="tm-product-img-edit mx-auto mt-5">
+                                <img id="displayedImage" src="<%= existingProduct.images && existingProduct.images.length > 0 ? existingProduct.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product image" class="img-fluid d-block mx-auto">
+                            </div>
+                        </div>
+</div>
+
+                        <div class="row">
+                          <div class="form-group mb-3 col-xs-12 col-sm-6">
+                            <label for="color">Color</label>
+                            <select id="color" name="color" class="custom-select tm-select-accounts">
+                                <option selected>Select color</option>
+                                <option value="red" <%= existingProduct.color === "red" ? "selected" : "" %>>Red</option>
+                                    <option value="blue" <%= existingProduct.color === "blue" ? "selected" : "" %>>Blue</option>
+                                    <option value="green" <%= existingProduct.color === "green" ? "selected" : "" %>>Green</option>
+                                    <option value="red" <%= existingProduct.color === "black" ? "selected" : "" %>>Black</option>
+                                    <option value="blue" <%= existingProduct.color === "white" ? "selected" : "" %>>White</option>
+                                    <option value="green" <%= existingProduct.color === "yellow" ? "selected" : "" %>>Yellow</option>
+                                <!-- Add other color options -->
+                            </select>
+                          </div>
+                          <div class="form-group mb-3 col-xs-12 col-sm-6">
+                            <label for="size">Size</label>
+                            <select id="size" name="size" class="custom-select tm-select-accounts">
+                              <option value="S" <%= existingProduct.size === "S" ? "selected" : "" %>>Small</option>
+                              <option value="M" <%= existingProduct.size === "M" ? "selected" : "" %>>Medium</option>
+                              <option value="L" <%= existingProduct.size === "L" ? "selected" : "" %>>Large</option>
+                              <!-- Add other size options -->
+                                <!-- Add other size options -->
+                            </select>
+                          </div>
+                      </div>
                   </div>
-                  <div class="form-group mb-3 col-xs-12 col-sm-6">
-                    <label for="stock">Units In Stock</label>
-                    <input
-                      id="inStock"
-                      name="inStock"
-                      type="text"
-                      value="<%= existingProduct.inStock %>"
-                      class="form-control validate"
-                    />
-                  </div>
+                        
+                      
+                        <div class="col-6 col-xl-12 col-lg-12">
+                            <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            
-            <!-- Add more fields for other properties -->
-            <!-- Render existing product image -->
-            <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-2 ">
-              <div class="tm-product-img-edit mx-auto mt-5">
-    
-                <img id="displayedImage" src="<%= existingProduct.images && existingProduct.images.length > 0 ? existingProduct.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product image" class="img-fluid d-block mx-auto">
-
-                <!-- Add an icon to trigger the file input -->
-                <i class="fas fa-cloud-upload-alt tm-upload-icon" onclick="document.getElementById('fileInput').click();"></i>
-            </div>
-        
-            <!-- File input for changing the image -->
-            <div class="custom-file mt-3 mb-3">
-                <input id="fileInput" name="image" type="file" style="display:none;" onchange="displaySelectedImage(this);" />
-                <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE IMAGE NOW" onclick="document.getElementById('fileInput').click();" />
-            </div>
-
-            </div>
-            </div>
-            <div class="row">
-              <div class="form-group mb-3 col-xs-12 col-sm-3">
-              <label for="color">Color</label>
-              <select id="color" name="color" class="custom-select tm-select-accounts">
-                <option selected>Select color</option>
-                <option value="red">Red</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-                <!-- Add other color options -->
-              </select>
-            </div>
-          
-              <div class="form-group mb-3 col-xs-12 col-sm-3">
-              <label for="size">Size</label>
-              <select id="size" name="size" class="custom-select tm-select-accounts">
-                <option selected>Select size</option>
-                <option value="S">Small</option>
-                <option value="M">Medium</option>
-                <option value="L">Large</option>
-                <!-- Add other size options -->
-              </select>
-            </div>
-            </div>
-            <div class="col-6">
-              <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
-            </div>
-          </form>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-
+</div>
 <%- include('../partials/adminfooter') %>

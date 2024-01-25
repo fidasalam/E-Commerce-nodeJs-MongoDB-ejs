@@ -21,7 +21,6 @@
                 <th scope="col">&nbsp;</th>
                 <th scope="col">PRODUCT NAME</th>
                 <th scope="col">CATEGORY</th>
-                <th scope="col">UNIT SOLD</th>
                 <th scope="col">IN STOCK</th>
                 <th scope="col">&nbsp;</th>
                 <select id="categorySelect" class="form-control form-control-sm" onchange="filterByCategory(this.value)">
@@ -46,7 +45,6 @@
                   <% } %>
                   <td class="tm-product-name"><%= product.name %></td>
                   <td><%= product.category.name %></td>
-                  <td><%= product.unitsSold %></td>
                   <td><%= product.inStock %></td>
                   <td>
                     <a href="/admin/edit-product/<%= product._id %>" class="tm-product-delete-link">

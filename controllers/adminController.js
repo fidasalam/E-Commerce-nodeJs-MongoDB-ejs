@@ -1,6 +1,8 @@
 const User = require('../models/usermodel');
 const Product = require('../models/product');
 const Category = require('../models/category');
+const DeletedUser = require('../models/deletedUser');
+const Coupon = require('../models/coupen')
 
 const bcrypt = require('bcryptjs');
 
@@ -22,6 +24,28 @@ exports.displayAdmin = async (req, res) => {
   }
 };
 
+
+
+exports.handleLogout = (req, res) => {
+  try {
+    // Set a flash message
+    req.flash('success', 'Logged out successfully');
+
+    // Destroy the session to log out the user
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err);
+        res.status(500).send('Internal Server Error');
+      } else {
+        // Redirect to the login page with a success message
+        res.redirect('/user/index');
+      }
+    });
+  } catch (error) {
+    console.error('Error during logout:', error.message);
+    res.status(500).render('error', { message: 'Error during logout', error: error.message });
+  }
+};
 
 
 
@@ -120,30 +144,27 @@ exports.getUpdateProduct = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }};
 
-
   exports.postUpdateProduct = async (req, res) => {
     try {
-      const productId = req.params.id;
-      const updatedData = req.body;
-      const file = req.file;
+        const productId = req.params.id;
+        const updatedData = req.body;
 
-      console.log('ProductId:', productId);
-      console.log('Updated Data:', updatedData);
-      console.log('File:', file);
-     
+        console.log('ProductId:', productId);
+        console.log('Updated Data:', updatedData);
 
-      const updatedProduct = await ProductHelper.updateProductById(productId, updatedData, file);
+        const updatedProduct = await ProductHelper.updateProductById(productId, updatedData);
 
-      if (updatedProduct) {
-        return res.redirect('/admin/products');
-      } else {
-        res.status(404).render('error', { message: 'Product not found' });
-      }
+        if (updatedProduct) {
+            return res.redirect('/admin/products');
+        } else {
+            res.status(404).render('error', { message: 'Product not found' });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).render('error', { message: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).render('error', { message: 'Internal Server Error' });
     }
-  };
+};
+
 
   exports.deleteProduct = async (req, res) => {
     try {
@@ -183,7 +204,7 @@ console.log('After deleteProductById call');
       await ProductHelper.registerAdmin({ name, username, email, password, phone });
   
       // Redirect or render as needed
-      res.redirect('/admin/dashboard');
+      res.redirect('/admin/index');
     } catch (error) {
       console.error(error);
       if (error.code === 11000) {
@@ -195,6 +216,107 @@ console.log('After deleteProductById call');
   };
 
 
-  //user
+  //coupen
+
+
+  exports.getAddCoupon = (req, res) => {
+    try {
+      res.render('admin/coupen');
+    } catch (error) {
+      console.error('Error rendering add-product page:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+
+  exports.postAddCoupon = async (req, res) => {
+    try {
+        const { code, discountPercentage } = req.body;
+
+        // Validate if the required fields are provided
+        if (!code || !discountPercentage) {
+            return res.status(400).json({ success: false, message: 'Coupon code and discount percentage are required.' });
+        }
+
+        // Check if the coupon code already exists
+        const existingCoupon = await Coupon.findOne({ code });
+        if (existingCoupon) {
+            return res.status(400).json({ success: false, message: 'Coupon code already exists. Choose a different one.' });
+        }
+
+        // Create a new coupon
+        const newCoupon = new Coupon({
+            code,
+            discountPercentage,
+        });
+
+        // Save the coupon to the database
+        await newCoupon.save();
+
+        return res.status(201).json({ success: true, message: 'Coupon added successfully.' });
+    } catch (error) {
+        console.error('Error adding coupon:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};
+  
+
+exports.renderUsersList = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.render('admin/userlist', { users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const userToDelete = await User.findById(userId);
+
+    if (!userToDelete) {
+      return res.status(404).render('error', { error: "User not found." });
+    }
+
+  
+    const deletedUserData = {
+      deletedBy: userToDelete._id,
+      deletedAt: new Date(),
+      ...userToDelete.toObject(),
+    };
+    await DeletedUser.create(deletedUserData);
+
+    await User.findByIdAndDelete(userId);
+
+    res.redirect('/admin/userlist'); // Redirect to user list or another page
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).render('error', { error: "Internal Server Error" });
+  }
+};
+
+
+
+exports.blockUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.isBlocked = !user.isBlocked;
+    await user.save();
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
   

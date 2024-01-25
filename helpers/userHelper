@@ -19,6 +19,16 @@ module.exports = {
     return await newUser.save();
   },
 
+  
+  getUserById: async(userId)=> {
+    try {
+      const user = await User.findById(userId);
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user by ID: ${error.message}`);
+    }
+  },
+
   getCurrentUsername: async (userId) => {
     try {
       const user = await User.findById(userId);
@@ -59,6 +69,12 @@ module.exports = {
   getUserProfile: async (userId) => {
     return await User.findById(userId);
   },
+
+
+
+
+
+  
 
   addToCart : async (userId, productId, quantity) => {
     try {

@@ -1,8 +1,6 @@
-<!-- views/user/profile.ejs -->
+
 
 <%- include('../partials/header') %>
-
-
 
 <style>
     /* Add custom styles for padding */
@@ -23,30 +21,32 @@
         <div class="size-210 bor10 p-lr-15-lg w-full-md">
              <!-- Display success message if exists -->
            
-            <h4 class="mtext-105 cl2 txt-center p-b-30">
-                Update Your Details
-            </h4>
+            
             <form action="/user/profile/edit" method="post">
-                <!-- Form fields for modifying user details -->
+				<div class="p-b-10 text-center">
+					<h3 class="ltext-103 cl5">
+						update your details
+					</h3>
+				</div>    <!-- Form fields for modifying user details -->
                 <div class="bor8 m-b-20 how-pos4-parent">
                     <label for="username">Username:</label>
-                    <input type="text" name="username" value="<%= user.username %>" required>
+                    <input type="text" name="username" value="<%= userDetails.username %>" required>
                 </div>
                 <div class="bor8 m-b-20 how-pos4-parent">
                     <label for="email">Email:</label>
-                    <input type="email" name="email" value="<%= user.email %>" required>
+                    <input type="email" name="email" value="<%= userDetails.email %>" required>
                 </div>
                 <div class="bor8 m-b-20 how-pos4-parent">
                     <label for="name">Name:</label>
-                    <input type="text" name="name" value="<%= user.name %>" required>
+                    <input type="text" name="name" value="<%= userDetails.name %>" required>
                 </div>
                 <div class="bor8 m-b-20 how-pos4-parent">
                     <label for="phone">Phone:</label>
-                    <input type="tel" name="phone" value="<%= user.phone %>" required>
+                    <input type="tel" name="phone" value="<%= userDetails.phone %>" required>
                 </div>
                 <div class="bor8 m-b-20 how-pos4-parent">
                     <label for="address">Address:</label>
-                    <input type="text" name="address" value="<%= user.address %>" required>
+                    <input type="text" name="address" value="<%= userDetails.address %>" required>
                 </div>
 
                 <!-- Additional fields for modification (e.g., password, shipping address) -->
@@ -61,4 +61,5 @@
     </div>
 </section>
 
+ 
 <%- include('../partials/footer') %>

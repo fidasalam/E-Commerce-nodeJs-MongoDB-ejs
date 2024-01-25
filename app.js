@@ -10,9 +10,8 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
 const flash = require('express-flash');
-const { isAuth, displayuser } = require('./middleware/displayuser');
-
-
+const cors = require('cors');
+const Coupon= require('./models/coupen');
 
 
 
@@ -35,17 +34,24 @@ app.use(bodyParser.json());
 
 
 app.use(cookieParser());
+const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
   secret: process.env.secret,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false },
+  cookie: {  maxAge: oneDay,
+    secure:false, },
 }));
-app.use(flash());
-app.use(displayuser);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(flash());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
+
+
+
 
 
 
@@ -65,24 +71,32 @@ setupSession(app);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, "public")));
 
+// app.use((req, res, next) => {
+//   console.log('Session data:', req.session);
+//   next();
+// });
 
 app.use('/', indexRouter);
 app.use('/user', userRouter );
 app.use('/admin', adminRouter);
 app.use('/user', express.static(path.join(__dirname, 'public')));
 app.use('/user/productdetails', express.static(path.join(__dirname, 'public')));
+app.use('/user/cart', express.static(path.join(__dirname, 'public')));
 
 
 
-app.get('/test',(req,res)=>{
-  res.render('user/profile')
+
+
+app.get('/test',async(req,res)=>{
+ 
+  res.render('user/search')
 })
 
 
 
 
 
-
+const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
   console.log("Server is running at http://localhost:3000");
 });

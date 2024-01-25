@@ -1,0 +1,34 @@
+<%- include('../partials/adminheader') %>
+
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Add Coupon</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <form action="/admin/add-coupon" method="POST" class="tm-edit-product-form">
+                            <div class="form-group mb-3">
+                                <label for="code">Coupon Code</label>
+                                <input id="code" name="code" type="text" class="form-control validate" required />
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="discountPercentage">Discount Percentage</label>
+                                <input id="discountPercentage" name="discountPercentage" type="number" class="form-control validate" required />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Add Coupon Now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/adminfooter') %>

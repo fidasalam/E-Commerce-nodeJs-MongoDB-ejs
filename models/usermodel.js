@@ -38,6 +38,24 @@ const userSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
+    cart: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Cart',
+      
+    },
+
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Wishlist'
+      }
+    ],
+  
     // Add more address fields as needed
   
 });

@@ -59,39 +59,25 @@ module.exports = {
   },
 
   
-
-
-
-  updateProductById: async (productId, updatedData, file) => {
+  updateProductById: async (productId, updatedData) => {
     try {
-      // Check if a new image is being uploaded
-      if (file) {
-        // Delete the existing image file (optional, depending on your requirements)
-        const existingProduct = await Product.findById(productId);
-        if (existingProduct && existingProduct.image) {
-          const imagePath = path.join(__dirname, '../public', existingProduct.image);
-          fs.unlinkSync(imagePath);
+        // Use findByIdAndUpdate to find the product by ID and update its data
+        const updatedProduct = await Product.findByIdAndUpdate(productId, updatedData, { new: true });
+
+        if (updatedProduct) {
+            console.log('Product updated successfully:', updatedProduct);
+            return updatedProduct;
+        } else {
+            console.log('Product not found');
+            return null;
         }
-
-        // Update the image path in the database
-        updatedData.image = `/uploads/product-images/${file.filename}`;
-      }
-
-      // Use findByIdAndUpdate to find the product by ID and update its data
-      const updatedProduct = await Product.findByIdAndUpdate(productId, updatedData, { new: true });
-
-      if (updatedProduct) {
-        console.log('Product updated successfully:', updatedProduct);
-        return updatedProduct;
-      } else {
-        console.log('Product not found');
-        return null;
-      }
     } catch (error) {
-      console.error('Error updating product:', error.message);
-      throw new Error('Error updating product');
+        console.error('Error updating product:', error.message);
+        throw new Error('Error updating product');
     }
-  },
+},
+
+
 
 
   deleteProductById: async (productId) => {
@@ -138,7 +124,21 @@ module.exports = {
     await newAdmin.save();
   },
 
-     
+
+
+  performSearch: async (searchQuery) => {
+
+    const regex = new RegExp(searchQuery, 'i');
+
+    try {
+        // Query the database for products matching the search criteria
+        const searchResults = await Product.find({ name: regex });
+        return searchResults;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error performing search');
+    }
+},
 };
 
 
