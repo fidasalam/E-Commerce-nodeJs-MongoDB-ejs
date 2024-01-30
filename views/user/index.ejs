@@ -26,7 +26,7 @@
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -50,7 +50,7 @@
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="slideInUp" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="/user/product?categoryId=" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -74,7 +74,7 @@
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="rotateIn" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="/user/product?categoryId=" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -299,7 +299,7 @@
                                 <%= product.name %>
                             </a>
                             <span class="stext-105 cl3">
-                                $<%= product.price %>
+                                Rs.<%= product.price %>
                             </span>
                         </div>
 						<div class="block2-txt-child2 flex-r p-t-3">
@@ -313,13 +313,14 @@
             </div>
         <% }) %>
     </div>
-</section>
+
     <!-- Load more -->
     <div class="flex-c-m flex-w w-full p-t-45 text-center">
         <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
             Load More
         </a>
     </div>
+	</section>
 
  <script>
         // Remove the existing JavaScript code related to the search button
@@ -358,6 +359,27 @@
     
     </script>
     
-
-
+<style>
+	.isotope-item {
+		position: relative;
+		overflow: hidden;
+		margin-bottom: 20px; /* Adjust the margin as needed */
+	  }
+	  
+	  .block2 {
+		position: relative;
+	  }
+	  
+	  .block2-pic {
+		position: relative;
+		overflow: hidden;
+	  }
+	  
+	  .block2-pic img {
+		width: 100%; /* Ensure the image takes the full width of its container */
+		height: auto; /* Maintain the aspect ratio */
+		display: block;
+	  }
+	  
+</style>
     <%- include('../partials/footer') %>

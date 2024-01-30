@@ -10,7 +10,7 @@ const cartItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0,
-    default: 1 ,
+    default: 0 ,
   },
    size: {
     type: String,
@@ -32,10 +32,18 @@ const cartSchema = new mongoose.Schema({
    type: Number,
      default: 0
   },
-  appliedCoupon: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Coupon', 
-    default: null },
+  subtotal: {
+    type: Number,
+    default: 0
+  },
+  total: {
+    type: Number,
+    default: 0
+  },
+  // appliedCoupon: { 
+  //   type: mongoose.Schema.Types.ObjectId, 
+  //   ref: 'Coupon', 
+  //   default: null },
 
 
 });

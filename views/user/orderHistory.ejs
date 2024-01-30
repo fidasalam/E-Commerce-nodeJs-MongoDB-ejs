@@ -1,0 +1,45 @@
+<!-- views/user/orderHistory.ejs -->
+<%- include('../partials/header') %>
+
+
+<div class="container mt-5">
+  <section class="bg0 p-t-23 p-b-140">
+  <div class="col-sm-10 col-lg-8 col-xl-5  m-b-50 mt-5 ">
+    <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+      <div class="container">
+        <div class="p-b-10 text-center">
+            <h3 class="ltext-102 cl5">
+                Order History
+            </h3>
+        </div>
+
+  <ul>
+    <% orderHistory.forEach((order) => { %>
+      <li>
+        <strong>Order ID:</strong> <%= order.payment.orderId %><br>
+        <strong>Order Date:</strong> <%= order.payment.orderDate.toLocaleString() %><br>
+        <strong>Status:</strong> <%= order.payment.status %><br>
+        <ul>
+          <% order.items.forEach((item) => { %>
+            <li>
+              <strong>Product Name:</strong> <%= item.product.name %><br>
+              <div class="how-itemcart1">
+                <img src="<%= item.product.image || '/path/to/placeholder-image.jpg' %>" alt="Product Image">
+              </div>
+              <!-- Add more details as needed -->
+            </li>
+          <% }) %>
+          
+        </ul>
+      </li>
+      <hr>
+    <% }) %>
+  </ul>
+</div>
+</div>
+</div></section>
+</div>
+
+
+
+<%- include('../partials/footer') %>

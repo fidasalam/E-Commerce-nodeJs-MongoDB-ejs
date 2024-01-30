@@ -1,0 +1,104 @@
+<!-- views/admin/orderlist.ejs -->
+
+<%- include('../partials/adminheader') %>
+
+<div class="container mt-5">
+    <div class="row tm-content-row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-products">
+                <div class="tm-product-table-container">
+                    <table class="table table-hover tm-table-small tm-product-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Payment ID</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Order Date</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach((order, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td>
+                                        <a href="#" class="show-details-link" data-bs-toggle="modal" data-bs-target="#orderDetailsModal<%= order._id %>" style="text-decoration: none;color: #ffffff;">
+                                            <%= order.payment.orderId %>
+                                        </a>
+                                    </td>
+                                    <td><%= order.user.username %></td>
+                                    <td><%= order.payment.paymentId %></td>
+                                    <td><%= order.payment.status %></td>
+                                    <td><%= order.payment.orderDate.toLocaleString() %></td>
+                                    <td>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="pending" <% if(order.payment.status === 'pending') { %>checked<% } %>>
+                                            <label class="form-check-label">Pending</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>
+                                            <label class="form-check-label">Shipped</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="delivered" <% if(order.payment.status === 'delivered') { %>checked<% } %>>
+                                            <label class="form-check-label">Delivered</label>
+                                        </div>
+                                    </td>
+                                    <!-- Add more columns as needed -->
+
+                                    <!-- Modal for order details -->
+                                    <div class="modal fade" id="orderDetailsModal<%= order._id %>" tabindex="-1" aria-labelledby="orderDetailsModalLabel<%= order._id %>" aria-hidden="true">
+                                        <!-- ... (rest of your modal content) -->
+                                    </div>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this script at the bottom of your order list view -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const statusRadios = document.querySelectorAll('.status-radio');
+
+    statusRadios.forEach(radio => {
+        radio.addEventListener('change', async function () {
+            const orderId = radio.getAttribute('data-order-id');
+            const status = document.querySelector(`input[name="status${orderId}"]:checked`).value;
+            const currentDate = new Date().toISOString();
+            try {
+                const response = await fetch(`/admin/updateStatus/${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status,currentDate }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update order status');
+                }
+
+                const updatedOrder = await response.json();
+
+                // Update the displayed status on the client side
+                const statusCell = document.querySelector(`[data-order-id="${orderId}"] .order-status`);
+                if (statusCell) {
+                    statusCell.textContent = status;
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        });
+    });
+});
+
+</script>
+<%- include('../partials/adminfooter') %>

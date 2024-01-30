@@ -3,12 +3,14 @@ const Product = require('../models/product');
 const Category = require('../models/category');
 const DeletedUser = require('../models/deletedUser');
 const Coupon = require('../models/coupen')
+const Order = require('../models/order');
 
 const bcrypt = require('bcryptjs');
 
 const path = require('path');
 const fs = require('fs').promises;
 const ProductHelper = require('../helpers/productHelper');
+const orderHelper = require('../helpers/orderHelper');
 const upload = require('../config/multerConfig');
 
 
@@ -319,4 +321,48 @@ exports.blockUser = async (req, res) => {
   }
 };
 
-  
+exports.renderOrderList = async (req, res) => {
+  try {
+    const orders = await Order.find().populate('user'); // Assuming the user field in the Order model is used to reference the user who placed the order
+    res.render('admin/orderlist', { orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+exports.changeStatus = async (req, res) => {
+  const { orderId } = req.params;
+  const { status, currentDate } = JSON.parse(req.body);
+
+  console.log('Received payload:', currentDate);
+
+  try {
+    // Find the order by orderId
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Get the next status using the awaited result of getNextStatus
+    const nextStatus = await orderHelper.getNextStatus(status);
+
+    // Update only the payment status field
+    order.payment.status = nextStatus;
+    if (nextStatus === 'shipping') {
+      order.shippedDate = new Date(currentDate);
+  } else if (nextStatus === 'delivered') {
+      order.deliveredDate = new Date(currentDate);
+  }
+
+    // Save the updated order
+    const updatedOrder = await order.save();
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order status:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

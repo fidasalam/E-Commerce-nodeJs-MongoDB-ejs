@@ -10,8 +10,11 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
 const flash = require('express-flash');
-const cors = require('cors');
-const Coupon= require('./models/coupen');
+
+
+const Order = require('./models/order');
+
+
 
 
 
@@ -24,13 +27,18 @@ require('dotenv/config');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
+const webhookRouter = require('./routes/webhook')
 const { render } = require('ejs');
 
 
 // Middleware
+app.use(bodyParser.raw({ type: 'application/json' }));
 app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+
+
 
 
 app.use(cookieParser());
@@ -44,11 +52,6 @@ app.use(session({
 }));
 
 app.use(flash());
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-}));
 
 
 
@@ -82,6 +85,7 @@ app.use('/admin', adminRouter);
 app.use('/user', express.static(path.join(__dirname, 'public')));
 app.use('/user/productdetails', express.static(path.join(__dirname, 'public')));
 app.use('/user/cart', express.static(path.join(__dirname, 'public')));
+app.use('/webhook', webhookRouter);
 
 
 
@@ -89,14 +93,14 @@ app.use('/user/cart', express.static(path.join(__dirname, 'public')));
 
 app.get('/test',async(req,res)=>{
  
-  res.render('user/search')
+  await Order.deleteMany({});
+
 })
 
 
 
 
-
 const PORT = process.env.PORT || 3000;
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log("Server is running at http://localhost:3000");
 });

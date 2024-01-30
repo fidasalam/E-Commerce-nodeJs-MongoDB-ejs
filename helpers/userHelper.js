@@ -2,8 +2,51 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usermodel');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
+
+
 
 module.exports = {
+
+
+   generateTokenAndSetSession :(user, req) => {
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    req.session.token = token;
+    req.session.userId = user._id;
+},
+
+
+
+  isValidPasswordFormat :(password) => {
+   
+    const minLength = 6;
+    const hasUpperCase = /[A-Z]/.test(password);
+
+    return password.length >= minLength && hasUpperCase;
+},
+
+
+ isValidPhoneNumberFormat : (phoneNumber) => {
+ 
+  const numericRegex = /^[0-9]+$/;
+  return numericRegex.test(phoneNumber) && phoneNumber.length === 10; // Adjust as needed
+},
+
+
+  validatePassword: async (user, password) => {
+    try {
+
+
+        // Compare hashed password in the user object with the provided password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        return isPasswordValid;
+    } catch (error) {
+        console.error('Error validating password:', error);
+        return false; // Return false in case of an error
+    }
+},
+
+
   registerUser: async (userData) => {
     const { username, email, password, name,phone,address} = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -13,7 +56,7 @@ module.exports = {
       password: hashedPassword,
       name,
       phone,
-      address,
+    
     
     });
     return await newUser.save();

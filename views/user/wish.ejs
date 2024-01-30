@@ -22,7 +22,7 @@
                                                 <th class="column-2"></th>
                                                 <th class="column-3"></th>
                                                 <th class="column-4"></th>
-                                                <th class="column-5"></th>  
+                                                <th class="column-5"></th>
                                                 <th class="column-6"></th>
                                             </tr>
                                         </thead>
@@ -45,32 +45,27 @@
                                                             <%= item.product ? ('$ ' + (item.product.price || 0).toFixed(2)) : '' %>
                                                         </td>
 
-                                                        <td class="column-4">
-                                                            <select id="size" name="size" class="flex-c-m stext-101 cl0 bg2 bor1 hov-btn1 p-lr-15 trans-04 custom-select ml-3">
-                                                            
+                                                        <!-- <td class="column-4">
+                                                            <select id="size_<%= item.product._id %>" name="size" class="flex-c-m stext-101 cl0 bg2 bor1 hov-btn1 p-lr-15 trans-04 custom-select ml-3">
                                                                 <option value="S">S</option>
                                                                 <option value="M">M</option>
                                                                 <option value="L">L</option>
                                                                 <option value="XL">XL</option>
                                                             </select>
-                                                        </td>
+                                                        </td> -->
                                                         <td class="column-5">
                                                             <!-- Add a form to add item to cart -->
-                                                            <form id="addToCartForm_<%= item.product._id %>" action="/user/addToCart/<%= item.product._id %>" method="POST">
-                                                                <button type="submit" class="btn" >
-                                                                    <i class="zmdi zmdi-shopping-cart"></i>
+                                                            <form id="<%= `addToCartForm_${item.product._id}` %>" action="/user/wishlist/add-to-cart/<%= item.product._id %>" method="post">
+                                                                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                                                <button type="submit" class="btn">
+                                                                    <i class="zmdi zmdi-shopping-cart"></i> Add to Cart
                                                                 </button>
                                                             </form>
-                                                    
-                                                        
                                                         </td>
-
                                                         <td class="column-6">
-                                                            
                                                             <button type="button" class="btn" onclick="removeFromWishlist('<%= item.product._id %>')">
-                                                                <i class="zmdi zmdi-close"></i>
+                                                                <i class="zmdi zmdi-close"></i> Remove from Wishlist
                                                             </button>
-                                                    
                                                         </td>
                                                     </tr>
                                                 <% }); /* End of wishlist items loop */ %>
@@ -100,20 +95,33 @@
             url: `/user/wishlist/${productId}`,
             success: function (data) {
                 console.log('Successfully removed from wishlist');
-              
                 location.reload();  // Optionally, you can update the UI here to reflect the changes
             },
-          
             error: function (error) {
                 console.error('Error removing from wishlist:', error);
             }
         });
     }
     function addToCart(productId) {
-        // Trigger form submission
-        document.getElementById(`addToCartForm_${productId}`).submit();
+        var form = document.getElementById(`addToCartForm_${productId}`);
+        var formData = new FormData(form);
+
+        fetch(form.action, {
+            method: form.method,
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response, you can update the UI as needed
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error adding to cart:', error);
+        });
     }
-</script
-   
+</script>
 
 <%- include('../partials/footer') %>

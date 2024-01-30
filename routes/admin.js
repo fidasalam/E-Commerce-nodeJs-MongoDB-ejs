@@ -34,7 +34,9 @@ router.get('/delete-user/:id', adminController.deleteUser);
 
 router.post('/block-user/:id', adminController.blockUser);
 
+router.get('/orderlist', adminController.renderOrderList);
 
+router.post('/updateStatus/:orderId', adminController.changeStatus);
 
 
 

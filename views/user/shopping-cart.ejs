@@ -14,12 +14,13 @@
 </div>
 
 <!-- Shopping Cart -->
-<form class="bg0 p-t-75 p-b-85">
-    <div class="container">
+
+    <div class="container mt-5">
         <div class="row">
             <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
                 <div class="m-l-25 m-r--38 m-lr-0-xl">
                     <div class="wrap-table-shopping-cart">
+                        <% if (cart.items && cart.items.length > 0) { %>
                         <table class="table-shopping-cart">
                             <tr class="table_head">
                                 <th class="column-1">Product</th>
@@ -41,7 +42,7 @@
         </td>
         <td class="column-2"><%= cart.items[i].product ? cart.items[i].product.name : '' %></td>
         <td class="column-3">
-            <%= cart.items[i].product ? ('$ ' + (cart.items[i].product.price || 0).toFixed(2)) : '' %>
+            <%= cart.items[i].product ? ('Rs. ' + (cart.items[i].product.price || 0).toFixed(2)) : '' %>
         </td>
         <td class="column-4">
             <% const itemIndex = i + 1; %>
@@ -63,7 +64,7 @@
 
         <td class="column-6">
             <div class="how-itemcart1">
-            <%= cart.items[i].product ? ('$ ' + ((cart.items[i].product.price || 0) * cart.items[i].quantity).toFixed(2)) : '' %>
+            <%= cart.items[i].product ? ('Rs. ' + ((cart.items[i].product.price || 0) * cart.items[i].quantity).toFixed(2)) : '' %>
         </div>
         </td>
         
@@ -77,6 +78,9 @@
         </form>
     </tr>
 <% } /* End of cart items loop */ %>
+<% } else { %>
+    <p>Your cart is empty.</p>
+<% } %>
 
 
                         </table>
@@ -86,33 +90,34 @@
                    
                     <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
                         <span class="stext-101 cl2 size-118">Sub Total:</span>
-                        <span id="subtotal" class="stext-101 cl2 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">$ <%= subtotal.toFixed(2) %></span>
+                        <span id="subtotal" class="stext-101 cl2 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">Rs. <%= subtotal.toFixed(2) %></span>
                        
                     </div>
                      
                     <div class="row mt-5">
-                        <div class="col-md-6"> <!-- Adjust the column size as needed -->
+                        <div class="col-md-6">
                             <div class="coupon-box m-t-20">
                                 <div class="coupon-info">
                                     <p class="coupon-title">Special Offer!</p>
-                                    <p>Use coupon code <strong id="couponCode">FIRSTORDER30</strong></p>
+                                    <p>Use coupon code <strong id="firstOrderCoupon">FIRSTORDER30</strong></p>
                                     <p>Get <strong>30% off</strong> on your order</p>
-                                   
                                 </div>
+                                <button class="copy-coupon-btn" onclick="copyCouponCode('firstOrderCoupon')">Copy Coupon</button>
                             </div>
                         </div>
-                        <div class="col-md-6"> <!-- Adjust the column size as needed -->
-                            <div class=" m-t-5 coupen-Wintersale">
+                        <div class="col-md-6">
+                            <div class="m-t-5 coupen-Wintersale">
                                 <div class="coupon-info Wintersale">
                                     <p class="coupon-title">Winter Sale!</p>
-                                    <p>Use coupon code <strong id="couponCode">WINTERSALE</strong></p>
+                                    <p>Use coupon code <strong id="winterSaleCoupon">WINTERSALE</strong></p>
                                     <p>Get <strong>40% off</strong> on your order</p>
-                                  
                                 </div>
+                                <button class="copy-coupon-btn" onclick="copyCouponCode('winterSaleCoupon')">Copy Coupon</button>
+                                <p class="copy-instruction"></p>
                             </div>
-                            <p class="copy-instruction"></p>
                         </div>
                     </div>
+                    
                                        
                 </div>
             </div>
@@ -132,29 +137,31 @@
                                 </span>
                             </div>
                             <div class="size-209 ml-auto text-right">
-                                <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">$ <%= subtotal.toFixed(2) %></span>
+                                <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">Rs. <%= subtotal.toFixed(2) %></span>
                             </div>
                         </div>
                         
                         <div class="flex-w flex-m m-r-8 m-tb-5">
-                          <!-- ... Other HTML content ... -->
+                    
 
-                          <div id="couponFormWrapper" class="row">
-                            <div class="col-md-12">
-                                <!-- Convert the div to a form -->
+                        
+                            
                                 <!-- <form class="flex-w p-b-13" action="/user/cart/add-coupon" method="post"> -->
                                     <form class="flex-w p-b-13" action="/user/checkout" method="post">
-                                    <!-- Coupon input -->
+                    
+                                    <div id="couponFormWrapper" class="row">
+                                
                                     <input class="stext-104 cl3 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" id="couponCode2" name="coupon" placeholder="Coupon Code">
                                         
                                     <!-- Apply coupon button -->
                                     <button type="button" id="applyCouponBtn" class="stext-101 cl3 size-118 bg8 bor13 hov-btn3 p-lr-8 trans-04 pointer m-tb-5">
                                         Apply coupon
                                     </button>
-                                </form>
+                                    
+                            
                             </div>
                         </div>
-                        <form action="/user/checkout" method="post">
+                    
                             <!-- Existing code... -->
                         
                             <div class="flex-w flex-t bor12 p-t-15 p-b-30">
@@ -175,19 +182,19 @@
                                     </div>
                         
                                     <div class="bor8 bg0 m-b-12">
-                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="state" placeholder="State / Country">
+                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="state" placeholder="State / Country" required>
                                     </div>
                         
                                     <div class="bor8 bg0 m-b-12">
-                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="city" placeholder="City">
+                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="city" placeholder="City" required>
                                     </div>
                         
                                     <div class="bor8 bg0 m-b-22">
-                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="postalCode" placeholder="Postcode / Zip">
+                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="postalCode" placeholder="Postcode / Zip" required>
                                     </div>
                         
                                     <div class="bor8 bg0 m-b-22">
-                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="street" placeholder="Street Address">
+                                        <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="street" placeholder="Street Address" required>
                                     </div>
                                 </div>
                             </div>
@@ -203,12 +210,12 @@
                         
                                 <div class="size-209 p-t-1">
                                     <span class="mtext-110 cl2">
-                                        <span id="discountedTotal" class="stext-101 cl2 size-118">$ <%= discountedTotal.toFixed(2) %></span>
+                                        <span id="discountedTotal" class="stext-101 cl2 size-118 m-l-25">Rs. <%= discountedTotal.toFixed(2) %></span>
                                     </span>
                                 </div>
                             </div>
                             <input type="hidden" name="subtotal" value="<%= subtotal.toFixed(2) %>">
-                            <input type="hidden" name="total" value="<%= discountedTotal.toFixed(2) %>">
+                            <input type="hidden" name="discountedTotal" value="<%= discountedTotal.toFixed(2) %>">
                         
                             <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
                                 Proceed to Checkout
@@ -225,67 +232,10 @@
 
 
 
-<!-- Styles for Colorful Coupon Box -->
-<style>
-  
-    .coupon-box {
-        border: 1px solid #ddd;
-        padding: 5px;
-        text-align: left;
-        max-width:2000px;
-        margin: 0 auto;
-        font-size:10px;
-        background-color: #d9cbd7; /* Yellow background color */
-    }
-
-    .coupen-Wintersale{
-        border: 1px solid #ffffff;
-        padding: 5px;
-        text-align: left;
-        max-width:2000px;
-        margin: 0 auto;
-        font-size:10px;
-        background-color: #d2f2fa;
-
-    }
-    .coupon-info {
-        margin-bottom: 5px;
-    }
-
-    .coupon-title {
-        color: #000000; /* Dark text color */
-        font-weight: bold;
-        font-size: 8px;
-    }
-
-    #couponCode {
-        color: #000000; /* Red text color for the coupon code */
-        cursor: pointer;
-    }
-
-    .copy-instruction {
-        color: #ffffff; /* Blue text color for copy instruction */
-        cursor: pointer;
-    }
-</style>
 
 
-<style>
-    /* Add custom styles to reduce the width of the coupon input */
-    .stext-104 {
-        width: 100px; /* Adjust the width as needed */
-    }
-
-    /* Add custom styles to reduce the width of the apply coupon button */
-    .bg8 {
-        width: 100px; /* Adjust the width as needed */
-    }
-  
-   
-    
 
 
-</style>
 
 <script>
     $(document).ready(function () {
@@ -351,78 +301,168 @@
         updateQuantityAndTotal(itemIndex, newQuantity);
     });
 
-//Apply Coupen
-
-
-
     });
 
 
 </script>
+
+
 <script>
-    // Add this script to handle coupon application and total update
-    $(document).ready(function () {
-        // Event listener for applying coupon using Ajax
-        $('#applyCouponBtn').on('click', function () {
-            // Get the form data
-            const formData = $('#couponFormWrapper form').serialize();
+    // Function to copy coupon code to clipboard
+    function copyCouponCode(elementId) {
+        var couponCodeElement = document.getElementById(elementId);
+        var couponCode = couponCodeElement.innerText;
 
-            // Make an Ajax request to apply the coupon
-            $.ajax({
-                type: 'POST',
-                url: '/user/cart/add-coupon',
-                data: formData,
-                success: function (response) {
-                    if (response.success) {
-                        // Update the discounted total on success
-                        updateDiscountedTotal(response.discountedTotal);
-                    } else {
-                        // Handle unsuccessful coupon application (if needed)
-                        console.error('Coupon application failed:', response.error);
-                    }
-                },
-                error: function (error) {
-                    console.error('Ajax error:', error);
-                }
-            });
-        });
+        var tempInput = document.createElement('input');
+        tempInput.value = couponCode;
+        document.body.appendChild(tempInput);
 
-        // Function to update the discounted total on the page
-        function updateDiscountedTotal(discountedTotal) {
-            $('#discountedTotal').text('$ ' + discountedTotal.toFixed(2));
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        // Display copy instruction
+        var copyInstruction = document.querySelector('.copy-instruction');
+        copyInstruction.innerText = 'Coupon code copied!';
+    }
+
+   
+</script>
+<script>
+  $(document).ready(function () {
+    var appliedCouponCode = '';
+
+    $('#applyCouponBtn').on('click', function () {
+        var couponCode = $('#couponCode2').val();
+
+        if (appliedCouponCode) {
+            // If a coupon is applied, remove it
+            removeCoupon();
+        } else {
+            // Apply coupon logic
+            applyCoupon(couponCode);
         }
     });
+
+    function applyCoupon(couponCode) {
+        // Calculate discounted total based on the coupon code
+        var subtotal = parseFloat($('#subtotal').data('subtotal'));
+        var discountedTotal;
+
+        switch (couponCode) {
+            case 'FIRSTORDER30':
+                // Apply 30% discount for the first coupon
+                discountedTotal = subtotal * 0.7;
+                break;
+            case 'WINTERSALE':
+                // Apply 40% discount for the second coupon
+                discountedTotal = subtotal * 0.6;
+                break;
+            // Add more cases for other coupons if needed
+
+            default:
+                // No coupon or unknown coupon code
+                discountedTotal = subtotal;
+                break;
+        }
+
+        // Update the total
+        updateTotal(discountedTotal);
+
+        // Display the applied coupon code
+        appliedCouponCode = couponCode;
+        $('#applyCouponBtn').text('Remove Coupon');
+    }
+
+    function removeCoupon() {
+        // Reset the coupon input field
+        $('#couponCode2').val('');
+
+        // Reset the applied coupon code
+        appliedCouponCode = '';
+
+        // Recalculate total without the coupon
+        var subtotal = parseFloat($('#subtotal').data('subtotal'));
+        updateTotal(subtotal);
+
+        // Change button text back to "Apply Coupon"
+        $('#applyCouponBtn').text('Apply Coupon');
+    }
+
+    function updateTotal(total) {
+        console.log('Updating Total: total', total);
+        $('#discountedTotal').text('$ ' + total.toFixed(2));
+    }
+
+    // Your existing JavaScript code...
+});
+
 </script>
-<!-- Include Clipboard.js for copy-to-clipboard functionality -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
-
-<!-- JavaScript to initialize copy-to-clipboard functionality -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Clipboard.js
-        var clipboard = new ClipboardJS('#couponCode', {
-            text: function (trigger) {
-                return trigger.innerText; // Set the text to be copied
-            }
-        });
-
-        // Display success message on successful copy
-        clipboard.on('success', function (e) {
-            document.querySelector('.copy-instruction').innerText = 'Code copied successfully!';
-            setTimeout(function () {
-                document.querySelector('.copy-instruction').innerText = 'Click to copy code';
-            }, 2000); // Reset the instruction after 2 seconds
-        });
-
-        // Display error message on unsuccessful copy
-        clipboard.on('error', function (e) {
-            document.querySelector('.copy-instruction').innerText = 'Failed to copy code. Please try again.';
-        });
-    });
-</script>
 
 
+<style>
+  
+    .coupon-box {
+        border: 1px solid #ddd;
+        padding: 5px;
+        text-align: left;
+        max-width:2000px;
+        margin: 0 auto;
+        font-size:10px;
+        background-color: #d9cbd7; /* Yellow background color */
+    }
+
+    .coupen-Wintersale{
+        border: 1px solid #ffffff;
+        padding: 5px;
+        text-align: left;
+        max-width:2000px;
+        margin: 0 auto;
+        font-size:10px;
+        background-color: #d2f2fa;
+
+    }
+    .coupon-info {
+        margin-bottom: 5px;
+    }
+
+    .coupon-title {
+        color: #000000; /* Dark text color */
+        font-weight: bold;
+        font-size: 8px;
+    }
+
+    #couponCode {
+        color: #000000; /* Red text color for the coupon code */
+        cursor: pointer;
+    }
+
+    .copy-instruction {
+        color: #ffffff; /* Blue text color for copy instruction */
+        cursor: pointer;
+    }
+</style>
+
+
+<style>
+    /* Add custom styles to reduce the width of the coupon input */
+    .stext-104 {
+        width: 100px; /* Adjust the width as needed */
+    }
+
+    /* Add custom styles to reduce the width of the apply coupon button */
+    .bg8 {
+        width: 100px; /* Adjust the width as needed */
+    }
+  
+   
+    
+
+
+</style>
 
 
 
-<%- include('../partials/footer') %>
+
+
+t <%- include('../partials/footer') %>

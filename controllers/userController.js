@@ -5,7 +5,7 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 const Wishlist = require('../models/wishlist');
 const mongoose = require('mongoose');
-
+const nodemailer = require('nodemailer');
 const Order = require('../models/order');
 const Coupon = require('../models/coupen');
 const path = require('path');
@@ -14,6 +14,7 @@ const userHelper = require('../helpers/userHelper');
 const ProductHelper = require('../helpers/productHelper');
 const cartHelper = require('../helpers/cartHelper');
 const productHelper = require('../helpers/productHelper');
+const stripe = require('stripe')('sk_test_51OcjKQSAozOuGu5VBxZyokvRH8WSyNnWvtftzfloHNeWJIPL9tDpx8drMmAF24wukrPdSyp3yTJrT4vbOTwYQQ0n00EjxmHpCC');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
 
@@ -52,29 +53,21 @@ exports.handleLogin = async (req, res) => {
   try {
     
     const { username, password } = req.body;
-
     const user = await User.findOne({ username });
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+     if (!user || !(await bcrypt.compare(password, user.password))) {
       req.flash('error', 'Invalid credentials');
       return res.redirect('/user/login');
     }
 
     if (user.isBlocked) {
-      return res.status(403).json({ error: 'Your account is blocked. Please contact support for assistance.' });
+      req.flash('error', 'Your account is blocked. Please contact support for assistance.');
+     
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-    // Store the token and userId in the session
-    req.session.token = token;
-    req.session.userId = user._id;
-  
+    userHelper.generateTokenAndSetSession(user, req);
     res.redirect('/user/index')
 
   } catch (error) {
-    console.error('Error during login:', error.message);
     res.status(401).render('user/login', { error: error.message });
   }
 };
@@ -120,7 +113,28 @@ exports.handleRegister = async (req, res) => {
  
   try {
     
-     await userHelper.registerUser(req.body);
+    const { username, email, password, name, phone } = req.body;
+
+    if (!userHelper.isValidPasswordFormat(password)) {
+      return res.status(400).send('Invalid password format');
+    }
+
+    if (!userHelper.isValidPhoneNumberFormat(phone)) {
+      throw new Error('Invalid phone number format');
+  }
+
+ await userHelper.registerUser({
+    username,
+    email,
+    password,
+    name,
+    phone,
+  
+});
+
+const registeredUser = await User.findOne({ username });
+userHelper.generateTokenAndSetSession(registeredUser, req);
+   
     res.redirect('/user/index');
   } catch (error) {
     console.error(error);
@@ -148,17 +162,37 @@ exports.renderProfilePage = async (req, res) => {
 
 
 
+
 exports.handleEditProfile = async (req, res) => {
   try {
+    const { username, email, name, phone, address, oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Validate old password
+    const isPasswordValid = await userHelper.validatePassword(req.userDetails, oldPassword);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Invalid old password' });
+    }
+
+    // Validate new password and confirm password
+    if (newPassword && newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'New password and confirm password do not match' });
+    }
+
+    // Update user details
+    req.userDetails.username = username;
+    req.userDetails.email = email;
+    req.userDetails.name = name;
+    req.userDetails.phone = phone;
   
-    const { username, email, name, phone, address } = req.body;
-    await User.findByIdAndUpdate(req.userDetails, {
-      username,
-      email,
-      name,
-      phone,
-      address,
-    });
+
+    // Update the password only if a new password is provided
+    if (newPassword) {
+      req.userDetails.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // Save the updated user details
+    await req.userDetails.save();
 
     req.flash('success', 'Profile updated successfully');
 
@@ -201,6 +235,12 @@ exports.renderShoppingCart = async (req, res) => {
   try {
   
    const cart = await cartHelper.getCart(req.userId);
+
+    
+   if (!cart || cart.items.length === 0) {
+    return res.render('user/empty-cart', { userDetails: req.userDetails });
+  }
+
    const subtotal = cartHelper.calculateSubtotal(cart);
 
     res.render('user/shopping-cart',{userDetails:req.userDetails,cart,subtotal,discountedTotal:subtotal});
@@ -211,19 +251,18 @@ exports.renderShoppingCart = async (req, res) => {
   }
 };
 
+exports.renderEmptyCart = async(req,res)=>{
+  res.render('user/empty-cart',{userDetails:req.userDetails})
+}
+
 
 exports.addToCart = async (req, res) => {
   try {
     const { productId } = req.body;
     const userId = req.session.userId;
+   await cartHelper.addToCart(userId, productId, 1);
 
-    // // Validate that productId is a valid ObjectId
-    // if (!mongoose.Types.ObjectId.isValid(productId)) {
-    //   throw new Error('Invalid product ID');
-    // }
-    await cartHelper.addToCart(userId, productId, 1);
-
-    res.redirect(`/user/productdetails/${productId}`);
+ res.redirect(`/user/productdetails/${productId}`);
   } catch (error) {
     console.error('Error adding to cart:', error.message);
     res.status(500).render('error', { message: 'Error adding to cart', error: error.message });
@@ -246,7 +285,6 @@ exports.updateQuantity = async (req, res) => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
-    // Update quantity and total in the cart
     const cartItem = cart.items[itemIndex - 1];
 
     if (!cartItem) {
@@ -254,13 +292,6 @@ exports.updateQuantity = async (req, res) => {
     }
 
     cartItem.quantity = newQuantity;
-
-    // // Calculate the new total
-    // const pricePerUnit = parseFloat(cartItem.product.price || 0);
-    // const newTotal = pricePerUnit * newQuantity;
-
-    // cartItem.total = newTotal;
-
     await cart.save();
    res.json({ newTotal: subtotal});
   } catch (error) {
@@ -270,36 +301,37 @@ exports.updateQuantity = async (req, res) => {
 };
 
 
-
-
 exports.removeProduct = async (req, res) => {
   try {
     const productId = req.body.productId;
 
+    if (!productId) {
+      return res.status(400).json({ error: 'Missing or invalid product ID' });
+    }
+
     const cart = await cartHelper.getCart(req.userDetails);
+
+    if (!cart) {
+      return res.render('user/empty-cart', { userDetails: req.userDetails });
+    }
+
     const subtotal = cartHelper.calculateSubtotal(cart);
 
-    
-    if (!productId) {
-      return res.status(400).json({ error: 'Invalid product ID' });
-    }
-
-  
     cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+    await cartHelper.updateCart(cart);
+    if (cart.items.length === 0) {
+      return res.render('user/empty-cart', { userDetails: req.userDetails });
+    }
 
     await cartHelper.updateCart(cart);
-    
-    
-    if (!cart.items.length ) {
-      res.render('user/index', { userDetails: req.userDetails});
-    } else {
-    
-      res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal:subtotal });
-    }
-  } catch (error) {
-  
-    console.error('Error in removeProduct:', error);
 
+  
+    console.log('Cart items after removal:', cart.items);
+
+    res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal: subtotal });
+
+  } catch (error) {
+    console.error('Error in removeProduct:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -307,42 +339,42 @@ exports.removeProduct = async (req, res) => {
 
 
 
-exports.applyCoupen = async (req, res) => {
-  try {
-      const { coupon } = req.body;
+// exports.applyCoupen = async (req, res) => {
+//   try {
+//       const { coupon } = req.body.coupon;
       
 
       
-      if (!coupon) {
-          return res.json({ success: false, message: 'Coupon code is required.' });
-      }
+//       if (!coupon) {
+//           return res.json({ success: false, message: 'Coupon code is required.' });
+//       }
 
     
-      const foundCoupon = await Coupon.findOne({ code: coupon });
+//       const foundCoupon = await Coupon.findOne({ code: coupon });
       
     
-      if (!foundCoupon) {
-          return res.json({ success: false, message: 'Invalid coupon code.' });
-      }
+//       if (!foundCoupon) {
+//           return res.json({ success: false, message: 'Invalid coupon code.' });
+//       }
 
   
-      const cart = await cartHelper.getCart(req.userDetails);
+//       const cart = await cartHelper.getCart(req.userDetails);
 
-      const subtotal = cartHelper.calculateSubtotal(cart);
+//       const subtotal = cartHelper.calculateSubtotal(cart);
       
-      const discountedTotal = cartHelper.calculateDiscountedTotal(subtotal, foundCoupon);
+//       const discountedTotal = cartHelper.calculateDiscountedTotal(subtotal, foundCoupon);
 
-      cart.appliedCoupon = foundCoupon._id;
-      
-      await cart.save();
+//       cart.appliedCoupon = foundCoupon._id;
+//       console.log('distot:',discountedTotal)
+//       // await cart.save();
 
-      res.json({ success: true, discountedTotal });
+//       res.json({ success: true, discountedTotal });
         
-  } catch (error) {
-      console.error('Error in applyCoupen:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-  }
-};
+//   } catch (error) {
+//       console.error('Error in applyCoupen:', error);
+//       return res.status(500).json({ error: 'Internal server error' });
+//   }
+// };
 
 
 
@@ -454,72 +486,111 @@ exports.removeWishlist = async (req, res) => {
       res.status(500).json({ message: 'Error removing from wishlist' });
     }
   };
+  
 
+
+
+  exports.wishlistAddToCart = async (req, res) => {
+    try {
+      const productId = req.params.productId;
+    
+  
+      // Assuming Wishlist model has a reference to the Product model
+      const wishlistItem = await Wishlist.findOne({ user: req.userDetails, product: productId }).populate('product');
+  
+      if (!wishlistItem) {
+        return res.status(404).json({ error: 'Product not found in the wishlist' });
+      }
+  
+      // Add the product to the cart
+      await cartHelper.addToCart(req.userDetails, productId, 1);
+      await Wishlist.findOneAndDelete({ user: req.userDetails, product: productId });
+  
+      // Optionally, you may want to remove the product from the wishlist after adding to the cart
+      
+res.redirect('user/wishlist')  
+    
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
 
   exports.renderCheckout = async (req, res) => {
-  try {
-    // Fetch the user's cart
-    const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
-    
-    const couponCode = cart.appliedCoupon ? cart.appliedCoupon.code : null;   
-    const subtotal =cartHelper.calculateSubtotal(cart);
-    // const discountedTotal = cartHelper.calculateDiscountedTotal(subtotal, couponCode);
-console.log("discounted:",discountedTotal)
-console.log("sub:",subtotal)
+    try {
+      // Fetch the user's cart
+      const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
   
-    const latestorder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
-
-    // Render the checkout page with the necessary data
-    res.render('user/checkout', {
-      userDetails: req.userDetails,
-      cart,
-      subtotal,
-      discountedTotal,
-      latestorder
-      // Add more values as needed
-    });
-  } catch (error) {
-    console.error('Error rendering checkout page:', error.message);
-    res.status(500).render('error', { message: 'Error rendering checkout page', error: error.message });
-  }
-};
-
+      // Fetch the latest order
+      const latestorder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
+  
+      // Calculate subtotal and total from the latest order
+      const subtotal = latestorder.subtotal;
+      const total = latestorder.total;
+  
+      // Render the checkout page with the necessary data
+      res.render('user/checkout', {
+        userDetails: req.userDetails,
+        cart,
+        subtotal,
+        total,
+        latestorder
+        // Add more values as needed
+      });
+    } catch (error) {
+      console.error('Error rendering checkout page:', error.message);
+      res.status(500).render('error', { message: 'Error rendering checkout page', error: error.message });
+    }
+  };
 
 // Define the route to handle the post request from the cart
 
 
 
- exports.handleCheckout = async (req, res) => {
+exports.handleCheckout = async (req, res) => {
   try {
     // Fetch the user's cart
     const cart = await Cart.findOne({ user: req.userDetails }).populate('items.product');
 
-    // Extract shipping address details and order totals from the request body
-    const { street, city, state, postalCode,coupon } = req.body;
-    
-console.log('coupen:',coupon);
+    // Extract shipping address details, order totals, and coupon from the request body
+    const { street, city, state, postalCode, coupon } = req.body;
 
+    // Log the coupon code to the console
+    console.log('Coupon Code:', coupon);
+
+    // Find the coupon in the database
     const foundCoupon = await Coupon.findOne({ code: coupon });
+
+    // Log the coupon code to the console
+    console.log('Coupon found:', foundCoupon);
+
+    // Calculate order totals
     const subtotal = cartHelper.calculateSubtotal(cart);
-    const discountedTotal = cartHelper.calculateDiscountedTotal(subtotal, foundCoupon);
+    let discountedTotal = subtotal;
+
+    // Check if a coupon was found
+    if (foundCoupon) {
+      discountedTotal = cartHelper.calculateDiscountedTotal(subtotal, foundCoupon);
+    }
 
     // Validate the shipping address fields
     if (!street || !city || !state || !postalCode) {
       return res.status(400).render('error', { message: 'Invalid shipping address' });
     }
 
-    // Create a new order instance with shipping address and update totals
+    // Create a new order instance with shipping address, coupon, and update totals
     const order = new Order({
       user: req.userDetails._id,
       items: cart.items,
-      subtotal: subtotal, // Use the subtotal from the request body
-      total: discountedTotal, // Use the total from the request body
+      subtotal: subtotal,
+      total: discountedTotal,
+      appliedCoupon: foundCoupon, // Save the found coupon in the order
       shippingAddress: {
         street: street,
         city: city,
         state: state,
         postalCode: postalCode,
-        coupon:coupon
       },
       // Other order-related fields...
     });
@@ -527,6 +598,11 @@ console.log('coupen:',coupon);
     // Save the order to the database
     await order.save();
 
+    cart.total = discountedTotal; // Use the discountedTotal for the totalPrice
+    cart.subtotal = subtotal;
+
+    // Save the updated cart
+    await cart.save();
     // Update the user's cart (clear items, update inventory, etc.)
     // ...
 
@@ -537,3 +613,154 @@ console.log('coupen:',coupon);
   }
 };
 
+exports.handlePayment = async(req,res)=>{
+   const selectedPaymentMethod = req.body.paymentMethod;
+
+  // Check the selected payment method
+  if (selectedPaymentMethod === 'cardPayment') {
+    return res.redirect('/user/stripe-payment');
+
+  } else if (selectedPaymentMethod === 'cashOnDelivery') {
+    // Redirect to the route for cash on delivery payment
+    return res.redirect('/cash-on-delivery');
+
+  } else if (selectedPaymentMethod === 'razorPay') {
+    // Redirect to the route for Google Pay payment
+    return res.redirect('/Razor-pay');
+  }
+}
+
+
+
+exports.renderStripePayment = async(req,res)=>{
+  res.render('user/stripe-payment',{userDetails: req.userDetails}); // Create a new view for the Stripe payment form
+}
+
+
+
+exports.handleStripePayment = async(req,res)=>{
+  const { subtotal, discountedTotal } = req.body; // Get necessary data from the form
+
+  try {
+    // Create a PaymentIntent to confirm the payment with Stripe
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(discountedTotal * 100), // Amount in cents
+      currency: 'usd',
+    });
+
+    
+
+    // Render the confirmation page with the payment intent client secret
+    res.render('stripe-confirmation', { clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error('Error processing Stripe payment:', error.message);
+    res.status(500).render('error', { message: 'Error processing Stripe payment', error: error.message });
+  }
+}
+
+
+
+exports.handleProcessPayment = async (req, res) => {
+  const paymentMethodId = req.body.payment_method_id;
+
+  try {
+    // Create a PaymentIntent to confirm the payment with Stripe
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 2000, // Amount in cents (e.g., $20.00)
+      currency: 'usd',
+      payment_method: paymentMethodId,
+    
+    });
+
+    const orderId = generateOrderId();
+    console.log('orderid:',orderId);
+
+
+    // Send a success response to the client
+    res.status(200).json({
+      orderId,
+      paymentId: paymentIntent.id,
+      clientSecret: paymentIntent.client_secret
+    });
+  } catch (error) {
+    console.error('Error processing Stripe payment:', error.message);
+    res.status(500).send({ error: error.message });
+  }
+}
+
+function generateOrderId() {
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 8); // Random string with 6 characters
+  return `ORDER-${timestamp}-${randomString}`;
+}
+
+
+
+exports.saveOrder = async (req, res) => {
+  const bodyString = req.body.toString();
+  const { orderId, paymentId } = JSON.parse(bodyString);
+  console.log('Request Body:', JSON.parse(req.body.toString()));
+  console.log('use:', req.userDetails);
+
+  try {
+    // Validate the presence of orderId, paymentId, and user in the request
+    if (!orderId || !paymentId || !req.userDetails) {
+      return res.status(400).json({ error: 'Invalid request data' });
+    }
+
+    console.log('order:', orderId);
+
+    // Find the user's latest order
+    const latestOrder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
+    console.log('lastorder:', latestOrder);
+    // Update the latest order with payment details
+    if (latestOrder) {
+      latestOrder.payment = {
+        orderId:orderId,
+        paymentId: paymentId,
+        orderDate: new Date(), 
+        status: 'pending',
+      };
+      console.log('Updated payment:', latestOrder.payment.paymentId);
+      // Save the updated order to the database
+      await latestOrder.save();
+
+      const userCart = await Cart.findOne({ user: req.userDetails._id });
+      userCart.items = [];
+      await userCart.save();
+
+      res.status(200).json({ success: true });
+    } else {
+      // If no order is found, you might want to handle this case accordingly
+      return res.status(404).json({ error: 'No order found for the user' });
+    }
+  } catch (error) {
+    console.error('Error updating order with payment details:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.renderThankyou = async(req,res)=>{
+  res.render('user/thankyou',{userDetails: req.userDetails}); // Create a new view for the Stripe payment form
+}
+
+
+exports.renderOrderPage = async (req, res) => {
+
+    try {
+      // Retrieve user's order history with populated product details
+      const orderHistory = await Order.find({ user: req.userDetails })
+        .populate({
+          path: 'items.product',
+          select: 'name image', // Select only necessary fields from the Product model
+        })
+        .sort({ createdAt: -1 });
+  
+      // Render a view with the order history
+      res.render('user/orderHistory', { orderHistory,userDetails:req.userDetails });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };

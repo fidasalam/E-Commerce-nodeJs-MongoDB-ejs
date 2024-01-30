@@ -23,6 +23,7 @@ const orderItemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -63,8 +64,38 @@ const orderSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+
     // Add more address fields as needed
   },
+
+  payment: {
+    orderId: {
+      type: String,
+      default: '',
+    },
+    paymentId: {
+      type: String,
+      default: '',
+    },
+    orderDate: {
+      type: Date,
+      default: Date.now,
+    },
+    shippedDate: {
+      type: Date,
+      default: null,
+    },
+    deliveredDate: {
+      type: Date,
+      default: null,
+    },
+    status: {
+      type: String,
+      default: 'pending',
+    },
+  },
+
+  
   // Add more fields as needed
 });
 

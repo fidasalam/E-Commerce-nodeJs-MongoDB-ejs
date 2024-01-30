@@ -33,11 +33,11 @@ const userSchema = new mongoose.Schema({
     trim:true
   },
 
-  address: {
+  // address: {
     
-      type: String,
-      trim: true
-    },
+  //     type: String,
+  //     trim: true
+  //   },
     cart: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cart',

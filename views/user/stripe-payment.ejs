@@ -1,0 +1,154 @@
+<!-- views/user/stripe-payment.ejs -->
+<!-- Include Stripe.js library -->
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="container mt-5">
+  <section>
+    <h2>Stripe Payment</h2>
+
+    <!-- Display the payment form -->
+    <form id="stripe-payment-form">
+      <!-- Add your payment form fields and styling here -->
+      <!-- For example, you can use the Stripe Elements to create a card input field -->
+      <div id="card-element">
+        <!-- A Stripe Element will be inserted here. -->
+      </div>
+
+      <!-- Used to display form errors. -->
+      <div id="card-errors" role="alert"></div>
+
+      <button id="submit" class="stripe-submit-btn" type="button">Pay Now</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  var stripe = Stripe('pk_test_51OcjKQSAozOuGu5VAfvJjlOIS8k2VTMK1QAYX0fK9jUm7sz33I6hNbFBiMWFGsrYyTJ18If6CALLZlNp8G7hHsbW00UEVX5XZI');
+  var elements = stripe.elements();
+
+  // Create an instance of the card Element.
+  var card = elements.create('card');
+
+  // Add an instance of the card Element into the `card-element` div.
+  card.mount('#card-element');
+
+  // Handle form submission.
+  var submitButton = document.getElementById('submit');
+  submitButton.addEventListener('click', function () {
+    stripe.createPaymentMethod({
+      type: 'card',
+      card: card,
+    }).then(handlePaymentMethod);
+  });
+
+  function handlePaymentMethod(result) {
+    var errorElement = document.getElementById('card-errors');
+
+    if (result.error) {
+      // Display error messages to the user.
+      errorElement.textContent = result.error.message;
+    } else {
+      // Send the payment method ID to your server.
+      fetch('/user/process-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method_id: result.paymentMethod.id }),
+      }).then(handleServerResponse);
+    }
+  }
+
+  function handleServerResponse(response) {
+    if (response.ok) {
+      response.json().then(data => {
+        const { orderId, paymentId } = data;
+
+        // Send a request to save order details to the server
+        saveOrderToDatabase(orderId, paymentId)
+          .then(() => {
+            console.log('Order and payment details saved successfully!');
+            // Redirect to the Thank You page
+            window.location.href = '/user/thank-you';
+          })
+          .catch(error => {
+            console.error('Error saving order and payment details:', error.message);
+            // Handle the error, possibly redirect to an error page
+          });
+      });
+    } else {
+      console.error('Payment failed:', response.statusText);
+      // Handle an error from your server.
+    }
+  }
+
+  async function saveOrderToDatabase(orderId, paymentId) {
+    try {
+      // Make a server request to save order and payment details to the database
+      const response = await fetch('/user/save-order-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, paymentId }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to save order and payment details to the database: ${errorText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error saving order and payment details to the database:', error.message);
+      throw error;
+    }
+  }
+
+</script>
+
+<style>
+  /* Add your custom styles here */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 50px;
+  }
+
+  h2 {
+    color: #333;
+  }
+
+  #stripe-payment-form {
+    margin-top: 20px;
+  }
+
+  #card-element {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+
+  #card-errors {
+    color: red;
+    margin-top: 10px;
+  }
+
+  .stripe-submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
