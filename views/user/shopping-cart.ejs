@@ -42,7 +42,7 @@
         </td>
         <td class="column-2"><%= cart.items[i].product ? cart.items[i].product.name : '' %></td>
         <td class="column-3">
-            <%= cart.items[i].product ? ('Rs. ' + (cart.items[i].product.price || 0).toFixed(2)) : '' %>
+            <%= cart.items[i].product ? ('₹ ' + (cart.items[i].product.price || 0).toFixed(2)) : '' %>
         </td>
         <td class="column-4">
             <% const itemIndex = i + 1; %>
@@ -50,7 +50,7 @@
                 <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
                     <i class="fs-16 zmdi zmdi-minus" data-index="<%= i %>" data-value="-1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
                 </div>
-                <input class="mtext-104 cl3 txt-center num-product quantity-input" type="number" name="num-product<%= itemIndex %>" value="<%= cart.items[i].quantity %>" data-item="<%= itemIndex %>" data-unit-in-stock="<%= cart.items[i].product.inStock %>">
+                <input class="mtext-104 cl3 txt-center num-product quantity-input" type="number" name="num-product<%= itemIndex %>" value="<%= cart.items[i].quantity %>" data-item="<%= itemIndex %>" data-unit-in-stock="<%= cart.items[i].product.inStock %>" min="1">
                 <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                     <i class="fs-16 zmdi zmdi-plus" data-index="<%= i %>" data-value="1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
                 </div>
@@ -64,7 +64,7 @@
 
         <td class="column-6">
             <div class="how-itemcart1">
-            <%= cart.items[i].product ? ('Rs. ' + ((cart.items[i].product.price || 0) * cart.items[i].quantity).toFixed(2)) : '' %>
+            <%= cart.items[i].product ? ('₹ ' + ((cart.items[i].product.price || 0) * cart.items[i].quantity).toFixed(2)) : '' %>
         </div>
         </td>
         
@@ -90,7 +90,7 @@
                    
                     <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
                         <span class="stext-101 cl2 size-118">Sub Total:</span>
-                        <span id="subtotal" class="stext-101 cl2 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">Rs. <%= subtotal.toFixed(2) %></span>
+                        <span id="subtotal" class="stext-101 cl2 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">₹ <%= subtotal.toFixed(2) %></span>
                        
                     </div>
                      
@@ -137,7 +137,7 @@
                                 </span>
                             </div>
                             <div class="size-209 ml-auto text-right">
-                                <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">Rs. <%= subtotal.toFixed(2) %></span>
+                                <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(2) %>">₹ <%= subtotal.toFixed(2) %></span>
                             </div>
                         </div>
                         
@@ -210,7 +210,7 @@
                         
                                 <div class="size-209 p-t-1">
                                     <span class="mtext-110 cl2">
-                                        <span id="discountedTotal" class="stext-101 cl2 size-118 m-l-25">Rs. <%= discountedTotal.toFixed(2) %></span>
+                                        <span id="discountedTotal" class="stext-101 cl2 size-118 m-l-25">₹ <%= discountedTotal.toFixed(2) %></span>
                                     </span>
                                 </div>
                             </div>
@@ -244,12 +244,17 @@
 
         function updateQuantityAndTotal(itemIndex, newQuantity) {
             console.log('Before AJAX: newQuantity', newQuantity, 'itemIndex', itemIndex);
+            if (newQuantity < 1) {
+        console.log('Quantity cannot be less than 1.');
+        return;
+    }
    // Check unit in stock before sending AJAX request
    var stockElement = $('.quantity-input[data-item="' + itemIndex + '"]');
         var unitInStock = parseInt(stockElement.data('unit-in-stock')) || 0;
 
         if (newQuantity > unitInStock) {
             console.log('Quantity exceeds available stock.');
+            alert('Quantity exceeds available stock. Please choose a lower quantity.');
             // Display an error message or take appropriate action
             return;
         }
@@ -465,4 +470,4 @@
 
 
 
-t <%- include('../partials/footer') %>
+ <%- include('../partials/footer') %>

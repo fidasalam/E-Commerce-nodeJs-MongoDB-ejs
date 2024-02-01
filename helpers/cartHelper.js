@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const User = require('../models/usermodel');
 const Cart = require('../models/cart');
+const Wishlist = require('../models/wishlist');
 const productHelper = require('./productHelper');
 
 
@@ -131,14 +132,36 @@ async function getCart(userId) {
     
 
     return discountedTotal;
+};
+
+
+async function getCartProducts(userId){
+  const cart = await Cart.findOne({ user: userId }).populate({
+    path: 'items.product',
+    model: 'Product'
+  }).exec();
+  const cartProducts = cart.items.map(item => item.product);
+  return cartProducts;
+};
+
+
+
+async function getCartCount(userId){
+  const cart = await Cart.findOne({ user: userDetails._id });
+  const cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
+  return cartCount;
 }
 
-
+async function getWishlistCount(userId){
+  const wishlistCount = await Wishlist.countDocuments({ user: userDetails._id });
+  return wishlistCount;
+}
 
 
 
 
   
 module.exports = {
-removeFromCart,addToCart,getCart,calculateSubtotal,updateCart, calculateDiscountedTotal,
+  getWishlistCount, getCartCount,
+removeFromCart, getCartProducts,addToCart,getCart,calculateSubtotal,updateCart, calculateDiscountedTotal,
 };

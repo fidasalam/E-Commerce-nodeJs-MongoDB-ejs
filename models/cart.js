@@ -40,10 +40,10 @@ const cartSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  // appliedCoupon: { 
-  //   type: mongoose.Schema.Types.ObjectId, 
-  //   ref: 'Coupon', 
-  //   default: null },
+  appliedCoupon: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Coupon', 
+    default: null },
 
 
 });

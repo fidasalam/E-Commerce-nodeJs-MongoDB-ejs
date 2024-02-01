@@ -33,40 +33,40 @@ const orderSchema = new mongoose.Schema({
     type: [orderItemSchema],
     required: true
   },
-  subtotal: {
-    type: Number,
-    required: true
-  },
-  total: {
-    type: Number,
-    required: true
-  },
-  appliedCoupon: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Coupon', 
-    default: null
-   },
+  // subtotal: {
+  //   type: Number,
+  //   required: true
+  // },
+  // total: {
+  //   type: Number,
+  //   required: true
+  // },
+  // appliedCoupon: { 
+  //   type: mongoose.Schema.Types.ObjectId, 
+  //   ref: 'Coupon', 
+  //   default: null
+  //  },
 
-  shippingAddress: {
-    street: {
-      type: String,
-      required: true
-    },
-    city: {
-      type: String,
-      required: true
-    },
-    state: {
-      type: String,
-      required: true
-    },
-    postalCode: {
-      type: String,
-      required: true
-    },
+  // shippingAddress: {
+  //   street: {
+  //     type: String,
+  //     required: true
+  //   },
+  //   city: {
+  //     type: String,
+  //     required: true
+  //   },
+  //   state: {
+  //     type: String,
+  //     required: true
+  //   },
+  //   postalCode: {
+  //     type: String,
+  //     required: true
+  //   },
 
-    // Add more address fields as needed
-  },
+  //   // Add more address fields as needed
+  // },
 
   payment: {
     orderId: {

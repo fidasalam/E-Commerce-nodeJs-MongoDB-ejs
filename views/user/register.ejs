@@ -7,6 +7,11 @@
         Register
     </h2>
 </section>	
+<% if (messages.error) { %>
+    <div class="alert alert-danger">
+      <%= messages.error %>
+    </div>
+  <% } %>
 
 <!-- Content page -->
 <section class="bg0 p-t-104 p-b-116">

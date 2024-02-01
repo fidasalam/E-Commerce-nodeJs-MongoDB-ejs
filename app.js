@@ -85,7 +85,7 @@ app.use('/admin', adminRouter);
 app.use('/user', express.static(path.join(__dirname, 'public')));
 app.use('/user/productdetails', express.static(path.join(__dirname, 'public')));
 app.use('/user/cart', express.static(path.join(__dirname, 'public')));
-app.use('/webhook', webhookRouter);
+app.use('/user/wishlist', express.static(path.join(__dirname, 'public')));
 
 
 
@@ -93,7 +93,7 @@ app.use('/webhook', webhookRouter);
 
 app.get('/test',async(req,res)=>{
  
-  await Order.deleteMany({});
+  res.render('user/stripe-payment')
 
 })
 

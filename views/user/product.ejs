@@ -17,7 +17,7 @@
         <!-- ... (your existing code) ... -->
 
         <!-- Categories Section -->
-        <div class="flex-w flex-c-m m-tb-10 ">
+        <div class="flex-w flex-c-m m-tb-10  categories ">
             <a href="/user/product?categoryId=Men" class="category-box men-box">
                 <span class="category-text">Men</span>
             </a>
@@ -78,136 +78,24 @@
             <div class="dis-none panel-filter w-full p-t-10">
                 <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
                     <div class="filter-col1 p-r-15 p-b-27">
-                        <div class="mtext-102 cl2 p-b-15">
-                            Sort By
-                        </div>
-
-                        <ul>
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Default
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Popularity
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Average rating
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-                                    Newness
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Price: Low to High
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Price: High to Low
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="filter-col2 p-r-15 p-b-27">
-                        <div class="mtext-102 cl2 p-b-15">
-                            Price
-                        </div>
-
-                        <ul>
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    All
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $0.00 - $50.00
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $50.00 - $100.00
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $100.00 - $150.00
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $150.00 - $200.00
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $200.00+
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="filter-col3 p-r-15 p-b-27">
-                        <div class="mtext-102 cl2 p-b-15">
-                            Color
-                        </div>
-
-                        <ul>
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Red
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Blue
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    White
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Grey
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Black
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Green
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                      <!-- Price Range -->
+<select name="priceRange" id="priceRange">
+    <option value="">Price Range</option>
+    <option value="0-50">₹0.00 - ₹500.00</option>
+    <option value="50-100">₹500.00 - ₹1000.00</option>
+    <option value="100-150">₹1000.00 - ₹1500.00</option>
+    <option value="150-200">₹1500.00 - ₹5000.00</option>
+    <option value="200+">₹5000.00+</option>
+  </select>
+  
+  <!-- Sort By -->
+  <select name="sortBy" id="sortBy">
+    <option value="">Sort By</option>
+    <option value="default">Default</option>
+       <option value="newness">Newness</option>
+    <option value="priceLowToHigh">Price: Low to High</option>
+    <option value="priceHighToLow">Price: High to Low</option>
+  </select>
                 </div>
             </div>
         </div>
@@ -221,9 +109,7 @@
                             <a href="/user/productdetails/<%= product._id %>">
                                 <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="IMG-PRODUCT">
                             </a>
-                            <a href="/user/productdetails/<%= product._id %>" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-                                Quick View
-                            </a>
+                           
                         </div>
     
                         <div class="block2-txt flex-w flex-t p-t-14">
@@ -232,7 +118,7 @@
                                     <%= product.name %>
                                 </a>
                                 <span class="stext-105 cl3">
-                                    Rs.<%= product.price %>
+                                    ₹<%= product.price %>
                                 </span>
                             </div>
     
@@ -291,11 +177,86 @@
     }
         
     </script>
+    <script>
+        $(document).ready(function () {
+          // Define a function to filter and update the product list
+          function filterProducts() {
+            const priceRange = $('#priceRange').val();
+            const sortBy = $('#sortBy').val();
+      
+            // Make an AJAX request to your server to fetch filtered products
+            $.ajax({
+              type: 'GET',
+              url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&timestamp=${new Date().getTime()}`,
+              success: function (data) {
+                // Assuming data is an array of filtered products
+                updateProductList(data);
+              },
+              error: function (error) {
+                console.error('Error fetching filtered products:', error);
+              },
+            });
+          }
+      
+          // Handle change events for price range and sorting options
+          $('#priceRange, #sortBy').change(function () {
+            filterProducts();
+          });
+      
+          // Implement the updateProductList function
+          function updateProductList(products) {
+            $('.row.isotope-grid').empty(); // Clear the existing product list
+      
+            products.forEach(product => {
+              const productHtml = `
+              <div class="col-sm-6 col-md-6 col-lg-4 p-b-35 isotope-item category-${product.category}">
+                <div class="block2">
+                    <div class="block2-pic hov-img0">
+                        <a href="/user/productdetails/${product._id}">
+                            <img src="${product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg'}" alt="IMG-PRODUCT">
+                        </a>
+                        <a href="/user/productdetails/${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                            Quick View
+                        </a>
+                    </div>
+
+                    <div class="block2-txt flex-w flex-t p-t-14">
+                        <div class="block2-txt-child1 flex-col-l">
+                            <a href="/user/productdetails/${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                ${product.name}
+                            </a>
+                            <span class="stext-105 cl3">
+                                ₹${product.price}
+                            </span>
+                        </div>
+
+                        <div class="block2-txt-child2 flex-r p-t-3">
+                            <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="${product._id}">
+                                <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+                                <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Append the new product HTML to the container
+        $('.row.isotope-grid').append(productHtml);
+            });
+          }
+        });
+      </script>
     
     
 
     <style>
         /* Add CSS styles for the category boxes and text */
+
+        .categories {
+    display: flex;
+}
+
         .category-box {
             width: 150px;
             height: 150px;
@@ -313,7 +274,12 @@
             background-color: #000000; /* Darken the background on hover */
             color:white;
         }
-    
+        @media only screen and (max-width: 767px) {
+    .categories {
+        flex-direction: row;
+    }
+  
+}
         /* You can customize the styles further based on your design preferences */
     </style>  
 <%- include('../partials/footer') %>

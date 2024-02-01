@@ -4,10 +4,12 @@
 
 <div class="container mt-5">
   <section>
+    <form id="stripe-payment-form">
     <h2>Stripe Payment</h2>
-
+    <p>Total Amount: <%= discountedTotal %> INR</p>
     <!-- Display the payment form -->
     <form id="stripe-payment-form">
+      
       <!-- Add your payment form fields and styling here -->
       <!-- For example, you can use the Stripe Elements to create a card input field -->
       <div id="card-element">
@@ -67,7 +69,7 @@
           .then(() => {
             console.log('Order and payment details saved successfully!');
             // Redirect to the Thank You page
-            window.location.href = '/user/thank-you';
+            window.location.href = '/user/thankyou';
           })
           .catch(error => {
             console.error('Error saving order and payment details:', error.message);

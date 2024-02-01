@@ -33,11 +33,25 @@ const userSchema = new mongoose.Schema({
     trim:true
   },
 
-  // address: {
+  shippingAddress: {
+    street: {
+      type: String,
     
-  //     type: String,
-  //     trim: true
-  //   },
+    },
+    city: {
+      type: String,
+      
+    },
+    state: {
+      type: String,
+      
+    },
+    postalCode: {
+      type: String,
+    
+    },
+  },
+
     cart: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cart',

@@ -30,10 +30,10 @@
               <h2 class="mtext-109 cl3 p-b-30">
                 Shipping Address
               </h2>
-              <p class="stext-110 cl3"><strong>Street Address:</strong> <%= latestorder.shippingAddress.street %></p>
-              <p class="stext-110 cl3"><strong>City:</strong> <%= latestorder.shippingAddress.city %></p>
-              <p class="stext-110 cl3"><strong>State :</strong> <%=latestorder.shippingAddress.state %></p>
-              <p class="stext-110 cl3"><strong>Postcode:</strong> <%= latestorder.shippingAddress.postalCode %></p>
+              <p class="stext-110 cl3"><strong>Street Address:</strong> <%= userDetails.shippingAddress.street %></p>
+              <p class="stext-110 cl3"><strong>City:</strong> <%= userDetails.shippingAddress.city %></p>
+              <p class="stext-110 cl3"><strong>State :</strong> <%= userDetails.shippingAddress.state %></p>
+              <p class="stext-110 cl3"><strong>Postcode:</strong> <%= userDetails.shippingAddress.postalCode %></p>
               <!-- Add more address fields as needed -->
             </div>
             <div class="cart-items bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
@@ -57,69 +57,51 @@
               <h2 class="mtext-109 cl3 p-b-30">
                 Order Summary
               </h2>
-              <p class="stext-110 cl3">Subtotal: Rs.<%= latestorder.subtotal.toFixed(2) %></p>
-              <p class="stext-110 cl3">Total: Rs.<%= latestorder.total.toFixed(2) %></p>
+              <p class="stext-110 cl3">Subtotal: ₹<%= cart.subtotal %></p>
+              <p class="stext-110 cl3">Total: ₹.<%= cart.total %></p>
             </div>
+            
+            <!--<!-- Additional section for payment method -->
+<div class="payment-method bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+  <h2 class="mtext-109 cl3 p-b-30">
+    Payment Method
+  </h2>
+  <form id="paymentForm" method="post">
+    <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
+    <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
+    <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
+    <!-- Add more hidden fields as needed -->
 
-            <!-- Additional section for payment method -->
-            <div class="payment-method bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-              <h2 class="mtext-109 cl3 p-b-30">
-                Payment Method
-              </h2>
-              <form action="/user/handle-payment" method="post">
-                <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
-                <input type="hidden" name="subtotal" value="<%= latestorder.subtotal.toFixed(2) %>">
-                <input type="hidden" name="discountedTotal" value="<%= latestorder.total.toFixed(2) %>">
-                <!-- Add more hidden fields as needed -->
+    <!-- Radio buttons for payment options -->
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
+      <label class="form-check-label" for="cashOnDelivery">
+        Cash on Delivery
+      </label>
+    </div>
 
-                <!-- Radio buttons for payment options -->
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
-                  <label class="form-check-label" for="cashOnDelivery">
-                    Cash on Delivery
-                  </label>
-                </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
+      <label class="form-check-label" for="stripePayment">
+        Stripe Payment
+      </label>
+    </div>
 
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="cardPayment" value="cardPayment">
-                  <label class="form-check-label" for="cardPayment">
-                    Card Payment
-                  </label>
-                </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
+      <label class="form-check-label" for="razorPay">
+        Razor Pay
+      </label>
+    </div>
+    <div class="flex-c-m flex-w p-b-18 mt-5">
+      <!-- Add more radio buttons for additional payment options as needed -->
+    </div>
 
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="googlePay" value="razorPay">
-                  <label class="form-check-label" for="googlePay">
-                    Razor Pay
-                  </label>
-                </div>
-                <div class="flex-c-m flex-w p-b-18 mt-5">
-                  <a href="#" class="m-all-1">
-                    <img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
-                  </a>
-        
-                  <a href="#" class="m-all-1">
-                    <img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
-                  </a>
-        
-                  <a href="#" class="m-all-1">
-                    <img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
-                  </a>
-        
-                  <a href="#" class="m-all-1">
-                    <img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
-                  </a>
-        
-                  <a href="#" class="m-all-1">
-                    <img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
-                  </a>
-                </div>
-                <!-- Add more radio buttons for additional payment options as needed -->
-
-                <!-- Button to complete the purchase -->
-                <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" type="submit">Complete Purchase</button>
-              </form>
-            </div>
+    <!-- Button to complete the purchase -->
+    <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" type="submit">Complete Purchase</button>
+  </form>
+</div>
+           
           </div>
         </div>
       </div>
@@ -128,3 +110,12 @@
 </div>
 
 <%- include('../partials/footer') %>
+
+
+<script>
+  document.getElementById('paymentForm').addEventListener('submit', function(event) {
+  const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  this.action = `/user/${selectedPaymentMethod}`;
+});
+
+</script>

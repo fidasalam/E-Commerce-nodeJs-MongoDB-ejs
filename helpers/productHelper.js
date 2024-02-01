@@ -15,6 +15,34 @@ module.exports = {
       throw new Error('Error fetching all products');
     }
   },
+  getFewProducts: async () => {
+    return await Product.aggregate([
+      {
+        $sort: { category: 1, createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: "$category",
+          products: { $push: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$_id",
+          products: { $slice: ["$products", 3] }
+        }
+      },
+      {
+        $unwind: "$products"
+      },
+      {
+        $replaceRoot: { newRoot: "$products" }
+      }
+    ]);
+  },
+  
+  
   getAllCategories : async () => {
     try {
       const categories = await Category.find({}).lean();

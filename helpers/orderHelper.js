@@ -5,15 +5,16 @@ async function getNextStatus(currentStatus) {
  
     switch (currentStatus) {
         case 'pending':
-          return 'shipping';
+          return 'pending';
         case 'shipping':
-          return 'delivered';
+          return 'shipping';
         case 'delivered':
-          return 'completed';
+          return 'delivered';
         default:
           return currentStatus;
       }
-    }
+    };
+
 
 
 module.exports = {
