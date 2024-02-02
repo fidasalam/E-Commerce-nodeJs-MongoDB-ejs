@@ -24,6 +24,10 @@ router.post('/register',getUser, userController.handleRegister);
 router.get('/profile',isAuth,getUser, userController.renderProfilePage);
 router.post('/profile/edit',isAuth,getUser, userController.handleEditProfile);
 
+
+router.get('/contact',getUser,userController.renderContact);
+router.post('/contact', getUser, userController.handleContact);
+
 router.get('/product',getUser, userController.renderProductsByCategory);
 router.get('/productdetails/:productId',getUser, userController.renderProductDetail);
 router.post('/addToCart/:productId',getUser,userController.addToCart);

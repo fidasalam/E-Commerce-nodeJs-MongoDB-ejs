@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 const Wishlist = require('../models/wishlist');
+const Message = require('../models/message')
 const mongoose = require('mongoose');
 const Order = require('../models/order');
 const Coupon = require('../models/coupen');
@@ -198,6 +199,23 @@ module.exports = {
         searchResults,
         userDetails: req.userDetails,
       });
+    },
+  
+
+  //Render Contact
+  renderContact: async (req, res) => {
+    res.render('user/contact', { userDetails: req.userDetails });
+  },
+
+  handleContact:async (req, res) => {
+    
+      const { msg, email } = req.body;
+      const newMessage = new Message({ msg, email });
+       await newMessage.save();
+       req.flash('message', 'Message sent successfully!');
+       req.flash('error', 'Message sent successfully!');
+  
+     res.redirect('/user/contact')
     },
   
 
@@ -405,7 +423,7 @@ module.exports = {
       payment_capture: 1,
     });
 
-    res.render('user/razorPay', { order });
+    res.render('user/razorPay', { order ,user:req.userDetails});
   },
 
 
@@ -429,6 +447,7 @@ module.exports = {
           paymentId: payment.razorpay_payment_id,
           orderDate: new Date(),
           status: 'placed',
+          paymentMethod:'RazorPayment'
         },
         items: cart.items,
       });
@@ -461,13 +480,12 @@ module.exports = {
         orderId: orderId,
         orderDate: new Date(),
         status: 'placed',
+        paymentMethod:'COD'
       },
       items: cart.items,
     });
 
     await newOrder.save();
-
-   
 
     res.render('user/thankyou', { userDetails: req.userDetails });
   },
@@ -553,6 +571,7 @@ saveOrder : async (req, res) => {
         orderId: orderId,
         orderDate: new Date(),
         status: 'placed',
+        paymentMethod:'StripePayment'
       },
       items: cart.items,
     });

@@ -34,8 +34,8 @@
                                     <td><%= order.payment.orderDate.toLocaleString() %></td>
                                     <td>
                                         <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="pending" <% if(order.payment.status === 'pending') { %>checked<% } %>>
-                                            <label class="form-check-label">Pending</label>
+                                            <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="placed" <% if(order.payment.status === 'placed') { %>checked<% } %>>
+                                            <label class="form-check-label">Placed</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input type="radio" class="form-check-input status-radio" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>

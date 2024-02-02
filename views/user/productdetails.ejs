@@ -31,6 +31,8 @@
                     </div>
                 </div>
             </div>
+<!-- Popup Message -->
+<div id="wishlistPopupMessage" class="popup-message"></div>
 
             <div class="col-md-6 col-lg-5 p-b-30">
                 <div class="p-r-50 p-t-5 p-lr-0-lg">
@@ -51,7 +53,7 @@
         
 
           <!-- Product Detail -->
-<section class="sec-product-detail bg0 p-t-65 p-b-60">
+<section class="sec-product-detail bg0 p-t-65 p-b-33">
     <div class="container productdetails">
         <!-- ... (other code remains unchanged) ... -->
         <form id="addToCartForm" action="/user/addToCart/<%= product._id %>" method="POST">
@@ -63,7 +65,7 @@
             <div class="flex-w flex-r-m p-b-10 mt-5">
                 <div class="size-204 flex-w flex-m respon6-next">
                     <!-- Wishlist button -->
-                    <div class="flex-w flex-r-m p-b-10">
+                    <div class="flex-w  p-b-10">
 
                         <div class="size-204 respon6-next">
                             <div class="rs1-select2 bor8 bg0">
@@ -73,7 +75,7 @@
                                 <div class="dropDownSelect2"></div>
                             </div>
                         </div>
-                        <button type="submit" id="addToCartBtn" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-add-to-cart mt-5" onclick="toggleButtons()">
+                        <button type="submit" id="addToCartBtn" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-add-to-cart mt-3" onclick="toggleButtons()">
                             Add to Cart
                         </button>
                     </div>
@@ -93,42 +95,69 @@
 </section>
                   
 <script>
-    
-    function toggleWishlist(wishlistButton) {
-        const wishlistIcon = wishlistButton.querySelector('i#wishlistIcon');
+  function showPopupMessage(message) {
+    const wishlistPopupMessage = document.getElementById('wishlistPopupMessage');
 
-        // Determine the current state of the wishlist (added or not)
-        const isAdded = wishlistIcon.classList.contains('zmdi-favorite');
+    // Set the message content
+    wishlistPopupMessage.textContent = message;
 
-        // Toggle the heart icon color
-        wishlistIcon.classList.toggle('zmdi-favorite-outline');
-        wishlistIcon.classList.toggle('zmdi-favorite');
+    // Display the popup
+    wishlistPopupMessage.style.display = 'block';
 
-        // Send an AJAX request to the server to update the wishlist status
-        const productId = '<%= product._id %>';
-        updateWishlistStatus(productId, !isAdded);
-    }
+    // Clear the message after a delay (e.g., 3 seconds)
+    setTimeout(() => {
+        wishlistPopupMessage.style.display = 'none';
+        wishlistPopupMessage.textContent = '';
+    }, 3000); // 3000 milliseconds = 3 seconds
+}
 
-    async function updateWishlistStatus(productId, addToWishlist) {
-        try {
-            // Use async/await to handle the asynchronous fetch
-            const response = await fetch(`/user/wishlist/${productId}`, {
-                method: addToWishlist ? 'POST' : 'DELETE',
-                // Additional headers and body if needed
-            });
+async function updateWishlistStatus(productId, addToWishlist) {
+    try {
+        const response = await fetch(`/user/wishlist/${productId}`, {
+            method: addToWishlist ? 'POST' : 'DELETE',
+            // Additional headers and body if needed
+        });
 
-            if (response.ok) {
-                console.log(`Wishlist ${addToWishlist ? 'added to' : 'removed from'} successfully`);
-            } else {
-                // Log the error status and response text
-                console.error(`Failed to update wishlist status. Status: ${response.status}, ${await response.text()}`);
-            }
-        } catch (error) {
-            // Log any network-related errors
-            console.error('Network error:', error);
+        if (response.ok) {
+            const message = `Product ${addToWishlist ? 'added to' : 'removed from'} wishlist successfully`;
+            showPopupMessage(message);
+        } else {
+            console.error(`Failed to update wishlist status. Status: ${response.status}, ${await response.text()}`);
         }
+    } catch (error) {
+        console.error('Network error:', error);
     }
+}
+
+function toggleWishlist(wishlistButton) {
+    const wishlistIcon = wishlistButton.querySelector('i#wishlistIcon');
+
+    // Determine the current state of the wishlist (added or not)
+    const isAdded = wishlistIcon.classList.contains('zmdi-favorite');
+
+    // Toggle the heart icon color
+    wishlistIcon.classList.toggle('zmdi-favorite-outline');
+    wishlistIcon.classList.toggle('zmdi-favorite');
+
+    // Send an AJAX request to the server to update the wishlist status
+    const productId = '<%= product._id %>';
+    updateWishlistStatus(productId, !isAdded);
+}
+
     
 </script>
+<style>
+    .popup-message {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px; /* Some padding */
+    border-radius: 5px; /* Rounded corners */
+    display: none; /* Initially hidden */
+}
+
+</style>
 
 <%- include('../partials/footer') %>

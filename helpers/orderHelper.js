@@ -4,8 +4,8 @@ const User = require('../models/usermodel');
 async function getNextStatus(currentStatus) {
  
     switch (currentStatus) {
-        case 'pending':
-          return 'pending';
+        case 'placed':
+          return 'placed';
         case 'shipping':
           return 'shipping';
         case 'delivered':

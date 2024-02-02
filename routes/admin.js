@@ -19,7 +19,6 @@ router.post('/add-product', adminController.postAddProduct);
 
 router.get('/edit-product/:id', adminController.getUpdateProduct);
 router.post('/edit-product/:id', adminController.postUpdateProduct);
-
 router.delete('/delete-product/:id', adminController.deleteProduct);
 
 router.get('/register', adminController.getRegisterAdmin);
@@ -29,13 +28,12 @@ router.get('/coupen', adminController.getAddCoupon);
 router.post('/add-coupon', adminController.postAddCoupon);
 
 router.get('/userlist', adminController.renderUsersList);
-
 router.get('/delete-user/:id', adminController.deleteUser);
-
 router.post('/block-user/:id', adminController.blockUser);
 
-router.get('/orderlist', adminController.renderOrderList);
 
+
+router.get('/orderlist', adminController.renderOrderList);
 router.post('/updateStatus/:orderId', adminController.changeStatus);
 
 

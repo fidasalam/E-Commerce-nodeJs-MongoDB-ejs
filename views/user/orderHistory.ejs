@@ -12,20 +12,25 @@
         </div>
 
         <% if (orderHistory && orderHistory.length > 0) { %>
-          <div class="table-responsive " style="background-color: rgb(220, 234, 234);">
-            <table class="table table-bordered ">
+          <div class="table-responsive " style="background-color: rgb(255, 255, 255);">
+            <table class="table table-bordered black-bordered-table">
               <thead class="thead-dark">
                 <tr>
+                  <th scope="col">Order ID</th>
                   <th scope="col">Order Date</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Payment Method</th>
                   <th scope="col">Products</th>
                 </tr>
               </thead>
               <tbody>
-                <% orderHistory.forEach((order) => { %>
+                <% orderHistory.sort((a, b) => b.payment.orderDate - a.payment.orderDate).forEach((order) => { %>
+                  <!-- Sort the orderHistory array by order date in descending order -->
                   <tr>
+                    <td><%= order.payment.orderId %></td>
                     <td><%= order.payment.orderDate.toLocaleDateString() %></td>
                     <td><%= order.payment.status %></td>
+                    <td><%= order.payment.paymentMethod %></td>
                     <td>
                       <div class="d-flex flex-wrap">
                         <% order.items.forEach((item) => { %>

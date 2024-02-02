@@ -93,6 +93,10 @@ const orderSchema = new mongoose.Schema({
       type: String,
       default: 'pending',
     },
+    paymentMethod: {
+      type: String,
+      default: '',
+    },
   },
 
   
