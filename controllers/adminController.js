@@ -2,7 +2,7 @@ const User = require('../models/usermodel');
 const Product = require('../models/product');
 const Category = require('../models/category');
 const DeletedUser = require('../models/deletedUser');
-const Coupon = require('../models/coupen')
+const Coupon = require('../models/coupon')
 const Order = require('../models/order');
 
 const bcrypt = require('bcryptjs');

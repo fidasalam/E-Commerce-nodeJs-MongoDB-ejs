@@ -3,42 +3,31 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const back = require('../middleware/back');
 
-
-
+// Admin Authentication Routes
 router.get('/index', adminController.displayAdmin);
-router.get('/logout',back, adminController.handleLogout);
+router.get('/logout', back, adminController.handleLogout);
 
-
-
-//product
-
+// Product Routes
 router.get('/products/:category?', adminController.displayProduct);
-
 router.get('/add-product', adminController.displayAddProduct);
 router.post('/add-product', adminController.postAddProduct);
-
 router.get('/edit-product/:id', adminController.getUpdateProduct);
 router.post('/edit-product/:id', adminController.postUpdateProduct);
 router.delete('/delete-product/:id', adminController.deleteProduct);
 
+// Admin Registration and Coupon Routes
 router.get('/register', adminController.getRegisterAdmin);
 router.post('/register', adminController.postRegisterAdmin);
-
 router.get('/coupen', adminController.getAddCoupon);
 router.post('/add-coupon', adminController.postAddCoupon);
 
+// User Management Routes
 router.get('/userlist', adminController.renderUsersList);
 router.get('/delete-user/:id', adminController.deleteUser);
 router.post('/block-user/:id', adminController.blockUser);
 
-
-
+// Order Management Routes
 router.get('/orderlist', adminController.renderOrderList);
 router.post('/updateStatus/:orderId', adminController.changeStatus);
-
-
-
-
-
 
 module.exports = router;

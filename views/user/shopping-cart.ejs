@@ -96,35 +96,36 @@
                      
                     <div class="row mt-5">
                         <div class="col-md-6">
-                            <div class="coupon-box m-t-20">
+                             <div class="coupon-box m-t-20">
                                 <div class="coupon-info">
-                                    <p class="coupon-title">Special Offer!</p>
+                                    <p class="coupon-title"></p>
                                     <p>Use coupon code <strong id="firstOrderCoupon">FIRSTORDER30</strong></p>
-                                    <p>Get <strong>30% off</strong> on your order</p>
+                                    <p>Get <strong>30% off</strong> on your first order</p>
                                 </div>
                                 <button class="copy-coupon-btn" onclick="copyCouponCode('firstOrderCoupon')">Copy Coupon</button>
-                            </div>
-                        </div>
+                               
+                            </div> 
+                         </div>
                         <div class="col-md-6">
                             <div class="m-t-5 coupen-Wintersale">
                                 <div class="coupon-info Wintersale">
-                                    <p class="coupon-title">Winter Sale!</p>
-                                    <p>Use coupon code <strong id="winterSaleCoupon">WINTERSALE</strong></p>
-                                    <p>Get <strong>40% off</strong> on your order</p>
+                                    <p class="coupon-title"></p>
+                                    <p>Use coupon code <strong id="winterSaleCoupon">discount10</strong></p>
+                                    <p>Buy worth ₹1000 and Get <strong>10% off</strong> on your order</p>
                                 </div>
                                 <button class="copy-coupon-btn" onclick="copyCouponCode('winterSaleCoupon')">Copy Coupon</button>
-                                <p class="copy-instruction"></p>
+                               
                             </div>
                         </div>
                     </div>
-                    
+                    <p class="copy-instruction"></p>
                                        
                 </div>
             </div>
         </form> 
             
     
-                <!-- Display Coupon Box -->
+                
                 <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50 ">
                     <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
                         <h4 class="mtext-109 cl3 p-b-30">
@@ -235,8 +236,6 @@
 
 
 
-
-
 <script>
     $(document).ready(function () {
         // Use a conditional (ternary) operator to set a default value for subtotal
@@ -306,6 +305,7 @@
         updateQuantityAndTotal(itemIndex, newQuantity);
     });
 
+ 
     });
 
 
@@ -333,77 +333,117 @@
 
    
 </script>
+
 <script>
   $(document).ready(function () {
-    var appliedCouponCode = '';
 
-    $('#applyCouponBtn').on('click', function () {
-        var couponCode = $('#couponCode2').val();
+var appliedCouponCode = '';
+var subtotal = parseFloat($('#subtotal').data('subtotal'));
 
-        if (appliedCouponCode) {
-            // If a coupon is applied, remove it
-            removeCoupon();
-        } else {
-            // Apply coupon logic
-            applyCoupon(couponCode);
+// Function to show or hide coupons based on conditions
+function toggleCoupons() {
+    // Check if it's the user's first order
+    $.ajax({
+        url: '/user/coupons', // Update with your server endpoint
+        type: 'POST',
+        success: function (response) {
+            var showFirstOrderCoupon = !response.hasOrderHistory;
+            var showDiscount10Coupon = subtotal > 1000;
+
+            // Update coupon display based on conditions
+            updateCouponDisplay(showFirstOrderCoupon, showDiscount10Coupon);
+        },
+        error: function (error) {
+            console.error('Error checking order history:', error);
         }
     });
+}
 
-    function applyCoupon(couponCode) {
-        // Calculate discounted total based on the coupon code
-        var subtotal = parseFloat($('#subtotal').data('subtotal'));
-        var discountedTotal;
+// Initial toggle of coupons based on conditions
+toggleCoupons();
 
-        switch (couponCode) {
-            case 'FIRSTORDER30':
-                // Apply 30% discount for the first coupon
-                discountedTotal = subtotal * 0.7;
-                break;
-            case 'WINTERSALE':
-                // Apply 40% discount for the second coupon
-                discountedTotal = subtotal * 0.6;
-                break;
-            // Add more cases for other coupons if needed
+$('#applyCouponBtn').on('click', function () {
+    var couponCode = $('#couponCode2').val();
 
-            default:
-                // No coupon or unknown coupon code
-                discountedTotal = subtotal;
-                break;
-        }
-
-        // Update the total
-        updateTotal(discountedTotal);
-
-        // Display the applied coupon code
-        appliedCouponCode = couponCode;
-        $('#applyCouponBtn').text('Remove Coupon');
+    if (appliedCouponCode) {
+        // If a coupon is applied, remove it
+        removeCoupon();
+    } else {
+        // Apply coupon logic
+        applyCoupon(couponCode);
     }
-
-    function removeCoupon() {
-        // Reset the coupon input field
-        $('#couponCode2').val('');
-
-        // Reset the applied coupon code
-        appliedCouponCode = '';
-
-        // Recalculate total without the coupon
-        var subtotal = parseFloat($('#subtotal').data('subtotal'));
-        updateTotal(subtotal);
-
-        // Change button text back to "Apply Coupon"
-        $('#applyCouponBtn').text('Apply Coupon');
-    }
-
-    function updateTotal(total) {
-        console.log('Updating Total: total', total);
-        $('#discountedTotal').text('$ ' + total.toFixed(2));
-    }
-
-    // Your existing JavaScript code...
 });
 
-</script>
+function applyCoupon(couponCode) {
+    // Calculate discounted total based on the coupon code
+    var discountedTotal;
 
+    switch (couponCode) {
+        case 'FIRSTORDER30':
+            discountedTotal = subtotal * 0.7;
+            break;
+        case 'discount10':
+            discountedTotal = subtotal * 0.9;
+            break;
+        // Add more cases for other coupons if needed
+
+        default:
+            // No coupon or unknown coupon code
+            discountedTotal = subtotal;
+            break;
+    }
+
+    // Update the total
+    updateTotal(discountedTotal);
+
+    // Display the applied coupon code
+    appliedCouponCode = couponCode;
+    $('#applyCouponBtn').text('Remove Coupon');
+}
+
+function removeCoupon() {
+    // Reset the coupon input field
+    $('#couponCode2').val('');
+
+    // Reset the applied coupon code
+    appliedCouponCode = '';
+
+    // Recalculate total without the coupon
+    updateTotal(subtotal);
+
+    // Change button text back to "Apply Coupon"
+    $('#applyCouponBtn').text('Apply Coupon');
+}
+
+function updateTotal(total) {
+    console.log('Updating Total: total', total);
+    $('#discountedTotal').text('$ ' + total.toFixed(2));
+}
+
+function updateCouponDisplay(showFirstOrderCoupon, showDiscount10Coupon) {
+    if (showFirstOrderCoupon && showDiscount10Coupon) {
+        // Display both coupons
+        $('.coupon-box, .coupen-Wintersale').show();
+    } else if (showFirstOrderCoupon) {
+        // Display only 'FIRSTORDER30'
+        $('.coupon-box').show();
+        $('.coupen-Wintersale').hide();
+    } else if (showDiscount10Coupon) {
+        // Display only 'discount10'
+        $('.coupen-Wintersale').show();
+        $('.coupon-box').hide();
+    } else {
+        // Display nothing
+        $('.coupon-box, .coupen-Wintersale').hide();
+    }
+}
+
+// Your existing JavaScript code...
+
+});
+
+
+</script>
 
 <style>
   
@@ -443,7 +483,7 @@
     }
 
     .copy-instruction {
-        color: #ffffff; /* Blue text color for copy instruction */
+        color: #040404; /* Blue text color for copy instruction */
         cursor: pointer;
     }
 </style>

@@ -15,14 +15,19 @@ module.exports = {
     req.session.userId = user._id;
 },
 
+ isValidUsernameFormat : (username) => {
+  
+  const nameRegex = /^[a-zA-Z]+$/;
+  return nameRegex.test(username) 
+},
 
 
+
+ 
   isValidPasswordFormat :(password) => {
    
     const minLength = 6;
-    const hasUpperCase = /[A-Z]/.test(password);
-
-    return password.length >= minLength && hasUpperCase;
+    return password.length >= minLength;
 },
 
 

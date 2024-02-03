@@ -276,6 +276,8 @@
         $('.js-modal1').removeClass('show-modal1');
     });
 
-
+    setTimeout(function() {
+        $topeContainer.isotope('layout');
+    }, 300)
 
 })(jQuery);

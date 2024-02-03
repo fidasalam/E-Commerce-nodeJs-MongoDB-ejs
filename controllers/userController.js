@@ -7,7 +7,7 @@ const Wishlist = require('../models/wishlist');
 const Message = require('../models/message')
 const mongoose = require('mongoose');
 const Order = require('../models/order');
-const Coupon = require('../models/coupen');
+const Coupon = require('../models/coupon');
 const path = require('path');
 const fs = require('fs');
 const userHelper = require('../helpers/userHelper');
@@ -81,44 +81,60 @@ module.exports = {
     res.render('user/register', { userDetails: req.userDetails });
   },
 
-  // Handle user registration
-  handleRegister:async (req, res) => {
- 
-    try {
-      
-      const { username, email, password, name, phone } = req.body;
-  
-      if (!userHelper.isValidPasswordFormat(password)) {
-          req.flash('error', 'Invalid password format');
-      }
-  
-      if (!userHelper.isValidPhoneNumberFormat(phone)) {
-              req.flash('error', 'Invalid phone number format');
+// Handle user registration
+handleRegister: async (req, res) => {
+  try {
+    const { username, email, password, name, phone } = req.body;
+
+    // Check for valid password format
+    if (!userHelper.isValidPasswordFormat(password)) {
+      req.flash('error', 'Invalid password format');
+      return res.redirect('/user/register');
     }
-  
-   await userHelper.registerUser({
+
+    // Check for valid phone number format
+    if (!userHelper.isValidPhoneNumberFormat(phone)) {
+      req.flash('error', 'Invalid phone number format');
+      return res.redirect('/user/register');
+    }
+
+    // Check for valid username format
+    if (!userHelper.isValidUsernameFormat(username)) {
+      req.flash('error', 'Invalid username format. Only alphabets are allowed.');
+      return res.redirect('/user/register');
+    }
+
+    // Check for valid name format
+    if (!userHelper.isValidUsernameFormat(name)) {
+      req.flash('error', 'Invalid name format. Only alphabets are allowed.');
+      return res.redirect('/user/register');
+    }
+
+    // Register the user
+    await userHelper.registerUser({
       username,
       email,
       password,
       name,
       phone,
-    
-  });
-  
-  const registeredUser = await User.findOne({ username });
-  userHelper.generateTokenAndSetSession(registeredUser, req);
-     
-      res.redirect('/user/index');
-    } catch (error) {
-      console.error(error);
-      if (error.code === 11000) {
-        
-        return res.status(400).send('Username or email already in use.');
-      }
-  
-      res.status(500).send('Internal Server Error');
+    });
+
+    // Generate token and set session
+    const registeredUser = await User.findOne({ username });
+    userHelper.generateTokenAndSetSession(registeredUser, req);
+
+    // Redirect to the homepage or any other desired page
+    res.redirect('/user/index');
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === 11000) {
+      return res.status(400).send('Username or email already in use.');
     }
-  },
+
+    res.status(500).send('Internal Server Error');
+  }
+},
 
   // Render the profile page
   renderProfilePage: async (req, res) => {
@@ -251,7 +267,7 @@ module.exports = {
     const itemIndex = req.body.itemIndex;
     const newQuantity = req.body.newQuantity;
     const cart = await cartHelper.getCart(req.userDetails);
-    const subtotal = await cartHelper.calculateSubtotal(cart);
+    const subtotal =  cartHelper.calculateSubtotal(cart);
     const cartItem = cart.items[itemIndex - 1];
     cartItem.quantity = newQuantity;
     await cart.save();
@@ -266,12 +282,11 @@ module.exports = {
     if (!productId) {
       return res.status(400).json({ error: 'Missing or invalid product ID' });
     }
-
     const cart = await cartHelper.getCart(req.userDetails);
-    const subtotal = cartHelper.calculateSubtotal(cart);
-
     cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
     await cartHelper.updateCart(cart);
+
+    const subtotal = cartHelper.calculateSubtotal(cart);
 
     if (cart.items.length === 0) {
       return res.render('user/empty-cart', { userDetails: req.userDetails });
@@ -365,7 +380,20 @@ module.exports = {
   },
 
 
+  renderCoupon: async (req, res) => {
+    
+    const coupons = await Coupon.find();
+        res.json(coupons);
+   
+  },
 
+
+  handleCoupon: async (req, res) => {
+    const userId = req.userDetails;
+    const userOrders = await Order.find({ user: userId });
+   const hasOrderHistory = userOrders.length > 0;
+   res.json({ hasOrderHistory });
+  },
 
   // Render checkout page
   renderCheckout: async (req, res) => {
