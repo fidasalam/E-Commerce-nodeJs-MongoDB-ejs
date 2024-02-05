@@ -22,6 +22,7 @@
                 <th scope="col">PRODUCT NAME</th>
                 <th scope="col">CATEGORY</th>
                 <th scope="col">IN STOCK</th>
+                <th scope="col">PRICE</th>
                 <th scope="col">&nbsp;</th>
                 <select id="categorySelect" class="form-control form-control-sm" onchange="filterByCategory(this.value)">
                   <option value="All">Select Categories</option>
@@ -46,6 +47,8 @@
                   <td class="tm-product-name"><%= product.name %></td>
                   <td><%= product.category.name %></td>
                   <td><%= product.inStock %></td>
+                  <td>₹<%= product.price %></td>
+
                   <td>
                     <a href="/admin/edit-product/<%= product._id %>" class="tm-product-delete-link">
                       <i class="far fa-edit tm-product-delete-icon"></i>
@@ -61,7 +64,7 @@
         </div>
 
         <a href="/admin/add-product" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
-        <a href="/admin/delete-product" onclick="deleteSelectedProducts()" class="btn btn-danger btn-block text-uppercase">Delete selected products</a>
+        <!-- <a href="/admin/delete-product" onclick="deleteSelectedProducts()" class="btn btn-danger btn-block text-uppercase">Delete selected products</a> -->
 
         </form>
       </div>

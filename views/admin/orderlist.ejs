@@ -14,6 +14,7 @@
                                 <th scope="col">Order ID</th>
                                 <th scope="col">User</th>
                                 <th scope="col">Payment ID</th>
+                                <th scope="col">Payment Method</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Order Date</th>
                                 <th scope="col">Actions</th>
@@ -30,6 +31,7 @@
                                     </td>
                                     <td><%= order.user.username %></td>
                                     <td><%= order.payment.paymentId %></td>
+                                    <td><%= order.payment.paymentMethod %></td>
                                     <td><%= order.payment.status %></td>
                                     <td><%= order.payment.orderDate.toLocaleString() %></td>
                                     <td>
@@ -46,6 +48,7 @@
                                             <label class="form-check-label">Delivered</label>
                                         </div>
                                     </td>
+                                    
                                     <!-- Add more columns as needed -->
 
                                     <!-- Modal for order details -->

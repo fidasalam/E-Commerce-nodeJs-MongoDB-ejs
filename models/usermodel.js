@@ -69,6 +69,10 @@ const userSchema = new mongoose.Schema({
         ref: 'Wishlist'
       }
     ],
+    otp:{
+      type:String,
+      default: '0000'
+    }
   
     // Add more address fields as needed
   

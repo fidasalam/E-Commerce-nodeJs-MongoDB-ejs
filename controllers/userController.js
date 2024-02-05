@@ -17,8 +17,18 @@ const productHelper = require('../helpers/productHelper');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Razorpay = require('razorpay');
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
-
+const nodemailerConfig=require('../config/nodemailerConfig')
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+const otpGenerator = require('otp-generator');
+
+function generateOTP() {
+  return otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
+}
+
+const transporter = nodemailer.createTransport(nodemailerConfig);
+
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -170,9 +180,82 @@ handleRegister: async (req, res) => {
     res.redirect('/user/profile');
   },
 
+  
+
+  //Render the forgotpassword
+  renderforgotpassword: async (req, res) => {
+    res.render('user/forgotPassword',{userDetails:req.userDetails})
+  },
+
+  //handle forgotpassword
+  forgotpassword: async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).send('User not found. Please check the email address.');
+      }
+  
+      const otp = generateOTP();
+
+      user.otp = otp;
+      await user.save();
+      const mailOptions = {
+        to: email,
+        subject: 'Forgot Password OTP',
+        text: `Your OTP for password reset is: ${otp}`
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          return res.status(500).send('Error sending OTP via email.');
+        }
+  
+        console.log('Email sent:', info.response);
+        res.render('user/enterOTP',{userDetails:req.userDetails,email:user.email})
+      });
+    } ,
 
 
+    //
+    verifyOtp: async (req, res) => {
+      const { email, otp } = req.body;
+      console.log('email',email);
+      console.log('otp',otp);
+        const user = await User.findOne({ email });
+        console.log('user',user);
+        if (!user) {
+          return res.status(404).send('User not found. Please check the email address.');
+        }
+        console.log('userotp',user.otp);
+        if (otp === user.otp) {
+          res.render('user/passwordreset',{userDetails:req.userDetails,email})
+        
+        } else {
+          res.status(401).send('Incorrect OTP. Please try again.');
+        }
+      } ,
 
+      resetPassword:async (req, res) => {
+        const { email, newPassword } = req.body;
+      const user = await User.findOne({ email });
+      
+          if (!user) {
+            return res.status(404).send('User not found. Please check the email address.');
+          }
+    
+          const hashedPassword = await bcrypt.hash(newPassword, 10);
+          user.password = hashedPassword;
+          await user.save();
+      
+          res.redirect('/user/index')
+        } ,
+
+        renderEnterOTPPage: async(req,res)=>{
+          res.render('user/enterOTP', { userDetails: req.userDetails });
+        },
+        
   // Render product details page
   renderProductDetail: async (req, res) => {
     const productId = req.params.productId;
@@ -200,6 +283,9 @@ handleRegister: async (req, res) => {
         userDetails: req.userDetails,
       });
     },
+
+
+      
   
     // Render search products page
     renderSearchProducts: async (req, res) => {

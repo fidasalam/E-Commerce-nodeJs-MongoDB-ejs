@@ -323,7 +323,7 @@ exports.blockUser = async (req, res) => {
 
 exports.renderOrderList = async (req, res) => {
   try {
-    const orders = await Order.find().populate('user'); // Assuming the user field in the Order model is used to reference the user who placed the order
+    const orders = await Order.find().sort({ 'payment.orderDate': -1 }).populate('user'); // Assuming the user field in the Order model is used to reference the user who placed the order
     res.render('admin/orderlist', { orders });
   } catch (error) {
     console.error(error);
@@ -366,3 +366,8 @@ exports.changeStatus = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+exports.getMonthlySalesData=async(req,res)=>{
+  const orders = await Order.find();
+        res.json(orders);
+}

@@ -30,4 +30,7 @@ router.post('/block-user/:id', adminController.blockUser);
 router.get('/orderlist', adminController.renderOrderList);
 router.post('/updateStatus/:orderId', adminController.changeStatus);
 
+
+router.get('/orders', adminController.getMonthlySalesData);
+
 module.exports = router;

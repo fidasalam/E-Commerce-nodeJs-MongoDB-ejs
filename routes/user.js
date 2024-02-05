@@ -6,7 +6,7 @@ const back = require('../middleware/back');
 const { getUser } = require('../middleware/getUser');
 
 // Homepage and Product Routes
-router.get('/index',isAuth, getUser, userController.displayHomepage);
+router.get('/index', getUser, userController.displayHomepage);
 router.get('/product', getUser, userController.renderProductsByCategory);
 router.get('/productdetails/:productId', getUser, userController.renderProductDetail);
 
@@ -21,12 +21,18 @@ router.post('/register', getUser, userController.handleRegister);
 router.get('/profile', isAuth, getUser, userController.renderProfilePage);
 router.post('/profile/edit', isAuth, getUser, userController.handleEditProfile);
 
+// forgot password Routes
+router.get('/forgot-password', getUser, userController.renderforgotpassword);
+router.post('/forgot-password', getUser, userController.forgotpassword);
+router.post('/verify-otp', getUser, userController.verifyOtp);
+router.post('/reset-password', getUser, userController.resetPassword);
+router.get('/enter-otp', userController.renderEnterOTPPage);
 // Contact Routes
 router.get('/contact', getUser, userController.renderContact);
 router.post('/contact', getUser, userController.handleContact);
 
 // Cart Routes
-router.get('/cart', isAuth,getUser, userController.renderShoppingCart);
+router.get('/cart', getUser, userController.renderShoppingCart);
 router.post('/cart',isAuth, getUser, userController.removeProduct);
 router.get('/empty-cart', getUser, userController.renderEmptyCart);
 router.post('/cart/update-quantity', getUser, userController.updateQuantity);

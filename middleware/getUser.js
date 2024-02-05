@@ -16,7 +16,7 @@ const getUser = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error fetching user and cart details:', error.message);
-    res.status(500).render('error', { message: 'Error fetching user and cart details', error: error.message });
+    res.status(500).render('error', { message: 'Error fetching user ', error: error.message });
   }
 };
 
