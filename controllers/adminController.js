@@ -12,6 +12,7 @@ const fs = require('fs').promises;
 const ProductHelper = require('../helpers/productHelper');
 const orderHelper = require('../helpers/orderHelper');
 const upload = require('../config/multerConfig');
+const productHelper = require('../helpers/productHelper');
 
 
 
@@ -19,7 +20,12 @@ const upload = require('../config/multerConfig');
 
 exports.displayAdmin = async (req, res) => {
   try {
-    res.render('admin/index');
+
+    const salesData = await productHelper.getProductSalesByMonth();
+    const totalSalesArray = salesData.map(item => item.totalSales); // Extract totalSales values
+    console.log('Total Sales Array:', totalSalesArray); // Log the array for debugging
+    res.render('admin/index', {salesData: totalSalesArray });
+
   } catch (error) {
     console.error('Error rendering admin page:', error);
     res.status(500).send('Internal Server Error');
@@ -232,7 +238,7 @@ console.log('After deleteProductById call');
 
   exports.postAddCoupon = async (req, res) => {
     try {
-        const { code, discountPercentage } = req.body;
+        const { code, discountPercentage , validityPeriod,description} = req.body;
 
         // Validate if the required fields are provided
         if (!code || !discountPercentage) {
@@ -249,6 +255,8 @@ console.log('After deleteProductById call');
         const newCoupon = new Coupon({
             code,
             discountPercentage,
+            validityPeriod,
+            description,
         });
 
         // Save the coupon to the database
@@ -367,7 +375,7 @@ exports.changeStatus = async (req, res) => {
   }
 };
 
-exports.getMonthlySalesData=async(req,res)=>{
-  const orders = await Order.find();
-        res.json(orders);
-}
+
+ 
+
+

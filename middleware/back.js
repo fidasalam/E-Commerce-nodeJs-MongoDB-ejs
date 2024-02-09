@@ -1,5 +1,5 @@
 //prevent back to login page after sucessfull login
-const back=((req, res, next) => {
+const  preventLoginPageCaching=((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
@@ -7,6 +7,6 @@ const back=((req, res, next) => {
   });
   
   
-  module.exports = back;
+  module.exports =  preventLoginPageCaching;
   
     

@@ -12,7 +12,7 @@ html {
 }
 body {
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  background-color: #4e657a;
+  background-color: #ffffff;
   overflow-x: hidden;
 }
 a {
@@ -705,6 +705,7 @@ input[type="checkbox"]:focus {
   #barChart,
   #lineChart {
     max-height: 350px;
+    color: white;
   }
 }
 .tm-content-row .category-label {

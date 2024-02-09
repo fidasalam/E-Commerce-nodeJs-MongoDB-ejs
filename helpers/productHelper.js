@@ -4,8 +4,15 @@ const User = require('../models/usermodel');
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const Order = require('../models/order')
 
 module.exports = {
+
+
+
+  getProductById: async (productId) => {
+    return await Product.findById(productId);
+  },
 
   getAllProducts: async () => {
     try {
@@ -89,7 +96,7 @@ module.exports = {
   
   updateProductById: async (productId, updatedData) => {
     try {
-        // Use findByIdAndUpdate to find the product by ID and update its data
+       
         const updatedProduct = await Product.findByIdAndUpdate(productId, updatedData, { new: true });
 
         if (updatedProduct) {
@@ -135,10 +142,7 @@ module.exports = {
   registerAdmin: async (adminData) => {
     const { name, username, email, password, phone } = adminData;
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new User instance with the 'admin' role
     const newAdmin = new User({
       name,
       username,
@@ -147,8 +151,6 @@ module.exports = {
       phone,
       role: 'admin',
     });
-
-    // Save the new admin to the database
     await newAdmin.save();
   },
 
@@ -159,7 +161,7 @@ module.exports = {
     const regex = new RegExp(searchQuery, 'i');
 
     try {
-        // Query the database for products matching the search criteria
+      
         const searchResults = await Product.find({ name: regex });
         return searchResults;
     } catch (error) {
@@ -167,10 +169,66 @@ module.exports = {
         throw new Error('Error performing search');
     }
 },
+
+
+
+getProductSalesByMonth: async () => {
+  try {
+    const salesData = await Order.aggregate([
+      {
+        $unwind: '$items' // Unwind the items array to work with each product separately
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: '$payment.orderDate' },
+            product: '$items.product'
+          },
+          totalQuantity: { $sum: '$items.quantity' } // Sum up the quantities of each product
+        }
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id.product',
+          foreignField: '_id',
+          as: 'productInfo'
+        }
+      },
+      {
+        $unwind: '$productInfo'
+      },
+      {
+        $group: {
+          _id: '$_id.month',
+          totalSales: { $sum: { $multiply: ['$totalQuantity',1] } } // Calculate the total sales for each month by multiplying product quantity with their respective prices and summing them up
+        }
+      },
+      {
+        $sort: { '_id': 1 } // Sort the results by month in ascending order
+      }
+    ]);
+
+    // Create an array of all months
+    const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
+
+    // Merge the sales data with all months
+    const formattedSalesData = allMonths.map(month => {
+      const salesInMonth = salesData.find(item => item._id === month);
+      return {
+        month: month,
+        totalSales: salesInMonth ? salesInMonth.totalSales : 0 // Set totalSales to 0 if there are no sales for that month
+      };
+    });
+
+    return formattedSalesData;
+  } catch (error) {
+    console.error('Error fetching product sales data:', error);
+    throw error;
+  }
+}
+
+ 
 };
-
-
-
-  
 
 

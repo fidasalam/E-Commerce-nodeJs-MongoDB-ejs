@@ -3,6 +3,8 @@ const User = require('../models/usermodel');
 const Cart = require('../models/cart');
 const Wishlist = require('../models/wishlist');
 const productHelper = require('./productHelper');
+const Order = require('../models/order');
+const Coupon = require('../models/coupon');
 
 
 
@@ -20,6 +22,8 @@ async function addToCart(userId, productId, quantity) {
     const quantityToAdd = parseInt(quantity, 10) || 1;
 
     const existingProduct = cart.items.find(item => item.product._id.toString() === productId);
+
+   
 
     if (existingProduct) {
       existingProduct.quantity += quantityToAdd;
@@ -43,19 +47,28 @@ async function addToCart(userId, productId, quantity) {
     console.error('Error adding to cart:', error);
     throw error; // Rethrow the error for better handling in the calling function
   }
-}
+};
 
 
-
+async function findCouponByCode(couponCode){
+  try {
+    // Find the coupon by code
+    const coupon = await Coupon.findOne({ code: couponCode });
+    return coupon;
+  } catch (error) {
+    console.error('Error finding coupon by code:', error);
+    throw new Error('Failed to find coupon by code');
+  }
+};
 
 
 async function getCart(userId) {
     try {
+      console.log('guest:',userId)
       const cart = await Cart.findOne({ user: userId }).populate({
         path: 'items.product',
         model: 'Product'
       }).exec();
-  
       return cart;
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -64,6 +77,21 @@ async function getCart(userId) {
   };
 
 
+  async function count(cart, wish) {
+    try {
+      console.log("cart", cart);
+      console.log("wish", wish);
+      const cartCount = cart && cart.items ? cart.items.length : 0;
+      console.log("cartCount", cartCount);
+  
+      const wishlistCount = wish.length; // Assuming 'wish' is an array
+      console.log("wishlistCount", wishlistCount);
+      return { cartCount, wishlistCount };
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      throw error;
+    }
+  };
 
   async function removeFromCart(userId,productId) {
     const filter = { user: userId };
@@ -95,7 +123,45 @@ async function getCart(userId) {
     return subtotal;
   };
 
+  async function mergecart(user, guestCart) {
+    const userId = user._id;
+    
+    // Get the user's cart from the database
+    let userCart = await Cart.findOne({ user: userId }).populate({
+      path: 'items.product',
+      model: 'Product',
+    }).exec();
 
+    if (!userCart) {
+      // If the user doesn't have a cart, create a new one
+      userCart = new Cart({ user: userId, items: [] });
+    }
+    
+
+    // Merge guestCart items into userCart
+    guestCart.items.forEach(guestCartItem => {
+      const existingProduct = userCart.items.find(item => item.product._id.toString() === guestCartItem.product._id.toString());
+
+      if (existingProduct) {
+        // If the product already exists in the user's cart, update the quantity
+        existingProduct.quantity += guestCartItem.quantity;
+      } else {
+        // If the product doesn't exist in the user's cart, add it
+        userCart.items.push({
+          product: guestCartItem.product,
+          quantity: guestCartItem.quantity,
+        });
+      }
+    });
+
+    // Save the updated userCart to the database
+    const updatedUserCart = await userCart.save();
+    await Cart.findByIdAndDelete(guestCart._id);
+
+    console.log('User cart updated in the database:', updatedUserCart);
+    return updatedUserCart;
+
+  };
   async function updateCart(cart) {
     try {
       // Assuming that cart has a valid _id field
@@ -150,18 +216,47 @@ async function getCartCount(userId){
   const cart = await Cart.findOne({ user: userDetails._id });
   const cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
   return cartCount;
-}
+};
 
 async function getWishlistCount(userId){
   const wishlistCount = await Wishlist.countDocuments({ user: userDetails._id });
   return wishlistCount;
-}
+};
 
 
+async function applyCouponToCart(userId, cart){
+  try {
+    const userOrders = await Order.find({ user: userId });
+    const hasOrderHistory = userOrders.length > 0;
+    const subtotal = calculateSubtotal(cart);
+    const subtotalGreaterThan1000 = parseFloat(subtotal) > 1000;
+    let coupon = null;
 
+    // Check conditions and select appropriate coupon
+    if (!hasOrderHistory && subtotalGreaterThan1000) {
+      coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
+    } else if (!hasOrderHistory) {
+      coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
+    } else if (subtotalGreaterThan1000) {
+      coupon = await Coupon.findOne({ code: 'DISCOUNT10', validityPeriod: { $gte: new Date() } });
+    }
 
+    // Check if user already used the coupon
+    const userCoupon = await Coupon.findOne({ userId, coupon });
+    if (userCoupon) {
+      coupon = null;
+      
+    }
+
+    return coupon;
+  } catch (error) {
+    console.error('Error applying coupon to cart:', error);
+    throw new Error('Failed to apply coupon to cart');
+  }
+
+};
   
 module.exports = {
-  getWishlistCount, getCartCount,
+  getWishlistCount, getCartCount,mergecart,count,applyCouponToCart,findCouponByCode,
 removeFromCart, getCartProducts,addToCart,getCart,calculateSubtotal,updateCart, calculateDiscountedTotal,
 };

@@ -11,20 +11,5 @@ const storage = multer.diskStorage({
   },
 });
 
-// Function to filter file uploads to allow only images
-const fileFilter = function (req, file, cb) {
-  // Check if the file is an image
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true); // Accept the file
-  } else {
-    cb(new Error('File is not an image!'), false); // Reject the file
-  }
-};
-
-
-
-const upload = multer({ 
-  storage: storage,
-  fileFilter: fileFilter // Apply the file filter
-});
+const upload = multer({ storage: storage });
 module.exports = upload;

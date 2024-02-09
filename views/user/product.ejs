@@ -1,287 +1,269 @@
 <%- include('../partials/header') %>
 <!-- Product -->
 <div class="container mt-5">
-<section class="bg0 p-t-23 p-b-140">
-     <div class="container">
-        <div class="p-b-10 text-center">
-            <h3 class="ltext-103 cl5">
-                <%= selectedCategory ? selectedCategory + ' ' : 'All Products' %>
-            </h3>
-        </div>
-
-        
-<!-- Categories Section -->
-<div class="container mt-2">
-    <section class="bg0 p-t-23 m-b-20">
-        
-        <!-- ... (your existing code) ... -->
-
-        <!-- Categories Section -->
-        <div class="flex-w flex-c-m m-tb-10  categories ">
-            <a href="/user/product?categoryId=Men" class="category-box men-box">
-                <span class="category-text">Men</span>
-            </a>
-            <a href="/user/product?categoryId=Women" class="category-box women-box">
-                <span class="category-text">Women</span>
-            </a>
-            <a href="/user/product?categoryId=Kids" class="category-box kids-box">
-                <span class="category-text">Kids</span>
-            </a>
-            <a href="/user/product?categoryId=Accessories" class="category-box accessories-box">
-                <span class="category-text">Accessories</span>
-            </a>
-            <a href="/user/product?categoryId=" class="category-box men-box">
-                <span class="category-text">All Products</span>
-            </a>
+    <section class="bg0 p-t-23 p-b-140">
+       
+        <div class="flex-w flex-c-m justify-content-end">
+            <!-- Search form -->
+            <form name="searchForm" method="POST" action="/user/search" class="m-tb-4 ml-auto">
+                <div class="dis-flex p-l-15 bor8">
+                    <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                    <button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                        <i class="zmdi zmdi-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
         
-
-        <!-- ... (rest of your code) ... -->
-    </section>
-</div>
-
+      
         
+        <div class="container">
+            <div class="p-b-10 text-center">
+                <h3 class="ltext-103 cl5">
+                    <%= selectedCategory ? selectedCategory + ' ' : 'All Products' %>
+                </h3>
+            </div>
+            
+            <!-- Categories Section -->
+            <div class="container mt-2">
+                <section class="bg0 p-t-23 m-b-20">
+                    <!-- Categories Section -->
+                    <div class="flex-w flex-c-m m-tb-10  categories ">
+                        <a href="/user/product?categoryId=Men" class="category-box men-box">
+                            <span class="category-text">Men</span>
+                        </a>
+                        <a href="/user/product?categoryId=Women" class="category-box women-box">
+                            <span class="category-text">Women</span>
+                        </a>
+                        <a href="/user/product?categoryId=Kids" class="category-box kids-box">
+                            <span class="category-text">Kids</span>
+                        </a>
+                        <a href="/user/product?categoryId=Accessories" class="category-box accessories-box">
+                            <span class="category-text">Accessories</span>
+                        </a>
+                        <a href="/user/product?categoryId=" class="category-box men-box">
+                            <span class="category-text">All Products</span>
+                        </a>
+                    </div>
+                    <!-- ... (rest of your code) ... -->
+                </section>
+            </div>
 
-            <div class="flex-w flex-c-m ">
+            <div class="flex-w flex-c-m mb-5 ">
                 <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
                     <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
                     <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                     Filter
+                    Filter
                 </div>
-                <form name="searchForm" id="searchForm">
-                <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-                    <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-                    <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                    Search
-                </div>
-                </form>
-            </div>
-        
-            
-            <!-- Search product -->
-            <div class="dis-none panel-search w-full p-t-10 p-b-15">
-               <!-- views/user/search.ejs -->
-
-                    <form name="searchForm" method="POST" action="/user/search">
-                        <div class="dis-flex p-l-15 bor8">
-                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
-                        <button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-                            <i class="zmdi zmdi-search"></i>
-                        </button>
-                        </div>
-                    </form>
-  
+               
             </div>
             
-
+         
+            
             <!-- Filter -->
             <div class="dis-none panel-filter w-full p-t-10">
                 <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
                     <div class="filter-col1 p-r-15 p-b-27">
-                      <!-- Price Range -->
-<select name="priceRange" id="priceRange">
-    <option value="">Price Range</option>
-    <option value="0-50">₹0.00 - ₹500.00</option>
-    <option value="50-100">₹500.00 - ₹1000.00</option>
-    <option value="100-150">₹1000.00 - ₹1500.00</option>
-    <option value="150-200">₹1500.00 - ₹5000.00</option>
-    <option value="200+">₹5000.00+</option>
-  </select>
-  
-  <!-- Sort By -->
-  <select name="sortBy" id="sortBy">
-    <option value="">Sort By</option>
-    <option value="default">Default</option>
-       <option value="newness">Newness</option>
-    <option value="priceLowToHigh">Price: Low to High</option>
-    <option value="priceHighToLow">Price: High to Low</option>
-  </select>
+                        <!-- Price Range -->
+                        <select name="priceRange" id="priceRange">
+                            <option value="">Price Range</option>
+                            <option value="0-50">₹0.00 - ₹500.00</option>
+                            <option value="50-100">₹500.00 - ₹1000.00</option>
+                            <option value="100-150">₹1000.00 - ₹1500.00</option>
+                            <option value="150-200">₹1500.00 - ₹5000.00</option>
+                            <option value="200+">₹5000.00+</option>
+                        </select>
+                        
+                        <!-- Sort By -->
+                        <select name="sortBy" id="sortBy">
+                            <option value="">Sort By</option>
+                            <option value="default">Default</option>
+                            <option value="newness">Newness</option>
+                            <option value="priceLowToHigh">Price: Low to High</option>
+                            <option value="priceHighToLow">Price: High to Low</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row isotope-grid">
-            <% products.forEach(product => { %>
-                <div class="col-sm-6 col-md-6 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
-                    <!-- Block2 -->
+            <div class="row isotope-grid">
+                <% products.forEach(product => { %>
+                    <div class="col-sm-6 col-md-6 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
+                        <!-- Block2 -->
+                        <div class="block2">
+                            <div class="block2-pic hov-img0">
+                                <a href="/user/productdetails/<%= product._id %>">
+                                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="IMG-PRODUCT">
+                                </a>
+                            </div>
+                            <div class="block2-txt flex-w flex-t p-t-14">
+                                <div class="block2-txt-child1 flex-col-l">
+                                    <a href="/user/productdetails/<%= product._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                        <%= product.name %>
+                                    </a>
+                                    <span class="stext-105 cl3">
+                                        ₹<%= product.price %>
+                                    </span>
+                                </div>
+                                <div class="block2-txt-child2 flex-r p-t-3">
+                                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="<%= product._id %>">
+                                        <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <!-- Load more -->
+            <div class="flex-c-m flex-w w-full p-t-45 text-center">
+                <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+                    Load More
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // Remove the existing JavaScript code related to the search button
+    $(document).ready(function() {
+        // You can still keep this event listener for handling form submission
+        $('form[name="searchForm"]').submit(function(event) {
+            // The rest of your logic for handling the form submission
+            // ...
+        });
+
+        $('.js-addwish-b2').click(function(event) {
+        event.preventDefault();
+        var productId = $(this).data('product-id');
+        addToWishlist(productId);
+    });
+});
+
+function addToWishlist(productId) {
+    // Send an AJAX request to add the product to the wishlist
+    $.ajax({
+        type: 'POST',
+        url: `/user/wishlist/${productId}`,
+        success: function (data) {
+            console.log('Successfully added to wishlist');
+            // Optionally, you can update the UI here to reflect the changes
+        },
+        error: function (error) {
+            console.error('Error adding to wishlist:', error);
+        }
+    });
+}
+    
+</script>
+<script>
+    $(document).ready(function () {
+        // Define a function to filter and update the product list
+        function filterProducts() {
+            const priceRange = $('#priceRange').val();
+            const sortBy = $('#sortBy').val();
+        
+            // Make an AJAX request to your server to fetch filtered products
+            $.ajax({
+                type: 'GET',
+                url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&timestamp=${new Date().getTime()}`,
+                success: function (data) {
+                    // Assuming data is an array of filtered products
+                    updateProductList(data);
+                },
+                error: function (error) {
+                    console.error('Error fetching filtered products:', error);
+                },
+            });
+        }
+    
+        // Handle change events for price range and sorting options
+        $('#priceRange, #sortBy').change(function () {
+            filterProducts();
+        });
+    
+        // Implement the updateProductList function
+        function updateProductList(products) {
+            $('.row.isotope-grid').empty(); // Clear the existing product list
+    
+            products.forEach(product => {
+                const productHtml = `
+                <div class="col-sm-6 col-md-6 col-lg-4 p-b-35 isotope-item category-${product.category}">
                     <div class="block2">
                         <div class="block2-pic hov-img0">
-                            <a href="/user/productdetails/<%= product._id %>">
-                                <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="IMG-PRODUCT">
+                            <a href="/user/productdetails/${product._id}">
+                                <img src="${product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg'}" alt="IMG-PRODUCT">
                             </a>
-                           
+                            <a href="/user/productdetails/${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                                Quick View
+                            </a>
                         </div>
-    
                         <div class="block2-txt flex-w flex-t p-t-14">
                             <div class="block2-txt-child1 flex-col-l">
-                                <a href="/user/productdetails/<%= product._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    <%= product.name %>
+                                <a href="/user/productdetails/${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                    ${product.name}
                                 </a>
                                 <span class="stext-105 cl3">
-                                    ₹<%= product.price %>
+                                    ₹${product.price}
                                 </span>
                             </div>
-    
                             <div class="block2-txt-child2 flex-r p-t-3">
-                                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="<%= product._id %>">
+                                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="${product._id}">
                                     <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
                                     <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
                                 </a>
                             </div>
-                            
                         </div>
                     </div>
                 </div>
-            <% }) %>
-        </div>
+                `;
     
-        <!-- Load more -->
-        <div class="flex-c-m flex-w w-full p-t-45 text-center">
-            <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                Load More
-            </a>
-        </div>
-    </section>
-    </div>
-    
-
-    <script>
-        // Remove the existing JavaScript code related to the search button
-        $(document).ready(function() {
-            // You can still keep this event listener for handling form submission
-            $('form[name="searchForm"]').submit(function(event) {
-                // The rest of your logic for handling the form submission
-                // ...
+                // Append the new product HTML to the container
+                $('.row.isotope-grid').append(productHtml);
             });
-
-            $('.js-addwish-b2').click(function(event) {
-            event.preventDefault();
-            var productId = $(this).data('product-id');
-            addToWishlist(productId);
-        });
+        }
     });
-
-    function addToWishlist(productId) {
-        // Send an AJAX request to add the product to the wishlist
-        $.ajax({
-            type: 'POST',
-            url: `/user/wishlist/${productId}`,
-            success: function (data) {
-                console.log('Successfully added to wishlist');
-                // Optionally, you can update the UI here to reflect the changes
-            },
-            error: function (error) {
-                console.error('Error adding to wishlist:', error);
-            }
-        });
-    }
-        
-    </script>
-    <script>
-        $(document).ready(function () {
-          // Define a function to filter and update the product list
-          function filterProducts() {
-            const priceRange = $('#priceRange').val();
-            const sortBy = $('#sortBy').val();
-      
-            // Make an AJAX request to your server to fetch filtered products
-            $.ajax({
-              type: 'GET',
-              url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&timestamp=${new Date().getTime()}`,
-              success: function (data) {
-                // Assuming data is an array of filtered products
-                updateProductList(data);
-              },
-              error: function (error) {
-                console.error('Error fetching filtered products:', error);
-              },
-            });
-          }
-      
-          // Handle change events for price range and sorting options
-          $('#priceRange, #sortBy').change(function () {
-            filterProducts();
-          });
-      
-          // Implement the updateProductList function
-          function updateProductList(products) {
-            $('.row.isotope-grid').empty(); // Clear the existing product list
-      
-            products.forEach(product => {
-              const productHtml = `
-              <div class="col-sm-6 col-md-6 col-lg-4 p-b-35 isotope-item category-${product.category}">
-                <div class="block2">
-                    <div class="block2-pic hov-img0">
-                        <a href="/user/productdetails/${product._id}">
-                            <img src="${product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg'}" alt="IMG-PRODUCT">
-                        </a>
-                        <a href="/user/productdetails/${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-                            Quick View
-                        </a>
-                    </div>
-
-                    <div class="block2-txt flex-w flex-t p-t-14">
-                        <div class="block2-txt-child1 flex-col-l">
-                            <a href="/user/productdetails/${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                ${product.name}
-                            </a>
-                            <span class="stext-105 cl3">
-                                ₹${product.price}
-                            </span>
-                        </div>
-
-                        <div class="block2-txt-child2 flex-r p-t-3">
-                            <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="${product._id}">
-                                <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-                                <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Append the new product HTML to the container
-        $('.row.isotope-grid').append(productHtml);
-            });
-          }
-
-        });
-        
-      </script>
     
-    
+</script>
 
-    <style>
-        /* Add CSS styles for the category boxes and text */
-
-        .categories {
+<style>
+.categories {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping of category boxes */
+    justify-content: center; /* Center the boxes horizontally */
 }
 
-        .category-box {
-            width: 150px;
-            height: 150px;
-            background-color: #e6e6e6;
-            color: rgb(0, 0, 0);
-            text-align: center;
-            line-height: 150px; /* Center text vertically */
-            margin: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-    
-        .category-box:hover {
-            background-color: #000000; /* Darken the background on hover */
-            color:white;
-        }
-        @media only screen and (max-width: 767px) {
-    .categories {
-        flex-direction: row;
-    }
-  
+.category-box {
+    width: 150px;
+    height: 50px;
+    background-color: #e6e6e6;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    line-height: 50px; /* Center text vertically */
+    margin: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-        /* You can customize the styles further based on your design preferences */
-    </style>  
-<%- include('../partials/footer') %>
+
+.category-box:hover {
+    background-color: #000000; /* Darken the background on hover */
+    color: white;
+}
+
+@media only screen and (max-width: 767px) {
+    .categories {
+        flex-direction: column; /* Display category boxes vertically */
+        align-items: center; /* Center the boxes horizontally */
+    }
+
+    .category-box {
+        margin: 5px;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 

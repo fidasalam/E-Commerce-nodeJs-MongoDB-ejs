@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usermodel');
+const Message = require('../models/message')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
 
@@ -118,7 +119,23 @@ module.exports = {
     return await User.findById(userId);
   },
 
+  getUserByEmail: async (email) => {
+    return await User.findOne({ email });
+  },
 
+  
+  updateUserOTP:async (email, otp)=> {
+    const user = await User.findOne({ email });
+    if (user) {
+        user.otp = otp;
+        await user.save();
+    }
+},
+
+updateUserPassword: async(email, newPassword) =>{
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await User.updateOne({ email }, { password: hashedPassword });
+},
 
 
 
@@ -147,6 +164,13 @@ module.exports = {
       throw new Error('Error adding to cart');
     }
   },
+
+  saveMessage: async (msg, email) => {
+    const newMessage = new Message({ msg, email });
+    await newMessage.save();
+    return newMessage; // Optionally, you can return the saved message object
+  }
+
   
 };
 

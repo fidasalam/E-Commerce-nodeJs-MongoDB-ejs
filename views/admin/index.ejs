@@ -1,77 +1,103 @@
-<!-- Add this to the head of your HTML file -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <%- include('../partials/adminheader') %>
 
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
+  <div class="row">
+    <div class="col">
+      <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
+    
+      <div class="row tm-content-row">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col ">
+            <div class="tm-bg-primary-dark tm-block">
+                <h2 class="tm-block-title">Sales Chart</h2>
+                <!-- Move the script here to ensure it's after the canvas -->
+                <canvas id="barChart"></canvas>
+            </div>
         </div>
+      </div>
     </div>
-    <div>
-        <canvas id="salesChart" width="400" height="200"></canvas>
-    </div>
-    <script>
-        // Sample order data with order dates
-        const orderData = [
-            { date: '2022-01-05', amount: 500 },
-            { date: '2022-02-12', amount: 800 },
-            // Add more order data entries as needed
-        ];
-
-        // Process order data to get sales for each month
-        const salesData = processOrderData(orderData);
-
-        // Get the canvas element
-        const salesChartCanvas = document.getElementById('salesChart');
-
-        // Create the sales chart
-        const salesChart = new Chart(salesChartCanvas, {
-            type: 'bar', // You can use 'line' for a line chart
-            data: salesData,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                    },
-                },
-            },
-        });
-
-        // Function to process order data and generate sales data for each month
-        function processOrderData(orderData) {
-            const salesByMonth = {};
-            
-            // Process each order entry
-            orderData.forEach(order => {
-                const orderDate = new Date(order.date);
-                const monthYear = orderDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-                const amount = order.amount;
-
-                // Add to or initialize the sales for the month
-                if (salesByMonth[monthYear]) {
-                    salesByMonth[monthYear] += amount;
-                } else {
-                    salesByMonth[monthYear] = amount;
-                }
-            });
-
-            // Convert sales data to Chart.js format
-            const chartData = {
-                labels: Object.keys(salesByMonth),
-                datasets: [{
-                    label: 'Monthly Sales',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Adjust the color as needed
-                    borderColor: 'rgba(75, 192, 192, 1)', // Adjust the color as needed
-                    borderWidth: 1,
-                    data: Object.values(salesByMonth),
-                }],
-            };
-
-            return chartData;
-        }
-    </script>
+  </div>
+</div>
 
 <%- include('../partials/adminfooter') %>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const width_threshold = 480;
+const salesData = <%= JSON.stringify(salesData) %>;
+function drawBarChart() {
+  if ($("#barChart").length) {
+    ctxBar = document.getElementById("barChart").getContext("2d");
+    optionsBar = {
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: 'white', // Set font color for y-axis labels
+            beginAtZero: true
+          },
+          gridLines: {
+            color: 'rgba(255, 255, 255, 0.2)' // Set color for y-axis grid lines
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Sales",
+            fontColor: 'white' // Set font color for y-axis label
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            fontColor: 'white' // Set font color for x-axis labels
+          },
+          gridLines: {
+            color: 'rgba(255, 255, 255, 0.2)' // Set color for x-axis grid lines
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Month",
+            fontColor: 'white' // Set font color for x-axis label
+          }
+        }]
+      }
+    };
+
+    // Set aspect ratio based on window width
+    optionsBar.maintainAspectRatio =
+      $(window).width() < width_threshold ? false : true;
+    
+    configBar = {
+      type: "bar",
+      data: {
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ],
+        datasets: [{
+          label: "Sales",
+          data: salesData,
+          backgroundColor: "rgba(75, 192, 192, 0.8)", // Set background color for bars
+          borderWidth: 1 // Set border width
+        }]
+      },
+      options: optionsBar
+    };
+
+    barChart = new Chart(ctxBar, configBar);
+  }
+}
+
+// Call drawBarChart after DOM has fully loaded
+$(document).ready(function() {
+  drawBarChart();
+});
+</script>

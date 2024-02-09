@@ -20,8 +20,17 @@
                                 <label for="discountPercentage">Discount Percentage</label>
                                 <input id="discountPercentage" name="discountPercentage" type="number" class="form-control validate" required />
                             </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Add Coupon Now</button>
+                            <div class="form-group mb-3">
+                                <label for="validity">ValidityPeriod</label>
+                                <input id="validityPeriod" name="validityPeriod" type="date" class="form-control validate" required />
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" class="form-control validate" required></textarea>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Add Coupon </button>
                             </div>
                         </form>
                     </div>

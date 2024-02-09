@@ -2,17 +2,21 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { isAuth } = require('../middleware/isAuth');
-const back = require('../middleware/back');
+const  preventLoginPageCaching = require('../middleware/back');
 const { getUser } = require('../middleware/getUser');
 
+
+
+
 // Homepage and Product Routes
+router.get('/', userController.displayHomepage);
 router.get('/index', getUser, userController.displayHomepage);
 router.get('/product', getUser, userController.renderProductsByCategory);
 router.get('/productdetails/:productId', getUser, userController.renderProductDetail);
 
 // Authentication Routes
 router.get('/login', getUser, userController.renderLoginPage);
-router.post('/login', getUser, back, userController.handleLogin);
+router.post('/login', getUser,  preventLoginPageCaching, userController.handleLogin);
 router.get('/logout', getUser, userController.handleLogout);
 router.get('/register', getUser, userController.renderRegisterPage);
 router.post('/register', getUser, userController.handleRegister);
@@ -38,7 +42,7 @@ router.get('/empty-cart', getUser, userController.renderEmptyCart);
 router.post('/cart/update-quantity', getUser, userController.updateQuantity);
 router.post('/cart/remove-product', getUser, userController.removeProduct);
 
-
+//Product Routes
 router.get('/product',getUser, userController.renderProductsByCategory);
 router.get('/productdetails/:productId',getUser, userController.renderProductDetail);
 router.post('/addToCart/:productId',getUser,userController.addToCart);
@@ -55,11 +59,11 @@ router.post('/wishlist/add-to-cart/:productId', isAuth, getUser, userController.
 router.delete('/wishlist/:productId', getUser, userController.removeWishlist);
 
 // Coupon Routes
-router.get('/coupons', isAuth, getUser, userController.renderCoupon);
+router.post('/apply-coupon', isAuth, getUser, userController.applyCoupon);
 router.post('/coupons', isAuth, getUser, userController.handleCoupon);
 
 // Checkout Routes
-router.get('/checkout', back, isAuth, getUser, userController.renderCheckout);
+router.get('/checkout',  isAuth, getUser, userController.renderCheckout);
 router.post('/checkout', isAuth, getUser, userController.handleCheckout);
 
 // Payment Routes

@@ -12,7 +12,14 @@ const couponSchema = new mongoose.Schema({
         min: 0,
         max: 100,
     },
- 
+    validityPeriod: {
+        type: Date,
+        required: true,
+    },
+    description:{
+        type: String,
+         required: true,
+    }
 });
 
 const Coupon = mongoose.model('Coupon', couponSchema);

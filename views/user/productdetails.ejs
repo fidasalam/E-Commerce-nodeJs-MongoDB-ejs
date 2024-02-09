@@ -47,13 +47,11 @@
                     <p class="stext-102 cl3 p-t-23">
                         <%= product.description %>
                     </p>
-                    <a href='javascript:void(0);' onclick="toggleWishlist(this)">
-                        <i class="zmdi zmdi-favorite-outline heart-icon js-addwish-b2 mt-5" id="wishlistIcon" style="font-size: 24px;"></i>
-                    </a>
+                  
         
 
           <!-- Product Detail -->
-<section class="sec-product-detail bg0 p-t-65 p-b-33">
+<section class="sec-product-detail bg0 ">
     <div class="container productdetails">
         <!-- ... (other code remains unchanged) ... -->
         <form id="addToCartForm" action="/user/addToCart/<%= product._id %>" method="POST">
@@ -61,25 +59,32 @@
             <input type="hidden" name="productId" value="<%= product._id %>">
             <!-- Hidden input for quantity -->
             <input type="hidden" name="quantity" id="quantityInput" value="1">
-
+            <a href='javascript:void(0);' onclick="toggleWishlist(this)">
+                <i class="zmdi zmdi-favorite-outline heart-icon js-addwish-b2 mt-5" id="wishlistIcon" style="font-size: 24px;"></i>
+            </a>
             <div class="flex-w flex-r-m p-b-10 mt-5">
                 <div class="size-204 flex-w flex-m respon6-next">
                     <!-- Wishlist button -->
-                    <div class="flex-w  p-b-10">
+                    
 
-                        <div class="size-204 respon6-next">
-                            <div class="rs1-select2 bor8 bg0">
-                                <select class="js-select2" name="size">
-                                    <option value="M" selected>Size M</option>
-                                </select>
-                                <div class="dropDownSelect2"></div>
-                            </div>
-                        </div>
                         <button type="submit" id="addToCartBtn" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-add-to-cart mt-3" onclick="toggleButtons()">
                             Add to Cart
                         </button>
-                    </div>
+            
+                        <% if (messages.error) { %>
+                            <div class="flash error">
+                              <%= messages.error %>
+                            </div>
+                          <% } %>
+                          
+                          <% if (messages.success) { %>
+                            <div class="flash success">
+                              <%= messages.success %>
+                            </div>
+                          <% } %>
+                          
                 </div>
+                
             </div>
         </form>
         <!-- ... (other code remains unchanged) ... -->
@@ -93,8 +98,18 @@
        
     </div>
 </section>
-                  
+     
 <script>
+
+    
+const urlParams = new URLSearchParams(window.location.search);
+    const addedToCart = urlParams.get('addedToCart');
+
+    // Show popup if 'addedToCart' is true
+    if (addedToCart === 'true') {
+        showPopupMessage('Product added to cart successfully');
+    }
+             
   function showPopupMessage(message) {
     const wishlistPopupMessage = document.getElementById('wishlistPopupMessage');
 
@@ -142,6 +157,8 @@ function toggleWishlist(wishlistButton) {
     // Send an AJAX request to the server to update the wishlist status
     const productId = '<%= product._id %>';
     updateWishlistStatus(productId, !isAdded);
+
+
 }
 
     

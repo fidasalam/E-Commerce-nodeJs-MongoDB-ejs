@@ -11,10 +11,20 @@
                 </h3>
             </div>
     
+            <div class="flex-w flex-c-m justify-content-end">
+                <!-- Search form -->
+                <form name="searchForm" method="POST" action="/user/search" class="m-tb-4 ml-auto">
+                    <div class="dis-flex p-l-15 bor8">
+                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                        <button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                            <i class="zmdi zmdi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
 
 
-
-    <div class="row isotope-grid">
+    <div class="row isotope-grid mt-5">
         <% searchResults.forEach(product => { %>
             <div class="col-sm-6 col-md-6 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
                 <!-- Block2 -->
