@@ -42,6 +42,8 @@ module.exports = {
 
    verifyRazorpayPayment: async (payment, order, userDetails) => {
     try {
+      const address =await userHelper.defaultShippingAddress(userDetails)
+      console.log('adress:',address);
       const secret = process.env.RAZORPAY_KEY_SECRET;
       const generated_signature = crypto
         .createHmac('sha256', secret)
@@ -60,6 +62,15 @@ module.exports = {
             paymentMethod: 'RazorPayment',
           },
           items: cart.items,
+          shippingAddress: {
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            // Add other address fields as needed
+        },
+        appliedCoupon: cart.appliedCoupon 
+          
         });
         
         for (const item of cart.items) {
@@ -70,9 +81,10 @@ module.exports = {
           }
         }
   
-        await Cart.findOneAndUpdate({ user: userDetails._id }, { items: [] });
+        await cartHelper.deleteCart(cart._id);
   
         await newOrder.save();
+        console.log('neworder:',newOrder)
         return 'success';
       } else {
         return { status: 'error', error: 'Invalid signature' };
@@ -85,6 +97,7 @@ module.exports = {
 
   createCODOrder: async (cart,user) => {
     try {
+      const address =await userHelper.defaultShippingAddress(user)
         const orderId = generateOrderId();
         const newOrder = new Order({
           user: user._id,
@@ -95,6 +108,15 @@ module.exports = {
             paymentMethod:'COD'
           },
           items: cart.items,
+          shippingAddress: {
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            // Add other address fields as needed
+        },
+        appliedCoupon: cart.appliedCoupon ,
+          
         });
     
         for (const item of cart.items) {
@@ -104,7 +126,7 @@ module.exports = {
             await product.save();
           }
         }
-        await Cart.findOneAndUpdate({ user}, { items: [] });
+        await cartHelper.deleteCart(cart._id);
         await newOrder.save();
         return 'success';
     
@@ -145,6 +167,7 @@ module.exports = {
     try {
       // Get the user's cart
       const cart = await cartHelper.getCart(userDetails);
+      const address =await userHelper.defaultShippingAddress(userDetails)
 
       // Validate request data
       if (!orderId || !paymentId || !userDetails) {
@@ -162,6 +185,14 @@ module.exports = {
           paymentMethod: 'StripePayment',
         },
         items: cart.items,
+        shippingAddress: {
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          postalCode: address.postalCode,
+          // Add other address fields as needed
+      },
+      appliedCoupon: cart.appliedCoupon ,
       });
       for (const item of cart.items) {
         const product = await Product.findById(item.product._id);
@@ -171,7 +202,7 @@ module.exports = {
         }
       }
 
-      await Cart.findOneAndUpdate({ user: userDetails._id }, { items: [] });
+     await cartHelper.deleteCart(cart._id);
       // Save the order
       await newOrder.save();
 

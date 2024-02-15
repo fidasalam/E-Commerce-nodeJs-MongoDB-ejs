@@ -2,9 +2,11 @@ const User = require('../models/usermodel');
 const Cart = require('../models/cart');
 const Wishlist = require('../models/wishlist');
 const Coupon = require('../models/coupon');
-const Message = require('../models/message')
 const Order = require('../models/order');
+const Rating = require('../models/rating');
 const Product = require('../models/product');
+const orderHelper = require('../helpers/orderHelper');
+
 
 const userHelper = require('../helpers/userHelper');
 const ProductHelper = require('../helpers/productHelper');
@@ -16,19 +18,19 @@ const bcrypt = require('bcryptjs');
 const nodemailerConfig=require('../config/nodemailerConfig')
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator');
+const product = require('../models/product');
 const transporter = nodemailer.createTransport(nodemailerConfig);
 
 
-function generateOTP() {
-  return otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
-}
 
 
 
 module.exports = {
+  //home page
   displayHomepage: async (req, res) => {
-    const categories = await ProductHelper.getAllCategories();
-    const products = await ProductHelper.getFewProducts();
+    let categories = await ProductHelper.getAllCategories();
+    let products = await ProductHelper.getFewProducts();
+    products = await Product.populate(products, { path: 'coupon' });
     res.render('user/index', { products, categories, userDetails: req.userDetails });
   },
 
@@ -50,11 +52,9 @@ module.exports = {
       req.flash('error', 'Invalid credentials');
       return res.redirect('/user/login');
     }
-
     if (user.isBlocked) {
       req.flash('error', 'Your account is blocked. Please contact support for assistance.');
     }
-
     userHelper.generateTokenAndSetSession(user, req);
 
     if(guestCart){
@@ -62,6 +62,8 @@ module.exports = {
     }
     res.redirect('/user/index');
   },
+
+
 
   // Handle user logout
   handleLogout: (req, res) => {
@@ -79,60 +81,66 @@ module.exports = {
 
   // register page
   renderRegisterPage: async (req, res) => {
-    res.render('user/register', { userDetails: req.userDetails });
+    const emailSent = req.session.emailSent || false;
+    res.render('user/register', { userDetails: req.userDetails,emailSent}  );
   },
+
+
 
 // user registration
 handleRegister: async (req, res) => {
   try {
-    const { username, email, password, name, phone } = req.body;
-    if (!userHelper.isValidPasswordFormat(password)) {
-      req.flash('error', 'Invalid password format');
-      return res.redirect('/user/register');
-    }
+      const { username, email, password, name, phone } = req.body;
+      if (!userHelper.isValidPasswordFormat(password)) {
+          req.flash('error', 'Invalid password format');
+          return res.redirect('/user/register');
+      }
 
-    if (!userHelper.isValidPhoneNumberFormat(phone)) {
-      req.flash('error', 'Invalid phone number format');
-      return res.redirect('/user/register');
-    }
+      if (!userHelper.isValidPhoneNumberFormat(phone)) {
+          req.flash('error', 'Invalid phone number format');
+          return res.redirect('/user/register');
+      }
 
-    if (!userHelper.isValidUsernameFormat(username)) {
-      req.flash('error', 'Invalid username format. Only alphabets are allowed.');
-      return res.redirect('/user/register');
-    }
+      if (!userHelper.isValidUsernameFormat(username)) {
+          req.flash('error', 'Invalid username format. Only alphabets are allowed.');
+          return res.redirect('/user/register');
+      }
 
-    if (!userHelper.isValidUsernameFormat(name)) {
-      req.flash('error', 'Invalid name format. Only alphabets are allowed.');
-      return res.redirect('/user/register');
-    }
+      if (!userHelper.isValidUsernameFormat(name)) {
+          req.flash('error', 'Invalid name format. Only alphabets are allowed.');
+          return res.redirect('/user/register');
+      }
+;
 
-  
-    await userHelper.registerUser({
-      username,
-      email,
-      password,
-      name,
-      phone,
-    });
+      // Send registration email with redirect link
+     const otp = await userHelper.sendRegistrationEmail(email);
+      
+      await userHelper.registerUser({
+        username,
+        email,
+        password,
+        name,
+        phone,
+        otp
+    })
 
-    // Generate token and set session
-    const registeredUser = await User.findOne({ username });
-    userHelper.generateTokenAndSetSession(registeredUser, req);
-    res.redirect('/user/index');
+    const action ='Register';
+    res.render('user/enterOTP',{userDetails:req.userDetails,email,action})
   } catch (error) {
-    console.error(error);
+      console.error(error);
 
-    if (error.code === 11000) {
-      return res.status(400).send('Username or email already in use.');
-    }
+      if (error.code === 11000) {
+          return res.status(400).send('Username or email already in use.');
+      }
 
-    res.status(500).send('Internal Server Error');
+      res.status(500).send('Internal Server Error');
   }
 },
 
+
   // profile page
   renderProfilePage: async (req, res) => {
-    res.render('user/profile', { userDetails: req.userDetails });
+   res.render('user/profile', { userDetails: req.userDetails });
   },
 
 
@@ -174,46 +182,41 @@ handleRegister: async (req, res) => {
   //handle forgotpassword
   forgotpassword: async (req, res) => {
     const { email } = req.body;
-    const user = await userHelper.getUserByEmail(email);
-  
-      if (!user) {
-        return res.status(404).send('User not found. Please check the email address.');
-      }
-  
-      const otp = generateOTP();
-      await userHelper.updateUserOTP(email, otp);
-
-      const mailOptions = {
-        to: email,
-        subject: 'Forgot Password OTP',
-        text: `Your OTP for password reset is: ${otp}`
-      };
-  
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-          return res.status(500).send('Error sending OTP via email.');
-        }
-
-        res.render('user/enterOTP',{userDetails:req.userDetails,email:user.email})
-      });
+    const user =  await User.findOne({ email });
+   await userHelper.sendRegistrationOTP(email);
+   const action ='forgotPassword';
+    res.render('user/enterOTP',{userDetails:req.userDetails,email:user.email,action})
+    
     } ,
 
 
     //
-  verifyOtp: async (req, res) => {
-      const { email, otp } = req.body;
-      const user = await userHelper.getUserByEmail(email);
-        if (!user) {
-          return res.status(404).send('User not found. Please check the email address.');
-        }
-        if (otp === user.otp) {
-          res.render('user/passwordreset',{userDetails:req.userDetails,email})
-        
+    verifyOtp: async (req, res) => {
+      try {
+        const { email, otp, action } = req.body;
+        console.log('Action:', action); 
+        const success = await userHelper.verifyOTP(email, otp);
+    
+        if (success) {
+          if (action === 'forgotPassword') {
+            const userDetails = await userHelper.getUserByEmail(email);
+            res.render('user/passwordreset', { userDetails, email });
+          } else if (action === 'Register') {
+            req.flash('success', 'Successfully registered. Please log in.');
+            res.redirect('/user/login');
+          } 
         } else {
-          res.status(401).send('Incorrect OTP. Please try again.');
+          // Handle incorrect OTP
+          req.flash('error', 'Incorrect OTP. Please try again.');
+          res.redirect('/user/enter-otp'); // Redirect back to OTP verification page
         }
-      } ,
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      }
+    },
+    
+  
 
   resetPassword:async (req, res) => {
         const { email, newPassword } = req.body;
@@ -230,11 +233,14 @@ handleRegister: async (req, res) => {
   //  product details page
  renderProductDetail: async (req, res) => {
   const productId = req.params.productId;
-  const product = await Product.findById(productId);
+  
+  const product = await Product.findById(productId).populate('coupon');
+  const ratingData = await productHelper.getProductRatings(productId);
+  console.log('rating:',ratingData);
   if (!product) {
        return res.status(404).render('error', { message: 'Product not found' });
    }
-      res.render('user/productdetails', { product, userDetails: req.userDetails });
+      res.render('user/productdetails', { product, userDetails: req.userDetails,rating:ratingData });
 },
 
     // products by category
@@ -242,22 +248,31 @@ handleRegister: async (req, res) => {
       const selectedCategory = req.query.categoryId;
       let products;
       if (!selectedCategory) {
-        products = await Product.find();
+          products = await Product.find().populate('coupon');
       } else {
-        products = await productHelper.getProductsByCategoryName(selectedCategory);
+          products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
   
       res.render('user/product', {
-        selectedCategory,
-        products,
-        userDetails: req.userDetails,
+          selectedCategory,
+          products,
+          userDetails: req.userDetails,
       });
-    },
-
-
-      
+  },
   
-    // search products page
+
+   // search suggestions
+    searchSuggestions: async (req, res) => {
+      const { query } = req.body;
+      if (!query) {
+        return res.json([]);
+    }
+      const products = await productHelper.getProductsByName(query);
+      const suggestions = products.map(product => product.name);
+      res.json(suggestions);
+  } ,
+
+      // search products page
     renderSearchProducts: async (req, res) => {
       res.render('user/search', { userDetails: req.userDetails });
     },
@@ -284,9 +299,7 @@ handleRegister: async (req, res) => {
       const { msg, email } = req.body;
      await userHelper.saveMessage(msg, email);
        req.flash('message', 'Message sent successfully!');
-       req.flash('error', 'Message sent successfully!');
-  
-     res.redirect('/user/contact')
+      res.redirect('/user/contact')
     },
   
 
@@ -294,12 +307,22 @@ handleRegister: async (req, res) => {
   //cart
   renderShoppingCart: async (req, res) => {
     const cart = await cartHelper.getCart(req.userId);
+  
     if (!cart || cart.items.length === 0) {
+      if (cart) { 
+        await cartHelper.deleteCart(cart._id);
+      }
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }
-   const subtotal = cartHelper.calculateSubtotal(cart);
-    res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal: subtotal });
+    let subtotal = cartHelper.calculateSubtotal(cart);
+    let discountedTotal=subtotal;
+    if(cart.appliedCoupon){
+      discountedTotal=cart.total;
+    }
+    await cartHelper.updateCartTotals(cart, subtotal, discountedTotal);
+    res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal })
   },
+
 
   //  empty cart page
   renderEmptyCart: async (req, res) => {
@@ -309,7 +332,6 @@ handleRegister: async (req, res) => {
 
   // Add product to the cart
   addToCart: async (req, res) => {
-    try {
       const { productId } = req.body;
       const userId = req.session.userId;
       const product = await Product.findById(productId);
@@ -318,27 +340,24 @@ handleRegister: async (req, res) => {
         req.flash('error', 'Product is out of stock.');
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
       }
-  
       await cartHelper.addToCart(userId, productId, 1);
+      
       return res.redirect(`/user/productdetails/${productId}?addedToCart=true`);
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-      // Handle the error as needed, such as displaying an error page
-      res.status(500).send('Internal Server Error');
-    }
-  },
-  
+    },
 
+    
   // Update product quantity in the cart
   updateQuantity: async (req, res) => {
     const itemIndex = req.body.itemIndex;
     const newQuantity = req.body.newQuantity;
     const cart = await cartHelper.getCart(req.userDetails);
-    const subtotal =  cartHelper.calculateSubtotal(cart);
-    const cartItem = cart.items[itemIndex - 1];
-    cartItem.quantity = newQuantity;
-    await cart.save();
-    res.json({ newTotal: subtotal });
+    if(cart.appliedCoupon){
+      return res.json({ message: 'Remove Coupon and update your cart.' });
+  
+    }
+    const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity);
+    const updatedSubtotal = cartHelper.calculateSubtotal(updatedCart);
+    res.json({ newTotal: updatedSubtotal });
   },
 
 
@@ -350,31 +369,30 @@ handleRegister: async (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid product ID' });
     }
     const cart = await cartHelper.getCart(req.userDetails);
-    cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+    await cartHelper.removeProductFromCart(cart, productId);
     await cartHelper.updateCart(cart);
     const subtotal = cartHelper.calculateSubtotal(cart);
-
     if (cart.items.length === 0) {
+      await cartHelper.deleteCart(cart);
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }
-
     await cartHelper.updateCart(cart);
     res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal: subtotal });
   },
 
 
-
-  // Filter products based on criteria
-  filterProducts: async (req, res) => {
+// Filter products based on criteria
+filterProducts: async (req, res) => {
+  try {
+  
     let filterCriteria = {};
-
-    if (req.query.priceRange) {
-      const [minPrice, maxPrice] = req.query.priceRange.split('-');
-      filterCriteria.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
-    }
-
     let sortCriteria = {};
-
+   // Parse price range
+    if (req.query.priceRange) {
+      const [minPrice, maxPrice] = req.query.priceRange.split('-').map(parseFloat);
+      filterCriteria.price = { $gte: minPrice, $lte: maxPrice };
+     }
+     // Set sorting criteria
     if (req.query.sortBy) {
       switch (req.query.sortBy) {
         case 'newness':
@@ -390,27 +408,37 @@ handleRegister: async (req, res) => {
           break;
       }
     }
-
-    const products = await Product.find(filterCriteria).sort(sortCriteria).limit(10);
+    
+  
+    const products = await Product.find(filterCriteria).sort(sortCriteria);
     res.setHeader('Cache-Control', 'no-store');
     res.json({ products });
-  },
+  } catch (error) {
+    console.error('Error filtering products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
 
 
 
   //  wishlist
   renderWishlist: async (req, res) => {
-    const wishlist = await Wishlist.find({ user: req.userDetails }).populate('product');
+    const wishlist = await Wishlist.find({ user: req.userDetails }).populate({
+        path: 'product',
+        populate: {
+            path: 'coupon'
+        }
+    });
     res.render('user/wish', { wishlist, userDetails: req.userDetails });
-  },
+},
+
 
 
   // Add product to wishlist
   addWishlist: async (req, res) => {
     const { productId } = req.params;
     const existingWishlistItem = await Wishlist.findOne({ user: req.userDetails, product: productId });
-
-    if (existingWishlistItem) {
+   if (existingWishlistItem) {
       return res.status(400).json({ message: 'Product already in wishlist' });
     }
    await Wishlist.create({ user: req.userDetails, product: productId });
@@ -447,32 +475,49 @@ handleRegister: async (req, res) => {
 
   //ApplyCoupon
   applyCoupon: async (req, res) => {
-
-    const { couponCode } = req.body;
+  const { couponCode } = req.body;
     const coupon = await Coupon.findOne({ code: couponCode });
-    const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
-    
+    const cart = await Cart.findOne({ user: req.userDetails._id }).populate({
+      path: 'items.product',
+      populate: {
+          path: 'coupon'
+      }
+  });
     const subtotal = cartHelper.calculateSubtotal(cart);
     const discountedTotal=cartHelper.calculateDiscountedTotal(subtotal,coupon)
-
     const roundedDiscountedTotal = Math.round(discountedTotal);
-
     cart.subtotal=subtotal
     cart.total=roundedDiscountedTotal;
     cart.appliedCoupon=coupon;
     await cart.save();
     console.log('cart',cart);
-
-    res.json({ discountedTotal: roundedDiscountedTotal });
+    res.json({ message: 'Cart updated successfully' });
+  
   },
 
 
   handleCoupon: async (req, res) => {
     const userId = req.userDetails;
-    const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
+    const cart = await Cart.findOne({ user: req.userDetails._id }).populate({
+      path: 'items.product',
+      populate: {
+          path: 'coupon'
+      }
+  });
     const coupon = await cartHelper.applyCouponToCart(userId,cart);
     res.json({ coupon });
 },
+
+
+removeCoupon: async (req, res) => {
+const cart = await cartHelper.getCart(req.userId);
+ const discountedTotal=cart.subtotal;
+cart.appliedCoupon=null;
+ cart.total=discountedTotal;
+await cart.save();
+  res.json({ success: true ,discountedTotal});
+},
+
 
 
   // checkout page
@@ -486,29 +531,69 @@ handleRegister: async (req, res) => {
     });
   },
 
+  getAddAddress: async (req, res) => {
+   res.render('user/editAddress',{ userDetails: req.userDetails});
+  },
+
+  addAddress: async (req, res) => {
+   const userDetails= req.userDetails;
+    const { street, city, state, postalCode } = req.body;
+    const newAddress = {
+      street,
+      city,
+      state,
+      postalCode
+    };
+    userDetails.shippingAddresses.push(newAddress);
+    await userDetails.save();
+   res.redirect('/user/add-address')
+  
+   },
+
+   updateAddress: async (req, res) => {
+    const userDetails= req.userDetails;
+    const index = req.body.index;
+    userDetails.shippingAddresses[index] = {
+      street: req.body.street || userDetails.shippingAddresses[index].street,
+      city: req.body.city || userDetails.shippingAddresses[index].city,
+      state: req.body.state || userDetails.shippingAddresses[index].state,
+      postalCode: req.body.postalCode || userDetails.shippingAddresses[index].postalCode
+    };
+
+    console.log('addressindex:',userDetails.shippingAddresses[index])
+    await userDetails.save();
+    res.redirect('/user/add-address')
+    },
+
+    deleteAddress: async (req, res) => {
+      const userDetails= req.userDetails;
+      const index = req.params.index;
+      userDetails.shippingAddresses.splice(index, 1);
+     await userDetails.save()
+     res.redirect('/user/add-address')
+      
+     },
+
+     setDefault: async (req, res) => {
+      const userDetails= req.userDetails;
+      const index = req.params.index;
+      console.log('index:',index)
+      userDetails.shippingAddresses.forEach((address, i) => {
+        if (i == index) {
+            address.default = true;
+        } else {
+            address.default = false;
+        }
+    });
+      await userDetails.save()
+      res.redirect('/user/add-address')
+      
+     },
+
+
 
   // checkout process
   handleCheckout: async (req, res) => {
-   const { street, city, state, postalCode ,subtotal, discountedTotal} = req.body;
-  if (!street || !city || !state || !postalCode) {
-      return res.status(400).render('error', { message: 'Invalid shipping address' });
-    }
-
-    console.log('subtotal:',subtotal);
-    console.log('dicscount:',discountedTotal);
-    req.userDetails.shippingAddress = {
-      street: street,
-      city: city,
-      state: state,
-      postalCode: postalCode,
-    };
-    await req.userDetails.save();
-    const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
-
-    cart.subtotal = subtotal;
-    await cart.save();
-
-    console.log('cart:',cart)
     res.redirect('/user/checkout');
   },
 
@@ -541,7 +626,7 @@ handleRegister: async (req, res) => {
   handleCashOnDelivery: async (req, res) => {
    const user=req.userDetails;
     const cart = await Cart.findOne({ user: user._id });
-    const codPayment=await paymentHelper.createCODOrder(cart,user._id )
+    const codPayment=await paymentHelper.createCODOrder(cart,req.userDetails )
     if (codPayment === 'success') {
       res.render('user/thankyou', { userDetails: req.userDetails });
     }
@@ -563,10 +648,8 @@ handleStripePayment: async (req, res) => {
 
 
 handleProcessPayment : async (req, res) => {
-  
    const payment_method_id = req.body.payment_method_id;
-
-  const { orderId, paymentId, clientSecret } = await paymentHelper.handleProcessPayment(req.userDetails, payment_method_id);
+   const { orderId, paymentId, clientSecret } = await paymentHelper.handleProcessPayment(req.userDetails, payment_method_id);
  res.status(200).json({ orderId, paymentId, clientSecret });
 },
 
@@ -574,7 +657,6 @@ saveOrder : async (req, res) => {
 
   const bodyString = req.body.toString();
   const { orderId, paymentId } = JSON.parse(bodyString);
- 
   const saveOrderResult = await paymentHelper.saveOrder(orderId, paymentId, req.userDetails);
   if (saveOrderResult==='success'){
   res.status(200).json({ success: true });
@@ -591,10 +673,29 @@ renderThankyou: async (req, res) => {
 renderOrderPage: async (req, res) => {
       const orders = await Order.find({ user: req.userDetails }).populate('items.product');
       console.log('Order History:', orders);
-  
-      res.render('user/orderHistory', { orderHistory: orders, userDetails: req.userDetails });
+      const productRatings = {};
+      for (const order of orders) {
+        for (const item of order.items) {
+            // Query the ratings for the product
+            const ratings = await Rating.find({ product: item.product._id });
+
+            // Attach the ratings to the product item
+            item.product.ratings = ratings;
+            productRatings[item.product._id] = ratings;
+
+        }
+    }
+    console.log('productrating:',productRatings)
+      res.render('user/orderHistory', { orderHistory: orders, userDetails: req.userDetails,productrating:productRatings });
     },
 
+    submitRating: async (req, res) => {
+      const userDetails= req.userDetails;
+      const { productId, rating } = req.body;
+      await orderHelper.submitRating(userDetails,productId,rating);
+      res.redirect('/user/orders')
+   
+     },
   
 };
 

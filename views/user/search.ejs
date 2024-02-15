@@ -11,18 +11,29 @@
                 </h3>
             </div>
     
-            <div class="flex-w flex-c-m justify-content-end">
-                <!-- Search form -->
-                <form name="searchForm" method="POST" action="/user/search" class="m-tb-4 ml-auto">
-                    <div class="dis-flex p-l-15 bor8">
-                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
-                        <button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-                            <i class="zmdi zmdi-search"></i>
-                        </button>
+           
+            <div class="flex-w flex-sb-m p-b-52 justify-content-end">
+            
+                   
+                    <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                        <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                        <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                        Search
                     </div>
-                </form>
-            </div>
-
+                    <div class="dis-none panel-search w-full p-t-10 p-b-15">
+                        <div class="bor8 dis-flex p-l-15">
+                            <form id="searchForm" method="POST" action="/user/search">
+                            
+    
+                            <input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                            
+                            <div id="searchSuggestionsContainer"></div>
+    
+                            </form>
+                            </div>
+                </div>
+                </div>
+    
 
     <div class="row isotope-grid mt-5">
         <% searchResults.forEach(product => { %>
@@ -41,9 +52,24 @@
                             <a href="/user/productdetails/<%= product._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
                                 <%= product.name %>
                             </a>
-                            <span class="stext-105 cl3">
-                                Rs.<%= product.price %>
-                            </span>
+                            <div class="price-container">
+                                <% if (product.coupon) { %>
+                                    <span class="stext-105 cl3 original-price">
+                                        ₹<%= product.price %>
+                                    </span>
+                                    <br>
+                                    <span class="stext-105 cl3 discount-info">
+                                        ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                        (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
+                                    </span>
+                                <% } else { %>
+                                    <span class="stext-105 cl3">
+                                        ₹<%= product.price %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            
+                        </div>
                         </div>
 
                         <div class="block2-txt-child2 flex-r p-t-3">
@@ -63,5 +89,80 @@
 </section>
 </div>
 
+<script>
+    $(document).ready(function() {
+     // Function to fetch search suggestions
+     function fetchSuggestions(query) {
+         $.ajax({
+             method: 'POST',
+             url: '/user/search/suggestions',
+             data: { query: query },
+             success: function(response) {
+                 // Clear previous suggestions
+                 $('#searchSuggestionsContainer').empty();
+ 
+                 // Append new suggestions to the container
+                 response.forEach(suggestion => {
+                     // Create suggestion element and append to container
+                     const $suggestion = $('<div class="suggestion">' + suggestion + '</div>');
+                     $('#searchSuggestionsContainer').append($suggestion);
+ 
+                     // Handle click on suggestion
+                     $suggestion.click(function() {
+                         // Fill input field with suggestion text
+                         $('#searchSuggestions').val(suggestion);
+ 
+                         // Clear suggestions container
+                         $('#searchSuggestionsContainer').empty();
+                     });
+                 });
+             },
+             error: function(error) {
+                 console.error('Error fetching suggestions:', error);
+             }
+         });
+     }
+ 
+     // Handle input event on the search input field for fetching suggestions
+     $('#searchSuggestions').on('input', function() {
+         const query = $(this).val();
+         fetchSuggestions(query);
+     });
+ 
+     // Handle form submission for search
+     $('#searchForm').submit(function(event) {
+         event.preventDefault(); // Prevent default form submission
+         const query = $('#searchSuggestions').val().trim();
+         if (query.length > 0) {
+             $(this).unbind('submit').submit();
+         } else {
+             console.log('Search query is empty.');
+         }
+     });
+ 
+     $('#searchSuggestions').on('keypress', function(event) {
+         // Check if the pressed key is Enter (key code 13)
+         if (event.which === 13) {
+             // If Enter was pressed, trigger the form submission
+             $('#searchForm').submit();
+         }
+     });
+ });
+ 
+ </script>
+ <style>
+    .price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    color: red;
+}
+
+ </style>
 
 <%- include('../partials/footer') %>

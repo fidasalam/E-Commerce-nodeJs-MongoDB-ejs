@@ -12,14 +12,8 @@ const orderItemSchema = new mongoose.Schema({
     min: 0,
     default: 1
   },
-  // size: {
-  //   type: String,
-  //   enum: ['small', 'medium', 'large']
-  // },
-  // itemPrice: {
-  //   type: Number,
-  //   required: true
-  // },
+
+
 });
 
 const orderSchema = new mongoose.Schema({
@@ -33,40 +27,12 @@ const orderSchema = new mongoose.Schema({
     type: [orderItemSchema],
     required: true
   },
-  // subtotal: {
-  //   type: Number,
-  //   required: true
-  // },
-  // total: {
-  //   type: Number,
-  //   required: true
-  // },
-  // appliedCoupon: { 
-  //   type: mongoose.Schema.Types.ObjectId, 
-  //   ref: 'Coupon', 
-  //   default: null
-  //  },
+  appliedCoupon: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Coupon', 
+    default: null },
 
-  // shippingAddress: {
-  //   street: {
-  //     type: String,
-  //     required: true
-  //   },
-  //   city: {
-  //     type: String,
-  //     required: true
-  //   },
-  //   state: {
-  //     type: String,
-  //     required: true
-  //   },
-  //   postalCode: {
-  //     type: String,
-  //     required: true
-  //   },
 
-  //   // Add more address fields as needed
-  // },
 
   payment: {
     orderId: {
@@ -100,7 +66,21 @@ const orderSchema = new mongoose.Schema({
   },
 
   
-  // Add more fields as needed
+   shippingAddress: {
+    street: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+    // Add other address fields as needed
+  },
 });
 
 const Order = mongoose.model('Order', orderSchema);

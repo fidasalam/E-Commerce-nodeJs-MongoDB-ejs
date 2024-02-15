@@ -1,121 +1,254 @@
+<style>
+  /* Global styles */
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+  }
+
+  a {
+      text-decoration: none;
+      color: #007bff;
+  }
+
+  a:hover {
+      text-decoration: underline;
+  }
+
+  .container {
+      max-width: 1200px;
+      margin: 0 auto;
+  }
+
+  /* Header styles */
+  .header {
+      background-color: #fff;
+      padding: 20px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+  }
+
+  /* Footer styles */
+  .footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+  }
+
+  .footer p {
+      margin: 0;
+  }
+
+  /* Section styles */
+  .section {
+      background-color: #fff;
+      padding: 40px;
+      margin-bottom: 30px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+  }
+
+  /* Profile section styles */
+  .user-profile {
+      margin-bottom: 30px;
+  }
+
+  .user-profile p {
+      margin-bottom: 10px;
+  }
+
+  /* Address section styles */
+  .address {
+      margin-bottom: 30px;
+  }
+
+  .address p {
+      margin-bottom: 10px;
+  }
+
+  /* Cart section styles */
+  .cart {
+      margin-bottom: 30px;
+  }
+
+  .cart .how-itemcart1 {
+      margin-right: 15px;
+  }
+
+  /* Order summary styles */
+  .order-summary {
+      margin-bottom: 30px;
+  }
+
+  /* Payment method section styles */
+  .payment-method {
+      margin-bottom: 30px;
+  }
+
+  .payment-method .form-check-input {
+      margin-right: 10px;
+  }
+
+  .payment-method .form-check-label {
+      font-size: 18px;
+      color: #555;
+  }
+
+  .payment-method button[type="submit"] {
+      background-color: #000000;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.3s;
+  }
+
+  .payment-method button[type="submit"]:hover {
+      background-color: #515151;
+  }
+</style>
+
 <!-- Include Stripe.js library -->
 <script src="https://js.stripe.com/v3/"></script>
 
 <%- include('../partials/header') %>
 
 <div class="container mt-5">
-  <section class="bg0 p-t-23 p-b-140">
-    <div class="container">
-      <div class="p-b-10 text-center">
-        <h3 class="ltext-103 cl5">
-          Payment
-        </h3>
-      </div>
-
-      <div class="container checkout-container">
-        <div class="row">
-          <div class="col-md-6">
-            <!-- Your existing code for profile -->
-            <div class="user-profile bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-              <h2 class="mtext-109 cl3 p-b-30">
-                My Profile
-              </h2>
-              <p class="stext-110 cl3"><strong>Name:</strong> <%= userDetails.name %></p>
-              <p class="stext-110 cl3"><strong>Email:</strong> <%= userDetails.email %></p>
-              <!-- Add more profile information as needed -->
-            </div>
-
-            <!-- Your existing code for shipping address -->
-            <div class="shipping-address bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-              <h2 class="mtext-109 cl3 p-b-30">
-                Shipping Address
-              </h2>
-              <p class="stext-110 cl3"><strong>Street Address:</strong> <%= userDetails.shippingAddress.street %></p>
-              <p class="stext-110 cl3"><strong>City:</strong> <%= userDetails.shippingAddress.city %></p>
-              <p class="stext-110 cl3"><strong>State :</strong> <%= userDetails.shippingAddress.state %></p>
-              <p class="stext-110 cl3"><strong>Postcode:</strong> <%= userDetails.shippingAddress.postalCode %></p>
-              <!-- Add more address fields as needed -->
-            </div>
-            <div class="cart-items bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-              <h2 class="mtext-109 cl3 p-b-30">
-                My Cart
-              </h2>
-              <div class="flex-w">
-                <% for (let i = 0; i < cart.items.length; i++) { %>
-                    <div class="how-itemcart1 m-r-15">
-                        <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
-                    </div>
-                <% } %>
-            </div>
-            </div>
+  <section class="section">
+      <div class="container">
+          <div class="p-b-10 text-center">
+              <h3 class="ltext-103 cl5">
+                  Checkout
+              </h3>
           </div>
 
-          <div class="col-md-6">
-            <!-- Your existing code for cart items and order summary -->
-           
-            <div class="order-summary bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-              <h2 class="mtext-109 cl3 p-b-30">
-                Order Summary
-              </h2>
-              <p class="stext-110 cl3">Subtotal: ₹<%= cart.subtotal %></p>
-              <p class="stext-110 cl3">Total: ₹<%= cart.total %></p>
-            </div>
-            
-            <!--<!-- Additional section for payment method -->
-<div class="payment-method bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-  <h2 class="mtext-109 cl3 p-b-30">
-    Payment Method
-  </h2>
-  <form id="paymentForm" method="post">
-    <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
-    <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
-    <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
-    <!-- Add more hidden fields as needed -->
+          <div class="container checkout-container">
+              <div class="row">
+                  <div class="col-md-6">
+                      <!-- Your existing code for profile -->
+                      <div class="user-profile section bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                          <h2 class="mtext-109 cl3 p-b-30">
+                              My Profile
+                          </h2>
+                          <p class="stext-110 cl3"><strong>Name:</strong> <%= userDetails.name %></p>
+                          <p class="stext-110 cl3"><strong>Email:</strong> <%= userDetails.email %></p>
+                          <!-- Add more profile information as needed -->
+                      </div>
 
-    <!-- Radio buttons for payment options -->
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
-      <label class="form-check-label" for="cashOnDelivery">
-        Cash on Delivery
-      </label>
-    </div>
+                      <div class="address section bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                          <h2 class="mtext-109 cl3 p-b-30">
+                              Shipping Address
+                          </h2>
+                          <% if (userDetails.shippingAddresses && userDetails.shippingAddresses.length > 0) { %>
+                          <% userDetails.shippingAddresses.forEach(address => { %>
+                          <% if (address.default) { %>
+                          <p class="stext-110 cl3"><strong>Street Address:</strong> <%= address.street %></p>
+                          <p class="stext-110 cl3"><strong>City:</strong> <%= address.city %></p>
+                          <p class="stext-110 cl3"><strong>State:</strong> <%= address.state %></p>
+                          <p class="stext-110 cl3"><strong>Postal Code:</strong> <%= address.postalCode %></p>
+                          <a href="/user/add-address" class="edit-address-btn">Edit Address</a> <!-- Edit button -->
+                          <% } %>
+                          <% }); %>
+                          <% } else { %>
+                          <p class="stext-110 cl3">No shipping address set</p>
+                          <a href="/user/add-address" class="edit-address-btn">Add Address</a>
+                          <% } %>
+                      </div>
 
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
-      <label class="form-check-label" for="stripePayment">
-        Stripe Payment
-      </label>
-    </div>
 
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
-      <label class="form-check-label" for="razorPay">
-        Razor Pay
-      </label>
-    </div>
-    <div class="flex-c-m flex-w p-b-18 mt-5">
-      <!-- Add more radio buttons for additional payment options as needed -->
-    </div>
+                      <div class="cart section bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                          <h2 class="mtext-109 cl3 p-b-30">
+                              My Cart
+                          </h2>
+                          <div class="flex-w">
+                              <% for (let i = 0; i < cart.items.length; i++) { %>
+                              <div class="how-itemcart1 m-r-15">
+                                  <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
+                              </div>
+                              <% } %>
+                          </div>
+                      </div>
+                  </div>
 
-    <!-- Button to complete the purchase -->
-    <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" type="submit">Complete Purchase</button>
-  </form>
-</div>
-           
+                  <div class="col-md-6">
+                      <!-- Your existing code for cart items and order summary -->
+
+                      <div class="order-summary section bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                          <h2 class="mtext-109 cl3 p-b-30">
+                              Order Summary
+                          </h2>
+                          <p class="stext-110 cl3">Subtotal: ₹<%= cart.subtotal.toFixed(0) %></p>
+                          <p class="stext-110 cl3">Total: ₹<%= cart.total.toFixed(0)%></p>
+                      </div>
+
+                      <!-- Additional section for payment method -->
+                      <div class="payment-method section bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                          <h2 class="mtext-109 cl3 p-b-30">
+                              Payment Method
+                          </h2>
+                          <form id="paymentForm" method="post">
+                              <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
+                              <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
+                              <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
+                              <!-- Add more hidden fields as needed -->
+
+                              <!-- Radio buttons for payment options -->
+                              <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
+                                  <label class="form-check-label" for="cashOnDelivery">
+                                      Cash on Delivery
+                                  </label>
+                              </div>
+
+                              <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
+                                  <label class="form-check-label" for="stripePayment">
+                                      Stripe Payment
+                                  </label>
+                              </div>
+
+                              <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
+                                  <label class="form-check-label" for="razorPay">
+                                      Razor Pay
+                                  </label>
+                              </div>
+                              <div class="flex-c-m flex-w p-b-18 mt-5">
+                                  <!-- Add more radio buttons for additional payment options as needed -->
+                              </div>
+
+                              <!-- Button to complete the purchase -->
+                              <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" type="submit">Complete Purchase</button>
+                          </form>
+                      </div>
+
+                  </div>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
   </section>
 </div>
 
 <%- include('../partials/footer') %>
 
-
 <script>
   document.getElementById('paymentForm').addEventListener('submit', function(event) {
-  const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-  this.action = `/user/${selectedPaymentMethod}`;
-});
+      const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      this.action = `/user/${selectedPaymentMethod}`;
+  });
 
 </script>

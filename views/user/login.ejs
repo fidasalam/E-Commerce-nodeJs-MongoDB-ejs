@@ -1,64 +1,92 @@
-  <!-- Header -->
-  <%- include('../partials/header') %>
+<!-- Header -->
+<%- include('../partials/header') %>
 
-
-  <!-- Title page -->
-  <section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('images/bg-01.jpg');">
-      <h2 class="ltext-105 cl0 txt-center">
-          Login
-      </h2>
-  </section>	
-  <% if (messages.error) { %>
+<!-- Title page -->
+<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('images/bg-01.jpg');">
+    <h2 class="ltext-105 cl0 txt-center">
+        Login
+    </h2>
+</section>	
+<% if (messages.error) { %>
     <div class="alert alert-danger">
       <%= messages.error %>
     </div>
+  <% } else if (messages.success) { %>
+    <div class="alert alert-success">
+      <%= messages.success %>
+    </div>
   <% } %>
-  <!-- Content page -->
-  <section class="bg0 p-t-104 p-b-116">
-      <div class="container">
-          <div class="flex-w flex-tr">
-              <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
-                  <!-- Your login form can go here -->
-                  <form action="/user/login" method="post">
-                    <h4 class="mtext-105 cl2 txt-center p-b-30">
-                        Enter Your Details
-                    </h4>
+  
+<!-- Content page -->
+<section class="bg0 p-t-104 p-b-116">
+    <div class="container">
+        <div class="flex-w flex-tr">
+            <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+                <!-- Your login form can go here -->
+                <form action="/user/login" method="post">
+                  <h4 class="mtext-105 cl2 txt-center p-b-30">
+                      Enter Your Details
+                  </h4>
 
-                      <!-- Add your login form fields here -->
-                      <div class="bor8 m-b-20 how-pos4-parent">
-                          <input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="username" placeholder="Username">
-                          
-                      </div>
-                      
-                      <div class="bor8 m-b-20 how-pos4-parent">
-                          <input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="password" name="password" placeholder="Password">
-                         
-                      </div>
+                    <!-- Username Field -->
+                    <div class="bor8 m-b-20 how-pos4-parent">
+                        <input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="username" placeholder="Username">
+                    </div>
+                   <!-- Password Field -->
 
-                      <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-                          Login
-                      </button>
-                      <p class="stext-107 cl6 txt-center p-t-8">
+                <!-- Password Field -->
+                <div class="bor8 m-b-20 how-pos4-parent relative" style="display: flex; align-items: center;">
+                    <input id="password" class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="password" name="password" placeholder="Password" style="flex: 1;">
+                    <!-- Show Password Checkbox -->
+                    <div class="show-password-icon cursor-pointer m-r-10" onclick="togglePasswordVisibility()">
+                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye" style="width: 14px; height: 14px;">
+                            <path d="M12 4C7 4 2.8 7 1 12a9 9 0 0 0 22 0c-1.8-5-6.9-8-11-8zM12 17a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+
+                    <!-- Login Button -->
+                    <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+                        Login
+                    </button>
+                    <!-- Register Link -->
+                    <p class="stext-107 cl6 txt-center p-t-8">
                         If you don't have an account yet, <a href="/user/register" class="cl2">Please Register</a>.
                     </p>
+                    <!-- Forgot Password Link -->
                     <p class="stext-107 cl6 txt-center p-t-8">
                         <a href="/user/forgot-password" class="cl2">Forgot Password?</a>
                     </p>
-                  </form>
-              </div>
+                </form>
+            </div>
 
-              <div class="size-210 bor10 flex-w flex-col-m p-lr-93 p-tb-30 p-lr-15-lg w-full-md">
-                
-                    <div class="how-bor1 ">
-                        <div class="hov-img0">
-                            <img src="images/about-01.jpg" alt="IMG">
-                        </div>
+            <div class="size-210 bor10 flex-w flex-col-m p-lr-93 p-tb-30 p-lr-15-lg w-full-md">
+                <div class="how-bor1 ">
+                    <div class="hov-img0">
+                        <img src="images/about-01.jpg" alt="IMG">
                     </div>
                 </div>
-              
-          </div>
-      </div>
-  </section>	
+            </div>
+        </div>
+    </div>
+</section>	
 
-  <!-- Footer -->
-  <%- include('../partials/footer') %>
+<!-- Footer -->
+<%- include('../partials/footer') %>
+
+<script>
+    function togglePasswordVisibility() {
+        var passwordField = document.getElementById("password");
+        var icon = document.getElementById("eye-icon");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.setAttribute('data-icon', 'eye-off');
+            icon.innerHTML = '<path d="M23,12c0,0.1,0,0.1,0,0.2c-0.3,3.3-2.4,6.2-5.4,7.7c-0.6,0.4-1.3,0.8-2,1.1c-0.4,0.2-0.9,0.4-1.4,0.5c-1.5,0.3-3.1,0.3-4.6,0c-0.5-0.1-1-0.3-1.4-0.5c-0.7-0.3-1.4-0.7-2-1.1c-3-1.5-5.2-4.4-5.4-7.7c0-0.1,0-0.1,0-0.2c0-0.1,0-0.1,0-0.2c0.3-3.3,2.4-6.2,5.4-7.7c0.6-0.4,1.3-0.8,2-1.1c0.4-0.2,0.9-0.4,1.4-0.5c1.5-0.3,3.1-0.3,4.6,0c0.5,0.1,1,0.3,1.4,0.5c0.7,0.3,1.4,0.7,2,1.1c3,1.5,5.2,4.4,5.4,7.7C23,11.9,23,11.9,23,12z M12,5.5c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9c2.7,0,4.9-2.2,4.9-4.9C16.9,7.7,14.7,5.5,12,5.5z M12,15.5c-1.6,0-2.9-1.3-2.9-2.9c0-1.6,1.3-2.9,2.9-2.9c1.6,0,2.9,1.3,2.9,2.9C14.9,14.2,13.6,15.5,12,15.5z"></path>';
+        } else {
+            passwordField.type = "password";
+            icon.setAttribute('data-icon', 'eye');
+            icon.innerHTML = '<path d="M23,12c0,0.1,0,0.1,0,0.2c-0.3,3.3-2.4,6.2-5.4,7.7c-0.6,0.4-1.3,0.8-2,1.1c-0.4,0.2-0.9,0.4-1.4,0.5c-1.5,0.3-3.1,0.3-4.6,0c-0.5-0.1-1-0.3-1.4-0.5c-0.7-0.3-1.4-0.7-2-1.1c-3-1.5-5.2-4.4-5.4-7.7c0-0.1,0-0.1,0-0.2c0-0.1,0-0.1,0-0.2c0.3-3.3,2.4-6.2,5.4-7.7c0.6-0.4,1.3-0.8,2-1.1c0.4-0.2,0.9-0.4,1.4-0.5c1.5-0.3,3.1-0.3,4.6,0c0.5,0.1,1,0.3,1.4,0.5c0.7,0.3,1.4,0.7,2,1.1c3,1.5,5.2,4.4,5.4,7.7C23,11.9,23,11.9,23,12z M12,5.5c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9c2.7,0,4.9-2.2,4.9-4.9C16.9,7.7,14.7,5.5,12,5.5z M12,15.5c-1.6,0-2.9-1.3-2.9-2.9c0-1.6,1.3-2.9,2.9-2.9c1.6,0,2.9,1.3,2.9,2.9C14.9,14.2,13.6,15.5,12,15.5z M12,9.5c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S13.1,9.5,12,9.5z"></path>';
+        }
+    }
+    </script>

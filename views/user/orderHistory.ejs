@@ -1,4 +1,3 @@
-<!-- views/user/orderHistory.ejs -->
 <%- include('../partials/header') %>
 
 <div class="container mt-5">
@@ -12,43 +11,44 @@
         </div>
 
         <% if (orderHistory && orderHistory.length > 0) { %>
-          <div class="table-responsive " style="background-color: rgb(255, 255, 255);">
-            <table class="table table-bordered black-bordered-table">
-              <thead class="thead-dark">
-                <tr>
-                  <th scope="col">Order ID</th>
-                  <th scope="col">Order Date</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Payment Method</th>
-                  <th scope="col">Products</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% orderHistory.sort((a, b) => b.payment.orderDate - a.payment.orderDate).forEach((order) => { %>
-                  <!-- Sort the orderHistory array by order date in descending order -->
-                  <tr>
-                    <td><%= order.payment.orderId %></td>
-                    <td><%= order.payment.orderDate.toLocaleDateString() %></td>
-                    <td><%= order.payment.status %></td>
-                    <td><%= order.payment.paymentMethod %></td>
-                    <td>
-                      <div class="d-flex flex-wrap">
-                        <% order.items.forEach((item) => { %>
-                          <div class="how-itemcart1 m-r-15">
-                            <img src="<%= item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image" class="product-image">
-                            <p class="product-name"><%= item.product.name %></p>
-                            <p class="product-quantity">Qty: <%= item.quantity %></p>
-                          </div>
-                        <% }) %>
+          <div class="order-history">
+            <% orderHistory.sort((a, b) => b.payment.orderDate - a.payment.orderDate).forEach((order) => { %>
+              <!-- Sort the orderHistory array by order date in descending order -->
+              <div class="order-item">
+                <div class="order-header">
+                  <p class="order-status <% if (order.payment.status === 'delivered') { %>delivered<% } %>">Status: <%= order.payment.status %></p>
+                  <p class="order-date"><% if (order.payment.status === 'delivered') { %><span class="green">Delivered on <%= order.payment.orderDate.toLocaleDateString() %></span><% } else { %>Order Date: <%= order.payment.orderDate.toLocaleDateString() %><% } %></p>
+                </div>
+                <div class="order-products">
+                  <% order.items.forEach((item) => { %>
+                    <div class="product-item">
+                      <img src="<%= item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image" class="product-image">
+                      <div class="product-details">
+                        <p class="product-name"><%= item.product.name %></p>
+                        <p class="product-price">Price: <%= item.product.price %></p>
+                        <p class="product-quantity">Qty: <%= item.quantity %></p>
+                        <!-- Rating form displayed only for delivered orders -->
+                        <% if (order.payment.status === 'delivered') { %>
+                          <form id="ratingForm_<%= item.product._id %>" action="/user/submitRating" method="POST">
+                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                            <div class="rating">
+                              <% for (let i = 5; i >= 1; i--) { %>
+                                <input type="radio" id="star<%= i %>_<%= item.product._id %>" name="rating" value="<%= i %>" <% if (productrating[item.product._id].length > 0 && productrating[item.product._id][0].value === i) { %>checked<% } %> />
+                                <label for="star<%= i %>_<%= item.product._id %>">&#9733;</label>
+                              <% } %>
+                            </div>
+                            <button type="submit" class="submit-rating-btn">Submit Rating</button>
+                          </form>
+                        <% } %>
                       </div>
-                    </td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            <% }) %>
           </div>
         <% } else { %>
-          <p>No order history found.</p>
+          <p class="no-order">No order history found.</p>
         <% } %>
       </div>
     </div>
@@ -56,3 +56,143 @@
 </div>
 
 <%- include('../partials/footer') %>
+
+<style>
+/* Add this CSS to your existing styles or create a new CSS file */
+
+/* Main heading styles */
+.ltext-102 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Order item styles */
+.order-item {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+/* Order header styles */
+.order-header {
+  margin-bottom: 10px;
+}
+
+/* Order status styles */
+.order-status {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Order date styles */
+.order-date {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Delivered date styles */
+.green {
+  color: green;
+}
+
+/* Order products styles */
+.order-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+/* Product item styles */
+.product-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #dfd5d5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Product image styles */
+.product-image {
+  width: 100%;
+  height: auto;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Product details styles */
+.product-details {
+  padding: 10px;
+}
+
+/* Product name styles */
+.product-name {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Product quantity styles */
+.product-quantity {
+  margin-top: 0.5rem;
+  font-family: 'Roboto', sans-serif;
+  font-style: italic;
+  color: #666;
+}
+
+/* Rating form styles */
+form {
+  margin-top: 1rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  font-size: 20px;
+  color: #ffffff;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.rating label:hover,
+.rating input:checked ~ label {
+  color: #f39c12;
+}
+
+.submit-rating-btn {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #f39c12;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-rating-btn:hover {
+  background-color: #e67e22;
+}
+
+/* No order message styles */
+.no-order {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+}
+
+</style>

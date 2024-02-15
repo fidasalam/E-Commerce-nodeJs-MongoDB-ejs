@@ -21,10 +21,12 @@ const productHelper = require('../helpers/productHelper');
 exports.displayAdmin = async (req, res) => {
   try {
 
-    const salesData = await productHelper.getProductSalesByMonth();
-    const totalSalesArray = salesData.map(item => item.totalSales); // Extract totalSales values
-    console.log('Total Sales Array:', totalSalesArray); // Log the array for debugging
-    res.render('admin/index', {salesData: totalSalesArray });
+    const salesData = await orderHelper.getProductSalesByMonth();
+     const totalSalesArray = salesData.map(item => item.totalSales); 
+     const incomeData = await orderHelper.getProductIncomeByMonth();
+     const totalIncomeArray = incomeData.map(item => item.totalIncome);
+ 
+     res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray });
 
   } catch (error) {
     console.error('Error rendering admin page:', error);
@@ -75,6 +77,7 @@ exports.displayProduct = async (req, res) => {
     } else {
       products = await ProductHelper.getAllProducts();
     }
+    await Product.populate(products, { path: 'coupon' });
 
     res.render('admin/products', { products, selectedCategory: categoryParam });
   } catch (error) {
@@ -269,6 +272,33 @@ console.log('After deleteProductById call');
     }
 };
   
+
+exports.postProductCoupon = async(req, res) => {
+  const productId = req.body.productId;
+  const couponCode = req.body.couponCode;
+  console.log('prod',productId)
+  console.log('coup',couponCode)
+
+  const product = await Product.findById(productId);
+  const coupon = await Coupon.findOne({ code: couponCode });
+
+  if (couponCode=='remove') {
+    product.coupon = undefined;
+    await product.save();
+    return res.status(200).json({ message: 'Coupon removed from product successfully' });
+  }
+  // if (!coupon) {
+  //   return res.status(404).json({ error: 'Coupon not found' });
+  // }
+  product.coupon = coupon;
+
+  // Save the updated product to the database
+  await product.save();
+  console.log('prod:',product)
+  return res.status(200).json({ message: 'Coupon added to product successfully' });
+
+};
+
 
 exports.renderUsersList = async (req, res) => {
   try {

@@ -14,9 +14,8 @@
                                 <th scope="col">Username</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Role</th>
-                                <th scope="col"></th>
-                                <th scope="col"></th>
-                                <th scope="col"></th>
+                                <th scope="col">Block/Unblock</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -24,23 +23,20 @@
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td>
-                                         <a href="#" class="show-details-link" data-bs-toggle="modal" data-bs-target="#userDetailsModal<%= user._id %>" style="text-decoration: none;color: #ffffff;">
+                                        <a href="#" class="show-details-link" data-bs-toggle="modal" data-bs-target="#userDetailsModal<%= user._id %>" style="text-decoration: none;color: #ffffff;">
                                             <%= user.username %>
-                                         </a>
+                                        </a>
                                     </td>
                                     <td><%= user.email %></td>
                                     <td><%= user.role %></td>
-                                    <!-- Add this button inside your user list table -->
                                     <td>
                                         <button class="toggle-block-btn" data-user-id="<%= user._id %>">
                                             <%= user.isBlocked ? 'Unblock' : 'Block' %>
                                         </button>
                                     </td>
-
                                     <td>
                                         <a href="/admin/delete-user/<%= user._id %>" class="toggle-block-btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
                                     </td>
-
                                     <!-- Modal for user details -->
                                     <div class="modal fade" id="userDetailsModal<%= user._id %>" tabindex="-1" aria-labelledby="userDetailsModalLabel<%= user._id %>" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -56,8 +52,6 @@
                                                     <p>Role: <%= user.role %></p>
                                                     <p>Phone: <%= user.phone %></p>
                                                     <p>Address: <%= user.address %></p>
-
-
                                                     <!-- Add more details as needed -->
                                                 </div>
                                                 <div class="modal-footer">
@@ -71,7 +65,6 @@
                         </tbody>
                     </table>
                 </div>
-
                 <a href="/admin/add-user" class="btn btn-primary btn-block text-uppercase mb-3">Add new user</a>
             </div>
         </div>
@@ -79,25 +72,6 @@
 </div>
 
 <!-- Add this script at the bottom of your user list view -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const toggleButtons = document.querySelectorAll('.toggle-block-btn');
-      const showDetailsButtons = document.querySelectorAll('.show-details-btn');
-  
-      toggleButtons.forEach(button => {
-        button.addEventListener('click', async function () {
-          // ... (rest of your toggle block code)
-        });
-      });
-
-      showDetailsButtons.forEach(button => {
-        button.addEventListener('click', function () {
-          // Modal will be triggered automatically
-        });
-      });
-    });
-</script>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -133,5 +107,45 @@
         });
     });
 </script>
+
+<style>
+    /* Add this CSS to your existing styles */
+
+    .toggle-block-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #fff;
+        background-color: #2c2b2b;
+    }
+
+    .toggle-block-btn:hover {
+        background-color: #404141;
+    }
+
+    .toggle-block-btn:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .toggle-block-btn:active {
+        transform: translateY(1px);
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .modal-title {
+        font-weight: bold;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+</style>
 
 <%- include('../partials/adminfooter') %>

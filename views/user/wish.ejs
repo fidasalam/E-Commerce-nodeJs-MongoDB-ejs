@@ -41,10 +41,26 @@
                                                         <td class="column-2">
                                                             <%= item.product ? item.product.name : '' %>
                                                         </td>
+                                                       
                                                         <td class="column-3">
-                                                            <%= item.product ? ('₹ ' + (item.product.price || 0).toFixed(2)) : '' %>
+                                                            <!-- Add price container here -->
+                                                            <div class="price-container">
+                                                                <% if (item.product.coupon) { %>
+                                                                    <span class="stext-105 cl3 original-price">
+                                                                        ₹<%= item.product.price %>
+                                                                    </span>
+                                                                    <br>
+                                                                    <span class="stext-105 cl3 discount-info">
+                                                                        ₹<%= (item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100)).toFixed(0) %><br>
+                                                                        (<span class="discount-percentage"><%= item.product.coupon.discountPercentage %>% Off</span>)
+                                                                    </span>
+                                                                <% } else { %>
+                                                                    <span class="stext-105 cl3">
+                                                                        ₹<%= item.product.price %>
+                                                                    </span>
+                                                                <% } %>
+                                                            </div>
                                                         </td>
-
                                                         <!-- <td class="column-4">
                                                             <select id="size_<%= item.product._id %>" name="size" class="flex-c-m stext-101 cl0 bg2 bor1 hov-btn1 p-lr-15 trans-04 custom-select ml-3">
                                                                 <option value="S">S</option>
@@ -125,5 +141,19 @@
         });
     }
 </script>
+<style>
+    .price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    display: inline-block;
+    color: red;
+}
+</style>
 
 <%- include('../partials/footer') %>

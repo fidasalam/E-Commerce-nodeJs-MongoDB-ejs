@@ -9,95 +9,114 @@
         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col ">
             <div class="tm-bg-primary-dark tm-block">
                 <h2 class="tm-block-title">Sales Chart</h2>
-                <!-- Move the script here to ensure it's after the canvas -->
-                <canvas id="barChart"></canvas>
+                <!-- Render canvas for the sales chart -->
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block">
+                <h2 class="tm-block-title">Income Chart</h2>
+                <!-- Render canvas for the income chart -->
+                <canvas id="incomeChart"></canvas>
             </div>
         </div>
       </div>
+      
     </div>
   </div>
 </div>
-
-<%- include('../partials/adminfooter') %>
 
 <!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-const width_threshold = 480;
-const salesData = <%= JSON.stringify(salesData) %>;
-function drawBarChart() {
-  if ($("#barChart").length) {
-    ctxBar = document.getElementById("barChart").getContext("2d");
-    optionsBar = {
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: 'white', // Set font color for y-axis labels
-            beginAtZero: true
-          },
-          gridLines: {
-            color: 'rgba(255, 255, 255, 0.2)' // Set color for y-axis grid lines
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Sales",
-            fontColor: 'white' // Set font color for y-axis label
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            fontColor: 'white' // Set font color for x-axis labels
-          },
-          gridLines: {
-            color: 'rgba(255, 255, 255, 0.2)' // Set color for x-axis grid lines
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Month",
-            fontColor: 'white' // Set font color for x-axis label
-          }
-        }]
-      }
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    // Retrieve sales data
+    const salesData = <%= JSON.stringify(salesData) %>;
 
-    // Set aspect ratio based on window width
-    optionsBar.maintainAspectRatio =
-      $(window).width() < width_threshold ? false : true;
-    
-    configBar = {
-      type: "bar",
-      data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December"
-        ],
-        datasets: [{
-          label: "Sales",
-          data: salesData,
-          backgroundColor: "rgba(75, 192, 192, 0.8)", // Set background color for bars
-          borderWidth: 1 // Set border width
-        }]
-      },
-      options: optionsBar
-    };
+    // Get canvas element for sales chart
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
 
-    barChart = new Chart(ctxBar, configBar);
-  }
-}
+    // Create line chart for sales
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [{
+                label: 'Total Sales',
+                data: salesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Transparent blue color for fill
+                borderColor: 'rgba(54, 162, 235, 1)', // Blue color for line
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'rgba(255, 255, 255, 1)' // Font color for y-axis labels
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'rgba(255, 255, 255, 1)' // Font color for x-axis labels
+                    }
+                }]
+            },
+            legend: {
+                labels: {
+                    fontColor: 'rgba(255, 255, 255, 1)' // Font color for legend labels
+                }
+            }
+        }
+    });
 
-// Call drawBarChart after DOM has fully loaded
-$(document).ready(function() {
-  drawBarChart();
+    // Retrieve income data
+    const incomeData = <%= JSON.stringify(incomeData) %>;
+
+    // Get canvas element for income chart
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+
+    // Create line chart for income
+    const incomeChart = new Chart(incomeCtx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [{
+                label: 'Total Income',
+                data: incomeData,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', // Transparent red color for fill
+                borderColor: 'rgba(255, 99, 132, 1)', // Red color for line
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'rgba(255, 255, 255, 1)' // Font color for y-axis labels
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'rgba(255, 255, 255, 1)' // Font color for x-axis labels
+                    }
+                }]
+            },
+            legend: {
+                labels: {
+                    fontColor: 'rgba(255, 255, 255, 1)' // Font color for legend labels
+                }
+            }
+        }
+    });
+
+    // Debugging: Log if the charts are created successfully
+    console.log('Sales chart created:', salesChart);
+    console.log('Income chart created:', incomeChart);
 });
 </script>
+
+<%- include('../partials/adminfooter') %>

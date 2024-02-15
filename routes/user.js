@@ -49,6 +49,7 @@ router.post('/addToCart/:productId',getUser,userController.addToCart);
 router.get('/filter',getUser,userController.filterProducts);
 
 // Search Routes
+router.post('/search/suggestions', getUser, userController.searchSuggestions);
 router.get('/search', getUser, userController.renderSearchProducts);
 router.post('/search', getUser, userController.searchProducts);
 
@@ -61,10 +62,20 @@ router.delete('/wishlist/:productId', getUser, userController.removeWishlist);
 // Coupon Routes
 router.post('/apply-coupon', isAuth, getUser, userController.applyCoupon);
 router.post('/coupons', isAuth, getUser, userController.handleCoupon);
+router.post('/remove-coupon', isAuth, getUser, userController.removeCoupon);
 
 // Checkout Routes
 router.get('/checkout',  isAuth, getUser, userController.renderCheckout);
 router.post('/checkout', isAuth, getUser, userController.handleCheckout);
+// Address
+router.get('/add-address',  isAuth, getUser, userController.getAddAddress);
+router.post('/add-address',  isAuth, getUser, userController.addAddress);
+router.post('/updateaddress',  isAuth, getUser, userController.updateAddress);
+router.get('/delete-address/:index',  isAuth, getUser, userController.deleteAddress);
+router.post('/set-default-address/:index',  isAuth, getUser, userController.setDefault);
+
+router.post('/submitRating',  isAuth, getUser, userController.submitRating);
+
 
 // Payment Routes
 router.post('/stripePayment', getUser, userController.handleStripePayment);

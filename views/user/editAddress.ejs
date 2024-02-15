@@ -1,0 +1,364 @@
+<!-- Font Awesome library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<%- include('../partials/header') %>
+<!-- Display existing addresses -->
+
+<div class="container mt-5">
+    
+    
+    <section class="bg0 p-t-23 p-b-140">
+      <div class="container">
+        <div class="p-b-10 text-center">
+          <h3 class="ltext-101 cl4">
+          Shipping Address 
+          </h3>
+        </div>
+  
+        <div class="container checkout-container">
+          
+            <div class="col-l-12">
+<div class="address-container">
+  <% userDetails.shippingAddresses.forEach((address, index) => { %>
+    <div class="address-item">
+      <h4>Address <%= index + 1 %></h4>
+      <div class="address-details">
+        <p><strong>Street Address:</strong> <%= address.street %></p>
+        <p><strong>City:</strong> <%= address.city %></p>
+        <p><strong>State:</strong> <%= address.state %></p>
+        <p><strong>Postal Code:</strong> <%= address.postalCode %></p>
+      </div>
+      <div class="action-icons">
+        <div class="checkbox-label">
+            <input type="checkbox" id="default-address-<%= index %>" name="defaultAddress" <%= address.default ? 'checked' : '' %> onclick="setDefaultAddress(<%= index %>)">
+            <label for="default-address-<%= index %>">Default</label>
+        </div>
+        <button type="button" class="edit-address-btn" onclick="displayEditForm(<%= index %>)"><i class="fas fa-edit"></i></button>
+        <a href="/user/delete-address/<%= index %>" class="delete-address-btn" title="Delete"><i class="fas fa-trash"></i></a>
+        
+      </div>
+      <form action="/user/updateAddress" method="POST" style="display: none;" class="edit-address-form" id="edit-address-form-<%= index %>">
+        <h4>Edit Address <%= index + 1 %></h4>
+        <button type="button" class="close-icon" onclick="closeEditForm(<%= index %>)"><i class="fas fa-times"></i></button>
+        <input type="hidden" name="index" value="<%= index %>">
+        <div class="address-details">
+            <input type="text" id="edit-street-<%= index %>" name="street" placeholder="Street Address" value="<%= address.street %>" required>
+            <input type="text" id="edit-city-<%= index %>" name="city" placeholder="City" value="<%= address.city %>" required>
+            <input type="text" id="edit-state-<%= index %>" name="state" placeholder="State" value="<%= address.state %>" required>
+            <input type="text" id="edit-postalCode-<%= index %>" name="postalCode" placeholder="Postal Code" value="<%= address.postalCode %>" required>
+        </div>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  <% }); %>
+</div>
+
+<!-- Add Address Button -->
+<button type="button" id="addAddressBtn" class="add-address-btn">Add New Address</button>
+
+<!-- Form to add new address -->
+<form action="/user/add-address" method="POST" style="display: none;" id="addAddressForm">
+    
+  <h2>Add New Address</h2>
+  
+  <div class="address-details">
+    <input type="text" id="street" name="street" placeholder="Street Address" required>
+    <input type="text" id="city" name="city" placeholder="City" required>
+    <input type="text" id="state" name="state" placeholder="State" required>
+    <input type="text" id="postalCode" name="postalCode" placeholder="Postal Code" required>
+  </div>
+  <button type="submit">Add</button>
+ 
+</form>
+</div>
+</div>
+
+
+</div>
+<div class="flex-c-m flex-w w-full p-t-45 text-center">
+    <a href="/user/checkout" onclick="return checkDefaultAddress()" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+        Back To Checkout
+    </a>
+</div>
+
+</section>
+
+</div>
+
+
+<!-- Script to toggle visibility of add address form -->
+<script>
+  document.getElementById('addAddressBtn').addEventListener('click', function() {
+    document.getElementById('addAddressForm').style.display = 'block';
+  });
+
+  async function setDefaultAddress(index) {
+    // Uncheck all other default address checkboxes
+    const defaultCheckboxes = document.querySelectorAll('input[name="defaultAddress"]');
+    defaultCheckboxes.forEach((checkbox, i) => {
+      if (i !== index) {
+        checkbox.checked = false;
+      }
+    });
+
+    // Make a POST request to set the default address
+    const response = await fetch(`/user/set-default-address/${index}`, {
+      method: 'POST'
+    });
+    if (response.ok) {
+      console.log('Default address set successfully.');
+    } else {
+      console.error('Failed to set default address.');
+    }
+  }
+
+  function displayEditForm(index) {
+    // Hide all other edit forms before displaying the current one
+    const editForms = document.querySelectorAll('.edit-address-form');
+    editForms.forEach(form => {
+      form.style.display = 'none';
+    });
+
+    // Display the edit form for the selected address
+    const editForm = document.getElementById('edit-address-form-' + index);
+    editForm.style.display = 'block';
+  }
+  function closeAddAddressForm() {
+    document.getElementById('addAddressForm').style.display = 'none';
+  }
+  function closeEditForm(index) {
+    const editForm = document.getElementById('edit-address-form-' + index);
+    editForm.style.display = 'none';
+  }
+  
+</script>
+<script>
+    // Function to hide edit and add address forms when clicking outside them
+    document.addEventListener('click', function(event) {
+      const editForms = document.querySelectorAll('.edit-address-form');
+      const addAddressForm = document.getElementById('addAddressForm');
+      
+      // Check if the click was outside any of the edit forms or the add address form
+      if (!event.target.closest('.edit-address-form') && event.target.id !== 'addAddressBtn' && !event.target.closest('#addAddressForm')) {
+        // Hide all edit forms and add address form
+        // editForms.forEach(form => {
+        //   form.style.display = 'none';
+        // });
+        addAddressForm.style.display = 'none';
+      }
+    });
+  
+    // Function to display the add address form when clicking the add address button
+    document.getElementById('addAddressBtn').addEventListener('click', function() {
+      document.getElementById('addAddressForm').style.display = 'block';
+    });
+  
+    // Function to set the default address
+    async function setDefaultAddress(index) {
+      // Uncheck all other default address checkboxes
+      const defaultCheckboxes = document.querySelectorAll('input[name="defaultAddress"]');
+      defaultCheckboxes.forEach((checkbox, i) => {
+        if (i !== index) {
+          checkbox.checked = false;
+        }
+      });
+  
+      // Make a POST request to set the default address
+      const response = await fetch(`/user/set-default-address/${index}`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        console.log('Default address set successfully.');
+      } else {
+        console.error('Failed to set default address.');
+      }
+    }
+  
+    // Function to display the edit form for a specific address
+    function displayEditForm(index) {
+      const editForm = document.getElementById('edit-address-form-' + index);
+      // Toggle the display of the edit form
+      editForm.style.display = editForm.style.display === 'block' ? 'none' : 'block';
+    }
+    function checkDefaultAddress() {
+    const defaultCheckboxes = document.querySelectorAll('input[name="defaultAddress"]');
+    let defaultAddressSet = false;
+    defaultCheckboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        defaultAddressSet = true;
+      }
+    });
+    if (!defaultAddressSet) {
+      alert("Please set at least one address as default before proceeding to checkout.");
+      return false; // Prevent the link from navigating if no default address is set
+    }
+    return true; // Allow navigation if at least one default address is set
+  }
+
+  </script>
+  
+<style>
+   /* General styles */
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+/* Address item container */
+.address-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Address item */
+.address-item {
+  width: 48%;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.address-item h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Address details */
+.address-details p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Action icons */
+.action-icons {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.action-icons button, .action-icons a {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #999;
+  transition: color 0.3s;
+}
+
+.action-icons button:hover, .action-icons a:hover {
+  color: #333;
+}
+
+/* Edit address form */
+.edit-address-form {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-address-form h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.edit-address-form input[type="text"] {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.edit-address-form button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-address-form button[type="submit"]:hover {
+  background-color: #333;
+}
+
+/* Add address button */
+.add-address-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-address-btn:hover {
+  background-color: #333;
+}
+
+/* Add address form */
+#addAddressForm {
+  display: none;
+  margin-top: 20px;
+}
+
+#addAddressForm h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#addAddressForm .address-details input[type="text"] {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#addAddressForm button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#addAddressForm button[type="submit"]:hover {
+  background-color: #333;
+}
+
+
+  </style>
+<%- include('../partials/footer') %>

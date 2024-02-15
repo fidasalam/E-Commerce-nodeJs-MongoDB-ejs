@@ -2,9 +2,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usermodel');
 const Message = require('../models/message')
-
+const nodemailerConfig=require('../config/nodemailerConfig')
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport(nodemailerConfig);
+const otpGenerator = require('otp-generator');
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
 
+function generateOTP() {
+  return otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
+}
 
 
 module.exports = {
@@ -54,7 +60,7 @@ module.exports = {
 
 
   registerUser: async (userData) => {
-    const { username, email, password, name,phone,address} = userData;
+    const { username, email, password, name,phone,otp} = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       username,
@@ -62,6 +68,7 @@ module.exports = {
       password: hashedPassword,
       name,
       phone,
+      otp
     
     
     });
@@ -169,12 +176,82 @@ updateUserPassword: async(email, newPassword) =>{
     const newMessage = new Message({ msg, email });
     await newMessage.save();
     return newMessage; // Optionally, you can return the saved message object
+  },
+  defaultShippingAddress:async(userId)=>
+  {
+  const defaultShippingAddress = userId.shippingAddresses.find(shippingAddress => shippingAddress.default === true);
+    return defaultShippingAddress;
+  },
+
+  sendRegistrationOTP: async (email) => {
+    const user =  await User.findOne({ email });
+    if (!user) {
+    console.log('User not found. Please check the email address.');
+    }
+    const otp = generateOTP();
+    if (user) {
+        user.otp = otp;
+        await user.save();
+    }
+       const mailOptions = {
+      to: email,
+      subject: 'Forgot Password OTP',
+      text: `Your OTP for password reset is: ${otp}`
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.log(error);
+            return res.status(500).send('Error sending OTP via email.');
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+},
+verifyOTP: async (email, otp) => {
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      console.log('User not found. Please check the email address.');
+      return false; // Return false if user not found
+    }
+
+    if (otp === user.otp) {
+      return 'success'; // Return true if OTP matches
+    } else {
+      return 'failed'; // Return false if OTP doesn't match
+    }
+  } catch (error) {
+    console.error(error);
+    return false; // Return false in case of any error
   }
+},
 
-  
-};
+  sendRegistrationEmail: async (email) => {
+    const otp = generateOTP();
+    
+       const mailOptions = {
+      to: email,
+      subject: 'Forgot Password OTP',
+      text: `Your OTP for password reset is: ${otp}`
+    };
+    
+    return new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+          console.error(error);
+          reject(new Error('Error sending OTP via email.'));
+        } else {
+          console.log('Email sent: ' + info.response);
+          resolve(otp); // Resolve with the OTP when the email is sent successfully
+        }
+      });
+    });
 
+},
 
+  }
 
 
 

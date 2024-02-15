@@ -40,9 +40,23 @@
                         <%= product.name %>
                     </h4>
 
-                    <span class="mtext-106 cl2">
-                        ₹<%= product.price %>
-                    </span>
+                    <div class="price-container">
+                        <% if (product.coupon) { %>
+                            <span class="stext-105 cl3 original-price">
+                                ₹<%= product.price %>
+                            </span>
+                            <br>
+                            <span class="stext-105 cl3 discount-info">
+                                ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
+                            </span>
+                        <% } else { %>
+                            <span class="stext-105 cl3">
+                                ₹<%= product.price %>
+                            </span>
+                        <% } %>
+                    </div>
+                    
 
                     <p class="stext-102 cl3 p-t-23">
                         <%= product.description %>
@@ -87,7 +101,9 @@
                 
             </div>
         </form>
-        <!-- ... (other code remains unchanged) ... -->
+        
+        </div>
+        
     </div>
 </section>
 
@@ -98,6 +114,39 @@
        
     </div>
 </section>
+<div>
+    <div>
+       <div class="ratings-container mb-4 ml-5">
+        <div class="col-md-4">
+    <h5 class="mtext-105 cl2 js-name-detail p-b-14 mt">Ratings</h5>
+    <% if (rating) { %>
+        <div class="rating-stars">
+            <% Object.entries(rating.ratings).forEach(([stars, count]) => { %>
+                <div class="rating-star">
+                   
+                    
+                    <div class="progress">
+                        <span class="star-count"><%= stars %>  </span>
+                    <span class="star-symbol">&#9733;</span>
+                    
+                        <div class="progress-bar" role="progressbar" style="background-color:#717fe0;width: <%= (count / rating.totalRatings * 100) %>%" aria-valuenow="<%= count %>" aria-valuemin="0" aria-valuemax="<%= rating.totalRatings %>"></div>
+                        <span class="star-count"> <%= count %></span>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        <div class="col-md-6">
+            <% if (rating) { %>
+                <p class="average-rating text-center mt-3"><strong>Average Rating:</strong> <%= rating.averageRating.toFixed(1) %>      <span class="star-symbol">&#9733;</span></p>
+            <% } %>
+        </div>
+    <% } else { %>
+        <p>No ratings available yet.</p>
+    <% } %>
+</div>
+
+    </div>
+    
      
 <script>
 
@@ -173,6 +222,45 @@ function toggleWishlist(wishlistButton) {
     padding: 15px; /* Some padding */
     border-radius: 5px; /* Rounded corners */
     display: none; /* Initially hidden */
+}
+.price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    color: red;
+}
+
+.ratings-container {
+    margin-top: 20px;
+}
+
+.rating-stars {
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-star {
+    margin-bottom: 5px;
+}
+
+.star-symbol {
+    font-size: 24px;
+    color: #f39c12; /* Color of the star */
+}
+
+.star-count {
+    margin-left: 5px;
+    color: #333; /* Color of the count */
+}
+
+.average-rating {
+    margin-top: 10px;
+    color: #333; /* Color of the average rating */
 }
 
 </style>

@@ -9,10 +9,7 @@ const productSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
-    // image: {
-    //     type: String,
-    //     required: true,
-    // },
+  
     images: [{
         type: String,
         required: true,
@@ -49,7 +46,19 @@ const productSchema = mongoose.Schema({
     isFeatured:{
         type:Boolean,
         default:false,
-    }})
+    },
+    coupon: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon',
+        default: null,
+    },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5, // Assuming a rating scale from 0 to 5
+    },
+})
 
 
 module.exports = mongoose.model('Product', productSchema);

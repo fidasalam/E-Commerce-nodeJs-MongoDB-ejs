@@ -20,6 +20,7 @@ router.get('/register', adminController.getRegisterAdmin);
 router.post('/register', adminController.postRegisterAdmin);
 router.get('/coupen', adminController.getAddCoupon);
 router.post('/add-coupon', adminController.postAddCoupon);
+router.post('/add-productCoupon', adminController.postProductCoupon);
 
 // User Management Routes
 router.get('/userlist', adminController.renderUsersList);

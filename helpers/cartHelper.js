@@ -40,7 +40,7 @@ async function addToCart(userId, productId, quantity) {
         
       });
     }
-
+   
     const savedCart = await cart.save();
     return savedCart;
   } catch (error) {
@@ -64,11 +64,14 @@ async function findCouponByCode(couponCode){
 
 async function getCart(userId) {
     try {
-      console.log('guest:',userId)
+  
       const cart = await Cart.findOne({ user: userId }).populate({
         path: 'items.product',
-        model: 'Product'
-      }).exec();
+        populate: {
+            path: 'coupon',
+            model: 'Coupon'
+        }
+    }).exec();
       return cart;
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -117,10 +120,15 @@ async function getCart(userId) {
     for (const item of cart.items) {
       // Ensure both quantity and price are present and are numbers
       if (typeof item.quantity === 'number' && typeof item.product.price === 'number') {
-        subtotal += item.quantity * item.product.price;
-      }
+        if (item.product.coupon) {
+            const discountedPrice = item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100);
+            subtotal += item.quantity * discountedPrice;
+        } else {
+            subtotal += item.quantity * item.product.price;
+        }
     }
-    return subtotal;
+}
+return subtotal;
   };
 
   async function mergecart(user, guestCart) {
@@ -223,15 +231,63 @@ async function getWishlistCount(userId){
   return wishlistCount;
 };
 
+async function deleteCart(cart){
+  await Cart.findByIdAndDelete(cart);
+};
+
+async function updateCartTotals(cart, subtotal, discountedTotal){
+  try {
+    cart.subtotal = subtotal;
+    cart.total = discountedTotal;
+    await cart.save();
+    console.log('Cart updated with subtotal and discounted total:', cart);
+  } catch (error) {
+    console.error('Error updating cart with subtotal and discounted total:', error);
+    throw new Error('Failed to update cart totals');
+  }
+};
+
+async function updateItemQuantity (cart, itemIndex, newQuantity) {
+  try {
+ 
+    const cartItem = cart.items[itemIndex - 1];
+    cartItem.quantity = newQuantity;
+    await cart.save();
+    console.log('Cart item quantity updated:', cartItem);
+    return cart; // Return the updated cart
+  } catch (error) {
+    console.error('Error updating cart item quantity:', error);
+    throw new Error('Failed to update cart item quantity');
+  }
+};
+
+const removeProductFromCart = async (cart, productId) => {
+  try {
+    // Filter out the product with the given productId from the cart items
+    cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+    await cart.save();
+    console.log('Product removed from cart:', productId);
+    return cart; // Return the updated cart
+  } catch (error) {
+    console.error('Error removing product from cart:', error);
+    throw new Error('Failed to remove product from cart');
+  }
+};
 
 async function applyCouponToCart(userId, cart){
   try {
+    
+  
+
     const userOrders = await Order.find({ user: userId });
     const hasOrderHistory = userOrders.length > 0;
     const subtotal = calculateSubtotal(cart);
     const subtotalGreaterThan1000 = parseFloat(subtotal) > 1000;
     let coupon = null;
+    const hasUsedCoupon = userOrders.some(order => order.appliedCoupon);
 
+    // Check conditions and select appropriate coupon
+    if (!hasUsedCoupon) {
     // Check conditions and select appropriate coupon
     if (!hasOrderHistory && subtotalGreaterThan1000) {
       coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
@@ -239,14 +295,10 @@ async function applyCouponToCart(userId, cart){
       coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
     } else if (subtotalGreaterThan1000) {
       coupon = await Coupon.findOne({ code: 'DISCOUNT10', validityPeriod: { $gte: new Date() } });
-    }
+    }}
 
-    // Check if user already used the coupon
-    const userCoupon = await Coupon.findOne({ userId, coupon });
-    if (userCoupon) {
-      coupon = null;
-      
-    }
+   
+  
 
     return coupon;
   } catch (error) {
@@ -257,6 +309,7 @@ async function applyCouponToCart(userId, cart){
 };
   
 module.exports = {
-  getWishlistCount, getCartCount,mergecart,count,applyCouponToCart,findCouponByCode,
+  updateCartTotals,updateItemQuantity,removeProductFromCart,
+ deleteCart, getWishlistCount, getCartCount,mergecart,count,applyCouponToCart,findCouponByCode,
 removeFromCart, getCartProducts,addToCart,getCart,calculateSubtotal,updateCart, calculateDiscountedTotal,
 };

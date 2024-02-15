@@ -11,7 +11,7 @@
         <!-- This is the new category filter checkbox -->
         
 
-        <form id="deleteProductsForm" action="/admin/delete-products" method="POST">
+        <!-- <form id="deleteProductsForm" action="/admin/delete-products" method="POST"> -->
 
         <div class="tm-product-table-container">
           <table class="table table-hover tm-table-small tm-product-table">
@@ -23,6 +23,8 @@
                 <th scope="col">CATEGORY</th>
                 <th scope="col">IN STOCK</th>
                 <th scope="col">PRICE</th>
+                <th scope="col">COUPON</th>
+                <th scope="col">ADD COUPON</th>
                 <th scope="col">&nbsp;</th>
                 <select id="categorySelect" class="form-control form-control-sm" onchange="filterByCategory(this.value)">
                   <option value="All">Select Categories</option>
@@ -55,7 +57,16 @@
                     <% } %>
                   </td>
                   <td>₹<%= product.price %></td>
-
+                  <td><%= product.coupon ? product.coupon.code : 'No coupon applied' %></td>
+                  <td>
+                    <form class="add-coupon-form">
+                      <input type="hidden" name="productId" value="<%= product._id %>">
+                      <div class="form-group">
+                        <label for="couponCode_<%= product._id %>">Coupon Code:</label>
+                        <input type="text" class="form-control coupon-code-input" id="couponCode_<%= product._id %>" name="couponCode">
+                      </div>
+                    </form>
+                  </td>
                   <td>
                     <a href="/admin/edit-product/<%= product._id %>" class="tm-product-delete-link">
                       <i class="far fa-edit tm-product-delete-icon"></i>
@@ -80,3 +91,32 @@
 </div>
 
 <%- include('../partials/adminfooter') %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.add-coupon-form').submit(function(event) {
+      event.preventDefault();
+
+      var formData = $(this).serialize();
+      var productId = $(this).find('input[name="productId"]').val();
+      var couponCode = $(this).find('input[name="couponCode"]').val();
+      
+      // Add product ID and coupon code to the serialized data
+      formData += '&productId=' + productId + '&couponCode=' + couponCode;
+
+      $.ajax({
+        type: 'POST',
+        url: '/admin/add-productCoupon',
+        data: formData,
+        success: function(response) {
+          alert('Coupon added successfully!');
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+          alert('Error adding coupon: ' + error);
+        }
+      });
+    });
+  });
+</script>
+

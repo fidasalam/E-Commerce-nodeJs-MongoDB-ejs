@@ -4,7 +4,9 @@ const User = require('../models/usermodel');
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const Order = require('../models/order')
+const Order = require('../models/order');
+const product = require('../models/product');
+const Rating = require('../models/rating');
 
 module.exports = {
 
@@ -58,6 +60,18 @@ module.exports = {
       throw new Error('Error fetching all categories');
     }
   },
+
+  
+  getProductsByName : async (productName) => {
+    try {
+      const products = await Product.find({ name: { $regex: `^${productName}`, $options: 'i' } });
+      return products;
+    } catch (error) {
+      throw new Error('Error fetching products');
+    }
+  },
+
+
   getProductsByCategoryName: async (categoryName) => {
     try {
       const selectedCategory = await Category.findOne({ name: categoryName });
@@ -66,7 +80,7 @@ module.exports = {
         return [];
       }
 
-      const products = await Product.find({ category: selectedCategory._id }).populate('category').lean();
+      const products = await Product.find({ category: selectedCategory._id }).populate('coupon').lean();
       return products;
     } catch (error) {
       throw new Error('Error fetching products by category');
@@ -162,7 +176,7 @@ module.exports = {
 
     try {
       
-        const searchResults = await Product.find({ name: regex });
+        const searchResults = await Product.find({ name: regex }).populate('coupon');
         return searchResults;
     } catch (error) {
         console.error(error);
@@ -170,63 +184,30 @@ module.exports = {
     }
 },
 
-
-
-getProductSalesByMonth: async () => {
+getProductRatings: async ( productId) => {
   try {
-    const salesData = await Order.aggregate([
-      {
-        $unwind: '$items' // Unwind the items array to work with each product separately
-      },
-      {
-        $group: {
-          _id: {
-            month: { $month: '$payment.orderDate' },
-            product: '$items.product'
-          },
-          totalQuantity: { $sum: '$items.quantity' } // Sum up the quantities of each product
-        }
-      },
-      {
-        $lookup: {
-          from: 'products',
-          localField: '_id.product',
-          foreignField: '_id',
-          as: 'productInfo'
-        }
-      },
-      {
-        $unwind: '$productInfo'
-      },
-      {
-        $group: {
-          _id: '$_id.month',
-          totalSales: { $sum: { $multiply: ['$totalQuantity',1] } } // Calculate the total sales for each month by multiplying product quantity with their respective prices and summing them up
-        }
-      },
-      {
-        $sort: { '_id': 1 } // Sort the results by month in ascending order
-      }
-    ]);
+    const ratings = await Rating.find({ product: productId }).select('value');
+    
+    let totalRatings = ratings.length;
+    let totalStars = 0;
+    const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-    // Create an array of all months
-    const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
-
-    // Merge the sales data with all months
-    const formattedSalesData = allMonths.map(month => {
-      const salesInMonth = salesData.find(item => item._id === month);
-      return {
-        month: month,
-        totalSales: salesInMonth ? salesInMonth.totalSales : 0 // Set totalSales to 0 if there are no sales for that month
-      };
+    ratings.forEach(rating => {
+      totalStars += rating.value;
+      ratingCounts[rating.value]++;
     });
 
-    return formattedSalesData;
+    const averageRating = totalRatings > 0 ? totalStars / totalRatings : 0;
+
+    return { ratings: ratingCounts, averageRating ,totalRatings};
   } catch (error) {
-    console.error('Error fetching product sales data:', error);
-    throw error;
+    console.error("Error:", error);
+    return null;
   }
-}
+},
+
+
+
 
  
 };
