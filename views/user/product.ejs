@@ -11,8 +11,11 @@
                 </h3>
             </div>
             
+            <div class="toggle-menu-icon">
+                <i class="fa fa-bars" onclick="toggleMenu()"></i>
+            </div>
             <!-- Categories Section -->
-            <div class="container mt-2">
+            <div class="container mt-2 categories-container">
                 <section class="bg0 p-t-23 m-b-20">
                     <!-- Categories Section -->
                     <div class="flex-w flex-c-m m-tb-10  categories ">
@@ -55,7 +58,7 @@
 						
 
 						<input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
-                        
+                         <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
                         <div id="searchSuggestionsContainer"></div>
 
                         </form>
@@ -111,12 +114,13 @@
                                     </a>
                                     <div class="price-container">
                                         <% if (product.coupon) { %>
-                                            <span class="stext-105 cl3 original-price">
+                                        
+                                            <span class="stext-105 cl3 original-price ">
                                                 ₹<%= product.price %>
                                             </span>
-                                            <br>
                                             <span class="stext-105 cl3 discount-info">
                                                 ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                                <br>
                                                 (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
                                             </span>
                                         <% } else { %>
@@ -316,8 +320,28 @@ function addToWishlist(productId) {
         }
     });
 </script>
-
+<script>
+    function toggleMenu() {
+        var categoriesContainer = document.querySelector('.categories-container');
+        categoriesContainer.classList.toggle('show-categories');
+    }
+</script>
 <style>
+      /* Hamburger menu icon style */
+      .toggle-menu-icon {
+        text-align: left;
+        margin-bottom: 20px;
+        cursor: pointer;
+        display: none; /* Hide by default */
+    }
+
+    /* Categories container style */
+    .categories-container {
+        display: block; /* Show by default */
+    }
+
+   
+
   .categories {
         display: flex;
         flex-wrap: wrap;
@@ -389,23 +413,46 @@ function addToWishlist(productId) {
     text-decoration: line-through; /* Apply strike-through */
     margin-right: 10px; /* Add some space between original and discounted price */
 }
+
 .discount-percentage {
     color: red;
     font-size: small;
 }
+ /* Show the hamburger menu icon only for small devices */
+ @media screen and (max-width: 767px) {
+        .toggle-menu-icon {
+            display: block;
+        }
+
+        .categories-container {
+            display: none; /* Hide on small devices initially */
+        }
+
+        .categories-container.show-categories {
+            display: block; /* Show on small devices when toggled */
+        }
+    
 
 
-@media only screen and (max-width: 767px) {
-    /* Additional styles for smaller screens */
-    .categories {
-        flex-direction: column; /* Display category boxes vertically */
-        align-items: center; /* Center the boxes horizontally */
+        /* Adjustments for the product items on small devices */
+        .isotope-item {
+            margin-bottom: 10px; /* Reduce margin */
+        }
+
+        .price-container {
+            font-size: 10px; /* Reduce font size for price */
+            margin-top: 5px; /* Adjust margin */
+        }
+
+        .original-price {
+            margin-right: 5px; /* Adjust margin */
+        }
+
+        .discount-percentage {
+            font-size: 10px; /* Reduce font size for discount percentage */
+        }
     }
 
-    .category-box {
-        margin: 5px; /* Adjusted margin for smaller screens */
-    }
-}
 </style>
 
 <%- include('../partials/footer') %> 

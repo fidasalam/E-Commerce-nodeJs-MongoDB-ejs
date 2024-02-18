@@ -218,9 +218,9 @@ verifyOTP: async (email, otp) => {
     }
 
     if (otp === user.otp) {
-      return 'success'; // Return true if OTP matches
+      return true; // Return true if OTP matches
     } else {
-      return 'failed'; // Return false if OTP doesn't match
+      return false; // Return false if OTP doesn't match
     }
   } catch (error) {
     console.error(error);

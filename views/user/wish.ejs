@@ -9,151 +9,125 @@
                 </h3>
             </div>
             <!-- Wishlist Table -->
-            <div class="container">
-                <div class="bg0 p-t-75 p-b-85">
-                    <div class="row">
-                        <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
-                            <div class="m-l-25 m-r--38 m-lr-0-xl">
-                                <div class="wrap-table">
-                                    <table class="table-shopping-cart">
-                                        <thead>
-                                            <tr class="table_head">
-                                                <th class="column-1"></th>
-                                                <th class="column-2"></th>
-                                                <th class="column-3"></th>
-                                                <th class="column-4"></th>
-                                                <th class="column-5"></th>
-                                                <th class="column-6"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Check if wishlist and wishlist.items exist before looping -->
-                                            <% if (wishlist && wishlist.length > 0) { %>
-                                                <!-- Loop through your wishlist items here -->
-                                                <% wishlist.forEach(item => { %>
-                                                    <tr class="table_row">
-                                                        <td class="column-1">
-                                                            <div class="how-itemcart1">
-                                                                <img src="<%= item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
-                                                            </div>
-                                                        </td>
-
-                                                        <td class="column-2">
-                                                            <%= item.product ? item.product.name : '' %>
-                                                        </td>
-                                                       
-                                                        <td class="column-3">
-                                                            <!-- Add price container here -->
-                                                            <div class="price-container">
-                                                                <% if (item.product.coupon) { %>
-                                                                    <span class="stext-105 cl3 original-price">
-                                                                        ₹<%= item.product.price %>
-                                                                    </span>
-                                                                    <br>
-                                                                    <span class="stext-105 cl3 discount-info">
-                                                                        ₹<%= (item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100)).toFixed(0) %><br>
-                                                                        (<span class="discount-percentage"><%= item.product.coupon.discountPercentage %>% Off</span>)
-                                                                    </span>
-                                                                <% } else { %>
-                                                                    <span class="stext-105 cl3">
-                                                                        ₹<%= item.product.price %>
-                                                                    </span>
-                                                                <% } %>
-                                                            </div>
-                                                        </td>
-                                                        <!-- <td class="column-4">
-                                                            <select id="size_<%= item.product._id %>" name="size" class="flex-c-m stext-101 cl0 bg2 bor1 hov-btn1 p-lr-15 trans-04 custom-select ml-3">
-                                                                <option value="S">S</option>
-                                                                <option value="M">M</option>
-                                                                <option value="L">L</option>
-                                                                <option value="XL">XL</option>
-                                                            </select>
-                                                        </td> -->
-                                                        <td class="column-5">
-                                                            <!-- Add a form to add item to cart -->
-                                                            <form id="<%= `addToCartForm_${item.product._id}` %>" action="/user/wishlist/add-to-cart/<%= item.product._id %>" method="post">
-                                                                <input type="hidden" name="productId" value="<%= item.product._id %>">
-                                                                <button type="submit" class="btn">
-                                                                    <i class="zmdi zmdi-shopping-cart"></i> Add to Cart
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                        <td class="column-6">
-                                                            <button type="button" class="btn" onclick="removeFromWishlist('<%= item.product._id %>')">
-                                                                <i class="zmdi zmdi-close"></i> 
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                <% }); /* End of wishlist items loop */ %>
+            <div class="table-responsive d-flex justify-content-center">
+                <table class="table table-bordered" style="max-width: 600px; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (wishlist && wishlist.length > 0) { %>
+                            <% wishlist.forEach(item => { %>
+                                <tr>
+                                    <td>
+                                        <div class="product-image">
+                                            <img src="<%= item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
+                                            <button type="button" class="btn btn-sm" onclick="removeFromWishlist('<%= item.product._id %>')">
+                                                <i class="fa fa-trash"></i> 
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="product-name">
+                                            <%= item.product ? item.product.name : '' %>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="price-container">
+                                            <% if (item.product.coupon) { %>
+                                                <span class="original-price <% if (item.product.coupon.discountPercentage) { %>strike-through<% } %>">₹<%= item.product.price %></span>
+                                                <br>
+                                                <span class="discounted-price">₹<%= (item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100)).toFixed(0) %></span>
+                                                <span class="discount-percentage"><%= item.product.coupon.discountPercentage %>% Off</span>
                                             <% } else { %>
-                                                <!-- Display a message if wishlist is empty -->
-                                                <tr>
-                                                    <td colspan="5">Your wishlist is empty.</td>
-                                                </tr>
+                                                <span>₹<%= item.product.price %></span>
                                             <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <form action="/user/wishlist/add-to-cart/<%= item.product._id %>" method="post">
+                                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                            <button type="submit" class="btn btn-dark btn-sm">
+                                                <i class="zmdi zmdi-shopping-cart">Add</i> 
+                                                <br>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4" class="text-center">Your wishlist is empty.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
 </div>
 
+<%- include('../partials/footer') %>
+
+
+<style>
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
+
+    .product-image img {
+        max-width: 80px;
+        height: auto;
+    }
+
+    .product-name {
+        font-weight: bold;
+    }
+
+    .price-container {
+        font-size: 14px;
+    }
+
+    .strike-through {
+        text-decoration: line-through;
+        color: #999;
+    }
+
+    .discounted-price {
+        font-weight: bold;
+    
+    }
+
+    .discount-percentage {
+        color: red;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+    .table {
+        margin: auto; /* Center the table horizontally */
+    }
+</style>
+
 <script>
     function removeFromWishlist(productId) {
-        // Send an AJAX request to remove the product from the wishlist
         $.ajax({
             type: 'DELETE',
             url: `/user/wishlist/${productId}`,
             success: function (data) {
                 console.log('Successfully removed from wishlist');
-                location.reload();  // Optionally, you can update the UI here to reflect the changes
+                location.reload();
             },
             error: function (error) {
                 console.error('Error removing from wishlist:', error);
             }
         });
     }
-    function addToCart(productId) {
-        var form = document.getElementById(`addToCartForm_${productId}`);
-        var formData = new FormData(form);
-
-        fetch(form.action, {
-            method: form.method,
-            headers: {
-                'Accept': 'application/json',
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response, you can update the UI as needed
-            console.log(data);
-
-            
-        })
-        .catch(error => {
-            console.error('Error adding to cart:', error);
-        });
-    }
 </script>
-<style>
-    .price-container {
-    display: inline-block; /* Make the container inline */
-}
-
-.original-price {
-    text-decoration: line-through; /* Apply strike-through */
-    margin-right: 10px; /* Add some space between original and discounted price */
-}
-.discount-percentage {
-    display: inline-block;
-    color: red;
-}
-</style>
-
-<%- include('../partials/footer') %>

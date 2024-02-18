@@ -19,7 +19,11 @@ const couponSchema = new mongoose.Schema({
     description:{
         type: String,
          required: true,
-    }
+    },
+    validProducts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      }],
 });
 
 const Coupon = mongoose.model('Coupon', couponSchema);

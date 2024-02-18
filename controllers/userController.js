@@ -245,6 +245,7 @@ handleRegister: async (req, res) => {
 
     // products by category
     renderProductsByCategory: async (req, res) => {
+      let categories = await ProductHelper.getAllCategories();
       const selectedCategory = req.query.categoryId;
       let products;
       if (!selectedCategory) {
@@ -256,7 +257,7 @@ handleRegister: async (req, res) => {
       res.render('user/product', {
           selectedCategory,
           products,
-          userDetails: req.userDetails,
+          userDetails: req.userDetails,categories
       });
   },
   

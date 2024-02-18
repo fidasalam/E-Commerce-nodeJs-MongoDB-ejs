@@ -1,142 +1,98 @@
 <%- include('../partials/header') %>
-<!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<!-- Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <!-- breadcrumb -->
-<div class="container">
-    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-        <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
-            Home
-            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
-        </a>
-        <span class="stext-109 cl4">
-            Shopping Cart
-        </span>
-    </div>
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/index">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+    </nav>
 </div>
 
 <!-- Shopping Cart -->
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-lg-10  col-xl-7 m-lr-auto m-b-50">
-                <div class=" m-r--38 m-lr-0-xl">
-                    <div class="wrap-table-shopping-cart">
-                        <% if (cart.items && cart.items.length > 0) { %>
-                        <table class="table-shopping-cart">
-                            <tr class="table_head">
-                                <th class="column-1">Product</th>
-                                <th class="column-2"></th>
-                                <th class="column-3">Price</th>
-                                <th class="column-4">Quantity</th>
-                                <th class="column-5">Size</th>
-                                <th class="column-6">Total</th>
-                                <th class="column-7">Action</th>
-                            </tr>
 
-                           <!-- Loop through your cart items here -->
-<% for (let i = 0; i < cart.items.length; i++) { %>
-    <tr class="table_row">
-        <td class="column-1">
-            <div class="how-itemcart1">
-                <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
-            </div>
-        </td>
-        <td class="column-2"><%= cart.items[i].product ? cart.items[i].product.name : '' %></td>
-        <td class="column-3">
-<div class="price-container">
-    <% if (cart.items[i].product.coupon) { %>
-        <span class="stext-105 cl3 original-price">
-            ₹<%= cart.items[i].product.price %>
-        </span>
-        <br>
-        <span class="stext-105 cl3 discount-info">
-            ₹<%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) %>
-            (<span class="discount-percentage"> <%= cart.items[i].product.coupon.discountPercentage %>% Off</span>)
-        </span>
-    <% } else { %>
-        <span class="stext-105 cl3">
-            ₹<%= cart.items[i].product.price %>
-        </span>
-    <% } %>
-</div>
-        </td>
-        <td class="column-4">
-            <% const itemIndex = i + 1; %>
-            <% if (cart.items[i].product.inStock > 0) { %>
-                <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-                        <i class="fs-16 zmdi zmdi-minus" data-index="<%= i %>" data-value="-1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
+<div class="container mt-4 ">
+    <div class="row">
+        <!-- Cart items column -->
+        <div class="col-md-8">
+    <div class="card ">
+        <div class="card-body">
+           
+            <% /* Loop through your cart items here */ %>
+            <% for (let i = 0; i < cart.items.length; i++) { %>
+            <div class="mb-4">
+              
+                <div class="row">
+                    <div class="col-md-2 col-4">
+                        <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" class="img-fluid" alt="Product Image">
                     </div>
-                    <input class="mtext-104 cl3 txt-center num-product quantity-input" type="number" name="num-product<%= itemIndex %>" value="<%= cart.items[i].quantity %>" data-item="<%= itemIndex %>" data-unit-in-stock="<%= cart.items[i].product.inStock %>" min="1">
-                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-                        <i class="fs-16 zmdi zmdi-plus" data-index="<%= i %>" data-value="1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
-                    </div>
-                </div>
-            <% } else { %>
-                Out of Stock
-            <% } %>
-        </td>
-        <!-- Corrected the closing tag here -->
-        <td class="column-5">
-            <%= cart.items[i].product.size %>
-        </td>
-
-
-        <td class="column-6">
-            <div class="how-itemcart1">
-                <% if (cart.items[i].product && cart.items[i].product.coupon) { %>
-                    <% const discountedPrice = cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100); %>
-                    ₹ <%= (discountedPrice * cart.items[i].quantity).toFixed(0) %>
-                <% } else { %>
-                    ₹ <%= (cart.items[i].product.price * cart.items[i].quantity).toFixed(0) %>
-                <% } %>
-            </div>
-        </td>
-        
-        
-        <form action="/user/cart/remove-product" method="post">
-            <!-- Hidden input field for product ID -->
-            <input type="hidden" name="productId" value="<%= cart.items[i].product._id %>">
-            <!-- Other form fields... -->
-            <td class="column-7">
-                <button type="submit" class="btn">   <i class="zmdi zmdi-close"></i></button>
-            </td>
-        </form>
-    </tr>
-<% } /* End of cart items loop */ %>
-<% } else { %>
-    <p>Your cart is empty.</p>
-<% } %>
-
-
-                        </table>
-                    </div>
-                   
-                   
-                    <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-                        <span class="stext-101 cl2 size-118">Sub Total:</span>
-                        <span id="subtotal" class="stext-101 cl2 size-118" data-subtotal="<%= subtotal.toFixed(0) %>">₹ <%= subtotal.toFixed(0) %></span>
+                    <div class="col-md-6">
+                        <h5 class="card-title"><%= cart.items[i].product ? cart.items[i].product.name : '' %></h5>
+                        <p class="card-text">
+                            <% if (cart.items[i].product.coupon) { %>
+                                <span class="original-price">₹<%= cart.items[i].product.price %></span>
+                                <br>
+                                <span class="discounted-price">₹<%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) %></span>
+                                (<span class="discount-percentage"><%= cart.items[i].product.coupon.discountPercentage %>% Off</span>)
+                            <% } else { %>
+                                <span>₹<%= cart.items[i].product.price %></span>
+                            <% } %>
+                        </p>
+                        <p class="card-text">
+                            <% const itemIndex = i + 1; %>
+                            <% if (cart.items[i].product.inStock > 0) { %>
+                                <div class="wrap-num-product flex-w">
+                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                        <i class="fs-16 zmdi zmdi-minus" data-index="<%= i %>" data-value="-1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
+                                    </div>
+                                    <input class="mtext-104 cl3 txt-center num-product quantity-input" type="number" name="num-product<%= itemIndex %>" value="<%= cart.items[i].quantity %>" data-item="<%= itemIndex %>" data-unit-in-stock="<%= cart.items[i].product.inStock %>" min="1">
+                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                        <i class="fs-16 zmdi zmdi-plus" data-index="<%= i %>" data-value="1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
+                                    </div>
+                                </div>
+                            
+                            <% } else { %>
+                                Out of Stock
+                            <% } %>
+                          
+                        </p>
                        
                     </div>
-                     
-                  
-                </div>
-            </div>
-        </form> 
 
-        
+                
+                    <div class="col-md-4 text-right">
+                        <p class="card-text"><strong>Total: </strong>
+                            <% if (cart.items[i].product && cart.items[i].product.coupon) { %>
+                                ₹ <%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) * cart.items[i].quantity %>
+                            <% } else { %>
+                                ₹ <%= (cart.items[i].product.price * cart.items[i].quantity).toFixed(0) %>
+                            <% } %>
+                        </p>
+                        <form action="/user/cart/remove-product" method="post">
+                            <!-- Hidden input field for product ID -->
+                            <input type="hidden" name="productId" value="<%= cart.items[i].product._id %>">
+                            <button type="submit" class="btn btn-sm "> <i class="fa fa-trash"></i> </button>
+                        </form>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <% } /* End of cart items loop */ %>
+        </div>
+    </div>
+</div>
+
             
         <div id="popupMessage" class="popup-message">
             <span id="popupText" class="popup-text"></span>
         </div>
         
-     
-        <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
-            <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+    
+        <div class="col-12 col-md-4 mb-4 ">
+            <div class="bor10 p-lr-40 p-t-30 p-b-40  m-r-40 m-lr-0-xl p-lr-15-sm">
                 <h4 class="mtext-109 cl3 p-b-30">
                     Cart Totals
                 </h4>
@@ -196,7 +152,9 @@
             </div>
         </div>
         </div>
-        </div>
+    </div>
+    
+   
         
 
   <!-- Modal -->
@@ -481,6 +439,7 @@
 }
 
 .original-price {
+    color: gray;
     text-decoration: line-through; /* Apply strike-through */
     margin-right: 10px; /* Add some space between original and discounted price */
 }

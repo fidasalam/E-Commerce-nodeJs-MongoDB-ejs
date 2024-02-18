@@ -46,6 +46,17 @@ module.exports = {
         $unwind: "$products"
       },
       {
+        $lookup: {
+          from: "categories", // Assuming your category collection is named "categories"
+          localField: "products.category",
+          foreignField: "_id",
+          as: "products.category"
+        }
+      },
+      {
+        $unwind: "$products.category"
+      },
+      {
         $replaceRoot: { newRoot: "$products" }
       }
     ]);
@@ -54,7 +65,7 @@ module.exports = {
   
   getAllCategories : async () => {
     try {
-      const categories = await Category.find({}).lean();
+      const categories = await Category.find({}).populate('name').lean();
       return categories;
     } catch (error) {
       throw new Error('Error fetching all categories');

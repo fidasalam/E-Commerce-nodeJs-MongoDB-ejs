@@ -156,10 +156,8 @@
                           <% if (userDetails.shippingAddresses && userDetails.shippingAddresses.length > 0) { %>
                           <% userDetails.shippingAddresses.forEach(address => { %>
                           <% if (address.default) { %>
-                          <p class="stext-110 cl3"><strong>Street Address:</strong> <%= address.street %></p>
-                          <p class="stext-110 cl3"><strong>City:</strong> <%= address.city %></p>
-                          <p class="stext-110 cl3"><strong>State:</strong> <%= address.state %></p>
-                          <p class="stext-110 cl3"><strong>Postal Code:</strong> <%= address.postalCode %></p>
+                          <p class="stext-110 cl3"><%= address.street %>, <%= address.city %></p>
+                          <p class="stext-110 cl3"><%= address.state %>, <%= address.postalCode %></p>
                           <a href="/user/add-address" class="edit-address-btn">Edit Address</a> <!-- Edit button -->
                           <% } %>
                           <% }); %>
@@ -191,8 +189,9 @@
                           <h2 class="mtext-109 cl3 p-b-30">
                               Order Summary
                           </h2>
-                          <p class="stext-110 cl3">Subtotal: ₹<%= cart.subtotal.toFixed(0) %></p>
-                          <p class="stext-110 cl3">Total: ₹<%= cart.total.toFixed(0)%></p>
+                         
+                          <p class="stext-110 cl3"><strong>Subtotal:</strong> ₹<%= cart.subtotal.toFixed(0) %></p>
+                          <p class="stext-110 cl3"><strong>Total: </strong>₹<%= cart.total.toFixed(0)%></p>
                       </div>
 
                       <!-- Additional section for payment method -->

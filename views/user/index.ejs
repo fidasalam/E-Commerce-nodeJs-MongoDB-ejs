@@ -8,7 +8,7 @@
 <section class="section-slide">
     <div class="wrap-slick1">
         <div class="slick1">
-            <div class="item-slick1" style="background-image: url(images/slide-01.jpg);">
+            <div class="item-slick1" style="background-image: url(/images/slide-01_edited.jpg);">
                 <div class="container h-full">
                     <div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
                         <div class="layer-slick1 animated visible-false" data-appear="fadeInDown" data-delay="0">
@@ -191,6 +191,9 @@
 </div>
 
 <!-- Product -->
+<!-- Inside your header partial (header.ejs) -->
+
+
 <section class="bg0 p-t-23 p-b-140">
     <div class="container">
         <div class="p-b-10 text-center">
@@ -200,48 +203,29 @@
         </div>
         <div class="flex-w flex-c-m justify-content-end">
          
-                <div class="flex-w flex-c-m m-tb-10">
-                    
-    
-                    <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-                        <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-                        <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                        Search
-                    </div>
-                    <div class="dis-none panel-search w-full p-t-10 p-b-15">
-                        <div class="bor8 dis-flex p-l-15">
-                            <form id="searchForm" method="POST" action="/user/search">
-                            
-    
-                            <input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
-                            
-                            <div id="searchSuggestionsContainer"></div>
-    
-                            </form>
-                        </div>	
-                    </div>
-                </div>
+            <div class="flex-w flex-c-m m-tb-10">
                 
-        </div>
 
-        <div class="flex-w flex-l-m filter-tope-group m-tb-10">
-            <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-                All Products
-            </button>
+                <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                    <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                    <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                    Search
+                </div>
+                <div class="dis-none panel-search w-full p-t-10 p-b-15">
+                    <div class="bor8 dis-flex p-l-15">
+                        <form id="searchForm" method="POST" action="/user/search">
+                        
 
-            <% categories.forEach(category => { %>
-                <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".category-<%= category._id %>">
-                    <%= category.name %>
-                </button>
-            <% }) %>
-        </div>
-        </div>
-    
-</section>
+                        <input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                        <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
+                        <div id="searchSuggestionsContainer"></div>
 
-<section class="bg0 p-t-23 p-b-140">
-    <div class="container">
-        <!-- ... (your existing code) ... -->
+                        </form>
+                    </div>	
+                </div>
+            </div>
+            
+    </div>
         <div class="row isotope-grid">
             <% products.forEach(product => { %>
                 <div class="col-4 col-md-6 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
@@ -257,35 +241,13 @@
                         <div class="block2-txt flex-w flex-t p-t-14">
                             <div class="block2-txt-child1 flex-col-l">
                                 <a href="/user/productdetails/<%= product._id %>"
-                                    class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                    class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 mb-2">
                                     <%= product.name %>
                                 </a>
-                                <div class="price-container">
-                                    <% if (product.coupon) { %>
-                                        <span class="stext-105 cl3 original-price">
-                                            ₹<%= product.price %>
-                                        </span>
-                                        <br>
-                                        <span class="stext-105 cl3 discount-info">
-                                            ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
-                                            (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
-                                        </span>
-                                    <% } else { %>
-                                        <span class="stext-105 cl3">
-                                            ₹<%= product.price %>
-                                        </span>
-                                    <% } %>
+                                <!-- Display category name -->
+                                <div class="category-name stext-106 cl6 m-b-20 ml-2">
+                                    <%= product.category.name%>
                                 </div>
-                                
-                            </div>
-                            <div class="block2-txt-child2 flex-r p-t-3">
-                                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2"
-                                    data-product-id="<%= product._id %>">
-                                    <img class="icon-heart1 dis-block trans-04"
-                                        src="images/icons/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                        src="images/icons/icon-heart-02.png" alt="ICON">
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -301,6 +263,7 @@
         </div>
     </div>
 </section>
+
 
 <script>
     // Remove the existing JavaScript code related to the search button
@@ -355,12 +318,35 @@
 }
 
 .original-price {
+    color: gray;
     text-decoration: line-through; /* Apply strike-through */
     margin-right: 10px; /* Add some space between original and discounted price */
 }
 .discount-percentage {
     color: red;
 }
+.product-image {
+    height: 100%; /* Set a fixed height for the images */
+    width: 100%; /* Ensure the image takes the full width of its container */
+    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+}
+
+.block2-pic {
+    position: relative;
+}
+
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+}
+
 
 </style>
 
