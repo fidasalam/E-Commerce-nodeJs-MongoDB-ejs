@@ -113,14 +113,19 @@
                     },
                     method: 'POST',
                     success: function (response) {
-                        console.log('Payment verification successful:', response);
+                    console.log('Payment verification successful:', response);
 
-                        if (response.status === 'success') {
-                            window.location.href = '/user/thankyou';
-                        }
+                    if (response.status === 'success') {
+                        window.location.href = '/user/thankyou';
+                    } else {
+                        
+                        window.location.href = '/user/login';
+                    }
                     },
                     error: function (error) {
-                        console.error('Payment verification failed:', error);
+                    console.error('Payment verification failed:', error);
+                    // If there's an error in the AJAX request itself, you might want to display a generic error message
+                    $('.error-message').text('An error occurred while verifying payment. Please try again later.');
                     }
                 });
             }

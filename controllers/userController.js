@@ -249,7 +249,7 @@ handleRegister: async (req, res) => {
       const selectedCategory = req.query.categoryId;
       let products;
       if (!selectedCategory) {
-          products = await Product.find().populate('coupon');
+          products = await Product.find().populate('coupon').lean();
       } else {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
@@ -411,7 +411,7 @@ filterProducts: async (req, res) => {
     }
     
   
-    const products = await Product.find(filterCriteria).sort(sortCriteria);
+    const products = await Product.find(filterCriteria).sort(sortCriteria).lean();
     res.setHeader('Cache-Control', 'no-store');
     res.json({ products });
   } catch (error) {

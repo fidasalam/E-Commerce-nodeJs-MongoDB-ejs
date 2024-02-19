@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
         }
-
+       
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -59,8 +59,9 @@
         }
 
         .edit-address-btn {
-            color: #007bff;
+            color: #5c5c5c;
             text-decoration: none;
+            font-size: 12px;
         }
 
         .edit-address-btn:hover {
@@ -86,10 +87,16 @@
         .order-summary p {
             margin-bottom: 10px;
         }
-
+       
+        hr {
+        border: none;
+        height: 1px; 
+        background-color: rgb(214, 214, 214); 
+    }
      
         .payment-method button[type="submit"] {
-            background-color: #28a745;
+            margin-top: 10px;
+            background-color: #000000;
             color: #fff;
             padding: 14px 20px;
             border: none;
@@ -100,7 +107,7 @@
         }
 
         .payment-method button[type="submit"]:hover {
-            background-color: #218838;
+            background-color: #464646;
         }
 
         /* Form check alignment */
@@ -132,6 +139,8 @@
     </style>
 </head>
 <body>
+
+    
     <div class="header">
         <h1 class="logo">Checkout</h1>
     </div>
@@ -161,7 +170,7 @@
                         <img class="product-image" src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
                     <% } %>
                 </div>
-<hr>
+                
                 <div class="order-summary">
                     <h3>Order Summary</h3>
                     <p><strong>Subtotal:</strong> ₹<%= cart.subtotal.toFixed(0) %></p>
@@ -206,7 +215,7 @@
                         </div>
                     
                         <!-- Button to complete the purchase -->
-                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" type="submit">Complete Purchase</button>
+                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer mt-5" type="submit">Complete Purchase</button>
                     </form>
                 </div>
             </section>

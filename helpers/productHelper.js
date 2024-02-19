@@ -25,42 +25,18 @@ module.exports = {
     }
   },
   getFewProducts: async () => {
-    return await Product.aggregate([
-      {
-        $sort: { category: 1, createdAt: -1 }
-      },
-      {
-        $group: {
-          _id: "$category",
-          products: { $push: "$$ROOT" }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          category: "$_id",
-          products: { $slice: ["$products", 3] }
-        }
-      },
-      {
-        $unwind: "$products"
-      },
-      {
-        $lookup: {
-          from: "categories", // Assuming your category collection is named "categories"
-          localField: "products.category",
-          foreignField: "_id",
-          as: "products.category"
-        }
-      },
-      {
-        $unwind: "$products.category"
-      },
-      {
-        $replaceRoot: { newRoot: "$products" }
-      }
-    ]);
+    try {
+      const result = await Product.find({})
+                                    .limit(10) // Adjust the limit as needed
+                                    .populate('category') // If needed
+                                    .lean();
+  
+      return result;
+    } catch (error) {
+      throw new Error('Error fetching few products');
+    }
   },
+  
   
   
   getAllCategories : async () => {
@@ -75,7 +51,7 @@ module.exports = {
   
   getProductsByName : async (productName) => {
     try {
-      const products = await Product.find({ name: { $regex: `^${productName}`, $options: 'i' } });
+      const products = await Product.find({ name: { $regex: `^${productName}`, $options: 'i' } }).lean();
       return products;
     } catch (error) {
       throw new Error('Error fetching products');
@@ -101,7 +77,7 @@ module.exports = {
 
   addProduct: async (productData) => {
     try {
-      const product = new Product(productData);
+      const product = new Product(productData).lean();
       await product.save();
     } catch (error) {
       throw new Error('Error adding product');
@@ -110,7 +86,7 @@ module.exports = {
   
   getProductById: async (productId) => {
     try {
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).lean();
       return product;
     } catch (error) {
       console.error('Error retrieving product by ID:', error);
@@ -187,7 +163,7 @@ module.exports = {
 
     try {
       
-        const searchResults = await Product.find({ name: regex }).populate('coupon');
+        const searchResults = await Product.find({ name: regex }).populate('coupon').lean();
         return searchResults;
     } catch (error) {
         console.error(error);
