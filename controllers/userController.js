@@ -230,18 +230,18 @@ handleRegister: async (req, res) => {
         
 
 
-  //  product details page
- renderProductDetail: async (req, res) => {
-  const productId = req.params.productId;
-  
-  const product = await Product.findById(productId).populate('coupon');
-  const ratingData = await productHelper.getProductRatings(productId);
-  console.log('rating:',ratingData);
-  if (!product) {
-       return res.status(404).render('error', { message: 'Product not found' });
-   }
-      res.render('user/productdetails', { product, userDetails: req.userDetails,rating:ratingData });
-},
+        //  product details page
+      renderProductDetail: async (req, res) => {
+        const productId = req.params.productId;
+        
+        const product = await Product.findById(productId).populate('coupon');
+        const ratingData = await productHelper.getProductRatings(productId);
+        console.log('rating:',ratingData);
+        if (!product) {
+            return res.status(404).render('error', { message: 'Product not found' });
+        }
+            res.render('user/productdetails', { product, userDetails: req.userDetails,rating:ratingData });
+      },
 
     // products by category
     renderProductsByCategory: async (req, res) => {
