@@ -17,7 +17,7 @@
 <div class="container mt-4 ">
     <div class="row">
         <!-- Cart items column -->
-        <div class="col-md-8">
+        <div class="col-md-8 col-12" >
     <div class="card ">
         <div class="card-body">
            
@@ -28,6 +28,11 @@
                 <div class="row">
                     <div class="col-md-2 col-4">
                         <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" class="img-fluid" alt="Product Image">
+                        <form action="/user/cart/remove-product" method="post">
+                            <!-- Hidden input field for product ID -->
+                            <input type="hidden" name="productId" value="<%= cart.items[i].product._id %>">
+                            <button type="submit" class="btn btn-sm "> <i class="fa fa-trash"></i> </button>
+                        </form>
                     </div>
                     <div class="col-md-6">
                         <h5 class="card-title"><%= cart.items[i].product ? cart.items[i].product.name : '' %></h5>
@@ -63,7 +68,7 @@
                     </div>
 
                 
-                    <div class="col-md-4 text-right">
+                    <div class="col-md-4 ">
                         <p class="card-text"><strong>Total: </strong>
                             <% if (cart.items[i].product && cart.items[i].product.coupon) { %>
                                 ₹ <%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) * cart.items[i].quantity %>
@@ -71,11 +76,8 @@
                                 ₹ <%= (cart.items[i].product.price * cart.items[i].quantity).toFixed(0) %>
                             <% } %>
                         </p>
-                        <form action="/user/cart/remove-product" method="post">
-                            <!-- Hidden input field for product ID -->
-                            <input type="hidden" name="productId" value="<%= cart.items[i].product._id %>">
-                            <button type="submit" class="btn btn-sm "> <i class="fa fa-trash"></i> </button>
-                        </form>
+                        
+                     
                     </div>
                 </div>
                 <hr>
@@ -108,7 +110,7 @@
                         <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(0) %>">₹ <%= subtotal.toFixed(0) %></span>
                     </div>
                 </div>
-        
+           
                 <% if (cart.appliedCoupon) { %>
                     <div class="flex-w flex-m m-r-8 m-tb-5">
                         <div class="ml-auto">
@@ -403,7 +405,7 @@
 
     /* Customize modal body */
     .modal-body {
-        padding: 20px;
+        padding: 10px;
     }
     #applyCouponBtn{
     
@@ -423,8 +425,9 @@
 
     .modal-dialog {
     position: absolute;
-    left: 50%;
+    left: 20%;
     top: 20%;
+    right: 20%;
     transform: translate(-50%, -50%);
 }
     /* Customize modal close button */

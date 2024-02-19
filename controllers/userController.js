@@ -524,12 +524,19 @@ await cart.save();
   // checkout page
   renderCheckout: async (req, res) => {
     const cart = await Cart.findOne({ user: req.userDetails._id }).populate('items.product');
-    const latestorder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
-     res.render('user/checkout', {
-      userDetails: req.userDetails,
-      cart,
-      latestorder,
-    });
+    const latestOrder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
+    const hasAddress = req.userDetails.shippingAddresses && req.userDetails.shippingAddresses.length > 0;
+    if (hasAddress) {
+      // If the user has an address, render the checkout page
+      return res.render('user/checkout', {
+        userDetails: req.userDetails,
+        cart,
+        latestOrder,
+      });
+    } else {
+      res.redirect('/user/add-address')
+    }
+    
   },
 
   getAddAddress: async (req, res) => {

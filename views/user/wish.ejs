@@ -9,18 +9,18 @@
                 </h3>
             </div>
             <!-- Wishlist Table -->
-            <div class="table-responsive d-flex justify-content-center">
-                <table class="table table-bordered" style="max-width: 600px; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (wishlist && wishlist.length > 0) { %>
+            <% if (wishlist && wishlist.length > 0) { %>
+                <div class="table-responsive d-flex justify-content-center">
+                    <table class="table table-bordered" style="max-width: 600px; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <% wishlist.forEach(item => { %>
                                 <tr>
                                     <td>
@@ -59,19 +59,18 @@
                                     </td>
                                 </tr>
                             <% }); %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="4" class="text-center">Your wishlist is empty.</td>
-                            </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center">Your wishlist is empty.</div>
+            <% } %>
         </div>
     </section>
 </div>
 
 <%- include('../partials/footer') %>
+
 
 
 <style>
@@ -100,7 +99,6 @@
 
     .discounted-price {
         font-weight: bold;
-    
     }
 
     .discount-percentage {
@@ -113,8 +111,45 @@
 
     .table {
         margin: auto; /* Center the table horizontally */
+        border-collapse: collapse; /* Collapse table borders */
+    }
+
+    .table th,
+    .table td {
+        border: none; /* Remove table cell borders */
+    }
+
+    .table th {
+        font-weight: bold;
+        background-color: #f2f2f2; /* Background color for table header */
+    }
+
+    .table td {
+        padding: 10px; /* Add padding to table cells */
+        border-bottom: 1px solid #ddd; /* Add bottom border to separate rows */
+    }
+
+    .table td:last-child {
+        text-align: center; /* Center align the last column (Add to Cart button) */
+    }
+
+    .table td:last-child button {
+        padding: 5px 10px; /* Add padding to Add to Cart buttons */
+        background-color: #333; /* Change button background color */
+        color: #fff; /* Change button text color */
+        border: none; /* Remove button border */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
+    .table td:last-child button:hover {
+        background-color: #555; /* Darken button background color on hover */
+    }
+
+    .table td:last-child button i {
+        margin-right: 5px; /* Add margin to the right of icon */
     }
 </style>
+
 
 <script>
     function removeFromWishlist(productId) {

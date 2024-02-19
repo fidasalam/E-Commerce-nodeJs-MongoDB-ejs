@@ -2,44 +2,7 @@
 <!-- Product -->
 <div class="container mt-5">
     <section class="bg0 p-t-23 p-b-140">
-       
-        
-        <div class="container">
-            <div class="p-b-10 text-center">
-                <h3 class="ltext-103 cl5">
-                    <%= selectedCategory ? selectedCategory + ' ' : 'All Products' %>
-                </h3>
-            </div>
-            
-            <div class="toggle-menu-icon">
-                <i class="fa fa-bars" onclick="toggleMenu()"></i>
-            </div>
-            <!-- Categories Section -->
-            <div class="container mt-2 categories-container">
-                <section class="bg0 p-t-23 m-b-20">
-                    <!-- Categories Section -->
-                    <div class="flex-w flex-c-m m-tb-10  categories ">
-                        <a href="/user/product?categoryId=Men" class="category-box men-box">
-                            <span class="category-text">Men</span>
-                        </a>
-                        <a href="/user/product?categoryId=Women" class="category-box women-box">
-                            <span class="category-text">Women</span>
-                        </a>
-                        <a href="/user/product?categoryId=Kids" class="category-box kids-box">
-                            <span class="category-text">Kids</span>
-                        </a>
-                        <a href="/user/product?categoryId=Accessories" class="category-box accessories-box">
-                            <span class="category-text">Accessories</span>
-                        </a>
-                        <a href="/user/product?categoryId=" class="category-box men-box">
-                            <span class="category-text">All Products</span>
-                        </a>
-                    </div>
-                    <!-- ... (rest of your code) ... -->
-                </section>
-            </div>
-            
-            <div class="flex-w flex-sb-m p-b-52 justify-content-end">
+        <div class="flex-w flex-sb-m p-b-52 justify-content-end">
             <div class="flex-w flex-c-m m-tb-10">
                 <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
                     <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
@@ -97,9 +60,46 @@
                 </div>
             </div>
 
+        
+        <div class="container">
+            <div class="p-b-10 text-center">
+                <h3 class="ltext-103 cl5">
+                    <%= selectedCategory ? selectedCategory + ' ' : 'All Products' %>
+                </h3>
+            </div>
+            
+            <div class="toggle-menu-icon">
+                <i class="fa fa-bars" onclick="toggleMenu()"></i>
+            </div>
+            <!-- Categories Section -->
+            <div class="container mt-2 categories-container">
+                <section class="bg0 p-t-23 m-b-20">
+                    <!-- Categories Section -->
+                    <div class="flex-w flex-c-m m-tb-10  categories ">
+                        <a href="/user/product?categoryId=Men" class="category-box men-box">
+                            <span class="category-text">Men</span>
+                        </a>
+                        <a href="/user/product?categoryId=Women" class="category-box women-box">
+                            <span class="category-text">Women</span>
+                        </a>
+                        <a href="/user/product?categoryId=Kids" class="category-box kids-box">
+                            <span class="category-text">Kids</span>
+                        </a>
+                        <a href="/user/product?categoryId=Accessories" class="category-box accessories-box">
+                            <span class="category-text">Accessories</span>
+                        </a>
+                        <a href="/user/product?categoryId=" class="category-box men-box">
+                            <span class="category-text">All Products</span>
+                        </a>
+                    </div>
+                    <!-- ... (rest of your code) ... -->
+                </section>
+            </div>
+            
+         
             <div class="row isotope-grid ">
                 <% products.forEach(product => { %>
-                    <div class="col-4 col-md-2 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
+                    <div class="col-6 col-md-2 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
                         <!-- Block2 -->
                         <div class="block2">
                             <div class="block2-pic hov-img0">
@@ -121,7 +121,7 @@
                                             <span class="stext-105 cl3 discount-info">
                                                 ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
                                                 <br>
-                                                (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
+                                                <span class="discount-percentage"> (<%= product.coupon.discountPercentage %>% Off)</span>
                                             </span>
                                         <% } else { %>
                                             <span class="stext-105 cl3">
@@ -282,7 +282,7 @@ function addToWishlist(productId) {
     
             products.forEach(product => {
                 const productHtml = `
-                <div class="col-sm-6 col-md-6 col-lg-2 p-b-35 isotope-item category-${product.category}">
+                <div class="col-6 col-md-6 col-lg-2 p-b-35 isotope-item category-${product.category}">
                     <div class="block2">
                         <div class="block2-pic hov-img0">
                             <a href="/user/productdetails/${product._id}">
@@ -418,6 +418,27 @@ function addToWishlist(productId) {
     color: red;
     font-size: small;
 }
+.block2-pic {
+    position: relative;
+    overflow: hidden; /* Ensure that overflow is hidden */
+}
+.product-image {
+    height: 100%; /* Set a fixed height for the images */
+    width: 100%; /* Ensure the image takes the full width of its container */
+    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+}
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+    z-index: 1; /* Ensure the category name is above the image */
+}
  /* Show the hamburger menu icon only for small devices */
  @media screen and (max-width: 767px) {
         .toggle-menu-icon {
@@ -425,11 +446,12 @@ function addToWishlist(productId) {
         }
 
         .categories-container {
+            
             display: none; /* Hide on small devices initially */
         }
 
         .categories-container.show-categories {
-            display: block; /* Show on small devices when toggled */
+            display:inline /* Show on small devices when toggled */
         }
     
 
@@ -451,6 +473,30 @@ function addToWishlist(productId) {
         .discount-percentage {
             font-size: 10px; /* Reduce font size for discount percentage */
         }
+        .block2-pic {
+    position: relative;
+    overflow: hidden; /* Ensure that overflow is hidden */
+}
+
+.product-image {
+    height: 100%; /* Set a fixed height for the images */
+    width: 100%; /* Ensure the image takes the full width of its container */
+    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+}
+
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+    z-index: 1; /* Ensure the category name is above the image */
+}
+
     }
 
 </style>

@@ -122,10 +122,16 @@ module.exports = {
         for (const item of cart.items) {
           const product = await Product.findById(item.product._id);
           if (product) {
-            product.inStock -= item.quantity;
-            await product.save();
+              // Ensure there's enough stock before decrementing
+              if (product.inStock >= item.quantity) {
+                  product.inStock -= item.quantity;
+                  await product.save();
+              } else {
+                  (product.inStock=0);
+                  // throw new Error(`Insufficient stock for product ${product.name}`);
+              }
           }
-        }
+      }
         await cartHelper.deleteCart(cart._id);
         await newOrder.save();
         return 'success';
