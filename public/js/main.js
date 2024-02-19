@@ -146,7 +146,10 @@
     // filter items on button click
     $filter.on('click', 'button', function () {
         var filterValue = $(this).attr('data-filter');
-        $topeContainer.isotope({ filter: filterValue });
+        setTimeout(function() {
+            $topeContainer.isotope({ filter: filterValue });
+        }, 2000); // Adjust the delay time (in milliseconds) as needed
+        
     
         // Toggle the 'how-active1' class
         $filter.find('button').removeClass('how-active1');

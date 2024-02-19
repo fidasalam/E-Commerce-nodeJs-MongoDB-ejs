@@ -18,7 +18,7 @@ module.exports = {
 
   getAllProducts: async () => {
     try {
-      const result = await Product.find({}).populate('category').lean();
+      const result = await Product.find({}).populate('category').limit(10).lean();
       return result;
     } catch (error) {
       throw new Error('Error fetching all products');

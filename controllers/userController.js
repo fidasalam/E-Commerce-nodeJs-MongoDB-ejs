@@ -249,7 +249,7 @@ handleRegister: async (req, res) => {
       const selectedCategory = req.query.categoryId;
       let products;
       if (!selectedCategory) {
-          products = await Product.find().populate('coupon').lean();
+          products = await Product.find().lean().populate('coupon');
       } else {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
