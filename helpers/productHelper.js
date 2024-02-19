@@ -67,7 +67,7 @@ module.exports = {
         return [];
       }
 
-      const products = await Product.find({ category: selectedCategory._id }).populate('coupon').lean();
+      const products = await Product.find({ category: selectedCategory._id }).limit(12).lean().populate('coupon');
       return products;
     } catch (error) {
       throw new Error('Error fetching products by category');
