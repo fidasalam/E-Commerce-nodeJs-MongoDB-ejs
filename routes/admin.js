@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-const back = require('../middleware/back');
+const noLoginPageCache= require('../middleware/noLoginPageCache');
 
 // Admin Authentication Routes
 router.get('/index', adminController.displayAdmin);
-router.get('/logout', back, adminController.handleLogout);
+router.get('/logout', noLoginPageCache, adminController.handleLogout);
 
 // Product Routes
 router.get('/products/:category?', adminController.displayProduct);

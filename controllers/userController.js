@@ -6,14 +6,12 @@ const Order = require('../models/order');
 const Rating = require('../models/rating');
 const Product = require('../models/product');
 const orderHelper = require('../helpers/orderHelper');
-
-
+const logger = require('../util/winston');
 const userHelper = require('../helpers/userHelper');
 const ProductHelper = require('../helpers/productHelper');
 const cartHelper = require('../helpers/cartHelper');
 const productHelper = require('../helpers/productHelper');
 const paymentHelper = require('../helpers/paymentHelper');
-
 const bcrypt = require('bcryptjs');
 const nodemailerConfig=require('../config/nodemailerConfig')
 const nodemailer = require('nodemailer');
@@ -29,9 +27,9 @@ module.exports = {
   //home page
   displayHomepage: async (req, res) => {
     let categories = await ProductHelper.getAllCategories();
-    let products = await ProductHelper.getFewProducts();
-    products = await Product.populate(products, { path: 'coupon' });
-    res.render('user/index', { products, categories, userDetails: req.userDetails });
+    let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
+    productsWithAvgRating = await Product.populate(productsWithAvgRating, { path: 'coupon' });
+    res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
   },
 
   //login page
@@ -44,9 +42,10 @@ module.exports = {
   handleLogin: async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
+  
     const guestUserId = null;
     const guestCart = await cartHelper.getCart(guestUserId);
-    
+        
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       req.flash('error', 'Invalid credentials');
@@ -206,7 +205,7 @@ handleRegister: async (req, res) => {
             res.redirect('/user/login');
           } 
         } else {
-          // Handle incorrect OTP
+
           req.flash('error', 'Incorrect OTP. Please try again.');
           res.redirect('/user/enter-otp'); // Redirect back to OTP verification page
         }
@@ -247,13 +246,19 @@ handleRegister: async (req, res) => {
     renderProductsByCategory: async (req, res) => {
       let categories = await ProductHelper.getAllCategories();
       const selectedCategory = req.query.categoryId;
+      logger.info('cat:', selectedCategory);
       let products;
       if (!selectedCategory) {
-          products = await Product.find().limit(12).lean().populate('coupon');
+        products = await productHelper.getAllProducts()
       } else {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
   
+      for (let product of products) {
+        product.avgRating = await productHelper.calculateAverageRating(product._id);
+      }
+
+
       res.render('user/product', {
           selectedCategory,
           products,

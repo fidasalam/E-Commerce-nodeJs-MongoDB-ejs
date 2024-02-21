@@ -35,7 +35,8 @@
                               <% for (let i = 5; i >= 1; i--) { %>
                                 <input type="radio" id="star<%= i %>_<%= item.product._id %>" name="rating" value="<%= i %>" <% if (productrating[item.product._id].length > 0 && productrating[item.product._id][0].value === i) { %>checked<% } %> />
                                 <label for="star<%= i %>_<%= item.product._id %>">&#9733;</label>
-                              <% } %>
+                            <% } %>
+                            
                             </div>
                             <button type="submit" class="submit-rating-btn">Submit Rating</button>
                           </form>
@@ -110,9 +111,10 @@
 /* Product item styles */
 .product-item {
   display: flex;
+  align-items: center;
   flex-direction: column;
   padding: 10px;
-  background-color: #ffffff;
+  background-color: #ebebeb;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -123,6 +125,7 @@
   height: auto;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  max-width: 200px;
 }
 
 /* Product details styles */
@@ -154,6 +157,7 @@ form {
 .rating {
   display: flex;
   align-items: center;
+  flex-direction: row-reverse;
 }
 
 .rating input {
@@ -165,6 +169,7 @@ form {
   color: #ffffff;
   cursor: pointer;
   margin-right: 5px;
+  order: 1;
 }
 
 .rating label:hover,
@@ -197,7 +202,7 @@ form {
 @media only screen and (max-width: 768px) {
     .product-image {
       max-width: 100px; /* Adjust the max-width as needed */
-      height: auto;
+    
     }}
 
 </style>

@@ -4,7 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <style>
+  
+</head>
+<body>
+
+    
+    <div class="header">
+        <h1 class="logo">Checkout</h1>
+    </div>
+
+    <div class="container">
+        <div class="col-md-6">
+            <section class="section">
+                <div class="address">
+                    <h3>Shipping Address</h3>
+                                  <% if (userDetails.shippingAddresses && userDetails.shippingAddresses.length > 0) { %>
+                            <% userDetails.shippingAddresses.forEach(address => { %>
+                                <% if (address.default) { %>
+                                    <p><%= address.street %>, <%= address.city %></p>
+                                    <p><%= address.state %>, <%= address.postalCode %></p>
+                                    <a href="/user/add-address" class="edit-address-btn">Change Address</a>
+                                <% } %>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No shipping address set</p>
+                        <% } %>
+                </div>
+                <hr>
+
+                <div class="cart">
+                    <h3>My Cart</h3>
+                    <% for (let i = 0; i < cart.items.length; i++) { %>
+                        <img class="product-image" src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
+                    <% } %>
+                </div>
+                
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <p><strong>Subtotal:</strong> ₹<%= cart.subtotal.toFixed(0) %></p>
+                    <p><strong>Total: </strong>₹<%= cart.total.toFixed(0)%></p>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-6">
+            <section class="section">
+                <div class="payment-method">
+                    <h3>Payment Method</h3>
+                    <form id="paymentForm" method="post">
+                        <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
+                        <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
+                        <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
+                        <!-- Add more hidden fields as needed -->
+                    
+                        <!-- Radio buttons for payment options -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
+                            <label class="form-check-label" for="cashOnDelivery">
+                                Cash on Delivery
+                            </label>
+                        </div>
+                    
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
+                            <label class="form-check-label" for="stripePayment">
+                                Stripe Payment
+                            </label>
+                        </div>
+                    
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
+                            <label class="form-check-label" for="razorPay">
+                                Razor Pay
+                            </label>
+                        </div>
+                        <div class="flex-c-m flex-w p-b-18 mt-5">
+                            <!-- Add more radio buttons for additional payment options as needed -->
+                        </div>
+                    
+                        <!-- Button to complete the purchase -->
+                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer mt-5" type="submit">Complete Purchase</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            this.action = `/user/${selectedPaymentMethod}`;
+        });
+    </script>
+      <style>
         /* Global styles */
         body {
             font-family: Arial, sans-serif;
@@ -137,97 +229,6 @@
             }
         }
     </style>
-</head>
-<body>
-
-    
-    <div class="header">
-        <h1 class="logo">Checkout</h1>
-    </div>
-
-    <div class="container">
-        <div class="col-md-6">
-            <section class="section">
-                <div class="address">
-                    <h3>Shipping Address</h3>
-                                  <% if (userDetails.shippingAddresses && userDetails.shippingAddresses.length > 0) { %>
-                            <% userDetails.shippingAddresses.forEach(address => { %>
-                                <% if (address.default) { %>
-                                    <p><%= address.street %>, <%= address.city %></p>
-                                    <p><%= address.state %>, <%= address.postalCode %></p>
-                                    <a href="/user/add-address" class="edit-address-btn">Change Address</a>
-                                <% } %>
-                            <% }); %>
-                        <% } else { %>
-                            <p>No shipping address set</p>
-                        <% } %>
-                </div>
-                <hr>
-
-                <div class="cart">
-                    <h3>My Cart</h3>
-                    <% for (let i = 0; i < cart.items.length; i++) { %>
-                        <img class="product-image" src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
-                    <% } %>
-                </div>
-                
-                <div class="order-summary">
-                    <h3>Order Summary</h3>
-                    <p><strong>Subtotal:</strong> ₹<%= cart.subtotal.toFixed(0) %></p>
-                    <p><strong>Total: </strong>₹<%= cart.total.toFixed(0)%></p>
-                </div>
-            </section>
-        </div>
-
-        <div class="col-md-6">
-            <section class="section">
-                <div class="payment-method">
-                    <h3>Payment Method</h3>
-                    <form id="paymentForm" method="post">
-                        <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
-                        <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
-                        <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
-                        <!-- Add more hidden fields as needed -->
-                    
-                        <!-- Radio buttons for payment options -->
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
-                            <label class="form-check-label" for="cashOnDelivery">
-                                Cash on Delivery
-                            </label>
-                        </div>
-                    
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
-                            <label class="form-check-label" for="stripePayment">
-                                Stripe Payment
-                            </label>
-                        </div>
-                    
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
-                            <label class="form-check-label" for="razorPay">
-                                Razor Pay
-                            </label>
-                        </div>
-                        <div class="flex-c-m flex-w p-b-18 mt-5">
-                            <!-- Add more radio buttons for additional payment options as needed -->
-                        </div>
-                    
-                        <!-- Button to complete the purchase -->
-                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer mt-5" type="submit">Complete Purchase</button>
-                    </form>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('paymentForm').addEventListener('submit', function(event) {
-            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-            this.action = `/user/${selectedPaymentMethod}`;
-        });
-    </script>
 </body>
 </html>
 

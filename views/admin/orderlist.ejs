@@ -33,7 +33,7 @@
                                     <td><%= order.user.username %></td>
                                     <!-- <td><%= order.payment.paymentId %></td> -->
                                     <td><%= order.payment.paymentMethod %></td>
-                                    <td><%= order.payment.status %></td>
+                                    <td class="order-status"><%= order.payment.status %></td>
                                     <td><%= order.shippingAddress.addressLine1 %> <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>,  <%= order.shippingAddress.postalCode %></td>
                                     <td><%= order.payment.orderDate.toDateString() %></td>
                                     <td>
@@ -41,17 +41,17 @@
                                             <input type="radio" class="form-check-input status-radio placed" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="placed" <% if(order.payment.status === 'placed') { %>checked<% } %>>
                                             <label class="form-check-label">Placed</label>
                                         </div>
+                                        <br>
                                         <div class="form-check form-check-inline">
                                             <input type="radio" class="form-check-input status-radio shipped" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>
                                             <label class="form-check-label">Shipped</label>
                                         </div>
+                                        <br>
                                         <div class="form-check form-check-inline">
                                             <input type="radio" class="form-check-input status-radio delivered" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="delivered" <% if(order.payment.status === 'delivered') { %>checked<% } %>>
                                             <label class="form-check-label">Delivered</label>
                                         </div>
                                     </td>
-                                    
-                                    <!-- Add more columns as needed -->
 
                                     <!-- Modal for order details -->
                                     <div class="modal fade" id="orderDetailsModal<%= order._id %>" tabindex="-1" aria-labelledby="orderDetailsModalLabel<%= order._id %>" aria-hidden="true">
@@ -78,13 +78,34 @@
             const orderId = radio.getAttribute('data-order-id');
             const status = document.querySelector(`input[name="status${orderId}"]:checked`).value;
             const currentDate = new Date().toISOString();
+
+            // Get the index of the current status
+            const statuses = ['placed', 'shipping', 'delivered'];
+            const currentIndex = statuses.indexOf(status);
+
+            // Check if the status is in sequential order and not reverse
+            const sequential = Array.from(statusRadios)
+                .filter(radio => radio.getAttribute('data-order-id') === orderId)
+                .every((radio, index) => {
+                    const radioStatus = radio.value;
+                    const radioIndex = statuses.indexOf(radioStatus);
+                    return (currentIndex === 0 && radioIndex === 0) || (currentIndex > 0 && radioIndex <= currentIndex);
+                });
+
+            if (!sequential) {
+                // If status is not in sequential order or reverse, display an alert
+                alert('Please update the status sequentially without going back.');
+                this.checked = false; // Uncheck the current radio button
+                return;
+            }
+
             try {
                 const response = await fetch(`/admin/updateStatus/${orderId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ status,currentDate }),
+                    body: JSON.stringify({ status, currentDate }),
                 });
 
                 if (!response.ok) {
@@ -131,83 +152,5 @@
         border-color: #da534f;
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const statusRadios = document.querySelectorAll('.status-radio');
-
-        statusRadios.forEach(radio => {
-            radio.addEventListener('change', async function () {
-                const orderId = radio.getAttribute('data-order-id');
-                const status = document.querySelector(`input[name="status${orderId}"]:checked`).value;
-                const currentDate = new Date().toISOString();
-                
-                // Get the index of the current status
-                const currentIndex = status === 'placed' ? 0 : status === 'shipping' ? 1 : 2;
-
-                // Check if the status is in sequential order
-                const sequential = Array.from(statusRadios)
-                    .filter(radio => radio.getAttribute('data-order-id') === orderId)
-                    .every((radio, index) => {
-                        if (status === 'delivered' && radio.value === 'placed') {
-                            return true; // Allow 'Placed' if 'Delivered' is selected
-                        }
-                        if (index <= currentIndex) {
-                            return radio.checked; // Allow checked radios up to the current index
-                        } else {
-                            return !radio.checked; // Disallow checked radios after the current index
-                        }
-                    });
-
-                if (!sequential) {
-                    // If status is not in sequential order, display an alert
-                    let alertMessage;
-                    switch (status) {
-                        case 'placed':
-                            alertMessage = 'Please ship the order before marking it as Delivered.';
-                            break;
-                        case 'shipping':
-                            alertMessage = 'Please mark the order as Delivered after shipping.';
-                            break;
-                        case 'delivered':
-                            alertMessage = 'The order has already been delivered.';
-                            break;
-                        default:
-                            alertMessage = 'Invalid status selected.';
-                            break;
-                    }
-                    alert(alertMessage);
-                    this.checked = false; // Uncheck the current radio button
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/admin/updateStatus/${orderId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ status, currentDate }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to update order status');
-                    }
-
-                    const updatedOrder = await response.json();
-
-                    // Update the displayed status on the client side
-                    const statusCell = document.querySelector(`[data-order-id="${orderId}"] .order-status`);
-                    if (statusCell) {
-                        statusCell.textContent = status;
-                    }
-                } catch (error) {
-                    console.error('Error:', error.message);
-                }
-            });
-        });
-    });
-</script>
-
 
 <%- include('../partials/adminfooter') %>

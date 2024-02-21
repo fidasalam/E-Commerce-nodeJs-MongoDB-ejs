@@ -135,7 +135,7 @@ async function getNextStatus(currentStatus) {
     async function submitRating(user,productId,rating){
      
     try {
-    
+      // const existingRating = await Rating.findOneAndDelete({ user: user.id, product: productId });
       const newRating = new Rating({
         user: user.id,
         product: productId,
@@ -152,11 +152,110 @@ async function getNextStatus(currentStatus) {
   } ;
 
     
+  async function getTotalOrdersByMonth() {
+    try {
+      const orderData = await Order.aggregate([
+        {
+          $group: {
+            _id: { $month: '$payment.orderDate' },
+            totalOrders: { $sum: 1 } // Count the number of orders for each month
+          }
+        },
+        {
+          $sort: { '_id': 1 } // Sort the results by month in ascending order
+        }
+      ]);
+  
+      return orderData;
+    } catch (error) {
+      console.error('Error fetching total orders data:', error);
+      throw error;
+    }
+  };
     
-    
+  async function getProductSalesByMonth() {
+    try {
+        const salesData = await Order.aggregate([
+            {
+                $unwind: '$items' // Unwind the items array to work with each product separately
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: '$payment.orderDate' }
+                    },
+                    totalQuantity: { $sum: '$items.quantity' } // Sum up the quantities of each product
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id.month',
+                    totalSales: { $sum: '$totalQuantity' } // Calculate the total sales for each month by summing up total quantities
+                }
+            },
+            {
+                $sort: { '_id': 1 } // Sort the results by month in ascending order
+            }
+        ]);
+
+        // Create an array of all months
+        const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
+
+        // Merge the sales data with all months
+        const formattedSalesData = allMonths.map(month => {
+            const salesInMonth = salesData.find(item => item._id === month);
+            return {
+                month: month,
+                totalSales: salesInMonth ? salesInMonth.totalSales : 0 // Set totalSales to 0 if there are no sales for that month
+            };
+        });
+
+        return formattedSalesData;
+    } catch (error) {
+        console.error('Error fetching product sales data:', error);
+        throw error;
+    }
+};
+  
+async function getTotalRevenue() {
+  try {
+      const totalRevenueData = await Order.aggregate([
+          {
+              $unwind: '$items' // Unwind the items array to work with each product separately
+          },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: 'items.product',
+                  foreignField: '_id',
+                  as: 'productInfo'
+              }
+          },
+          {
+              $unwind: '$productInfo'
+          },
+          {
+              $group: {
+                  _id: null,
+                  totalRevenue: { $sum: { $multiply: ['$items.quantity', '$productInfo.price'] } } // Calculate the total revenue by multiplying product quantity with their respective prices and summing them up
+              }
+          }
+      ]);
+
+      // Extract the total revenue from the aggregation result
+      const totalRevenue = totalRevenueData.length > 0 ? totalRevenueData[0].totalRevenue : 0;
+
+      return totalRevenue;
+  } catch (error) {
+      console.error('Error fetching total revenue data:', error);
+      throw error;
+  }
+}
+
+  
 
 module.exports = {
-  submitRating,
+  submitRating,getTotalOrdersByMonth,getTotalRevenue,
     getNextStatus,getProductSalesByMonth,getProductIncomeByMonth
     };
     

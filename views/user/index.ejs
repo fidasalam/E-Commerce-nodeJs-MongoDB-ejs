@@ -198,7 +198,7 @@
     <div class="container">
         <div class="p-b-10 text-center">
             <h3 class="ltext-103 cl5">
-                Product Overview
+                Top Rated Products
             </h3>
         </div>
         <div class="flex-w flex-c-m justify-content-end">
@@ -228,13 +228,18 @@
     </div>
     <div class="row isotope-grid">
         <% products.forEach(product => { %>
-            <div class="col-6 col-md-4 col-lg-3 p-b-35 isotope-item category-<%= product.category %>">
+            <div class="col-6 col-md-2 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
                 <!-- Block2 -->
                 <div class="block2">
                     <div class="block2-pic hov-img0">
                         <a href="/user/productdetails/<%= product._id %>">
                             <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>"
                                 alt="IMG-PRODUCT" class="product-image">
+                                <div class="rating-container">
+                                    <span>&#9733;</span> <!-- Display a filled star -->
+                                    <!-- Display the numeric average rating -->
+                                    <span class="numeric-rating"><%= product.averageRating.toFixed(1) %></span>
+                                </div>
                         </a>
                     </div>
                     <div class="block2-txt flex-w flex-t p-t-14">
@@ -243,9 +248,7 @@
                                 class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 mb-2">
                                 <%= product.name %>
                             </a>
-                            <div class="category-name stext-106 cl6 m-b-10 ml-2">
-                                <%= product.category.name %>
-                            </div>
+                            
                             <div class="price-container flex-w flex-l-m">
                             
                                     <% if (product.coupon) { %>
@@ -317,15 +320,32 @@
 
 
 <style>
-    .product-image {
-        height: 100%; /* Set a fixed height for the images */
-        width: 100%; /* Ensure the image takes the full width of its container */
-        object-fit: cover; /* Maintain the aspect ratio and cover the container */
-    }
-    .block2-pic {
-        position: relative;
-    overflow: hidden; 
+.rating-container {
+    position: absolute;
+    bottom: 10px; /* Adjust the distance from the bottom */
+    left: 10px; /* Adjust the distance from the left */
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 10px;
 }
+
+.rating-container span {
+    margin-right: 5px; /* Add space between the star and numeric rating */
+}
+
+.product-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.block2-pic {
+    position: relative;
+    overflow: hidden;
+}
+
 .price-container {
     display: inline-block; /* Make the container inline */
 }

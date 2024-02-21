@@ -749,37 +749,15 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
 }
 
 .arrow-main-menu-m {
-  font-size: 14px;
-  color: #fff;
-
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  right: 10px;
-  top: 2px;
-  padding: 10px;
-  cursor: pointer;
+  display:none;
 }
 
 .arrow-main-menu-m i {
-  transform-origin: center;
-  -webkit-transition: all 0.3s;
-  -o-transition: all 0.3s;
-  -moz-transition: all 0.3s;
-  transition: all 0.3s;
+  display:none;
 }
 
 .turn-arrow-main-menu-m i {
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  transform: rotate(90deg);
+  display:none;
 }
 
 /*---------------------------------------------*/
@@ -1259,11 +1237,11 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
 }
 
 .wrap-slick1:hover .arrow-slick1 {
-  opacity: 1;
+  display:none;
 }
 
 .arrow-slick1:hover {
-  color: #7280e0;
+  display:none;
 }
 
 .next-slick1 {
@@ -1404,35 +1382,19 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
 
 /*---------------------------------------------*/
 .wrap-slick3-arrows {
-  position: absolute;
-  z-index: 100;
-  width: 83.333333%;
-  right: 0;
-  top: calc(50% - 20px);
+  display:none;
 }
 
 .arrow-slick3 {
-  font-size: 25px;
-  color: #fff;
-  
-  position: absolute;
-  top: 0;
-  width: 40px;
-  height: 40px;
-  background-color: rgba(0,0,0,0.5);
-
-  -webkit-transition: all 0.4s;
-  -o-transition: all 0.4s;
-  -moz-transition: all 0.4s;
-  transition: all 0.4s;
+ display:none;
 }
 
 .arrow-slick3:hover {
-  background-color: rgba(0,0,0,0.9);
+  display:none;
 }
 
-.prev-slick3 {left: 0px;}
-.next-slick3 {right: 0px;}
+.prev-slick3 { display:none;}
+.next-slick3 { display:none;}
 
 /*---------------------------------------------*/
 .wrap-slick3-dots {
@@ -1988,7 +1950,7 @@ input.num-product::-webkit-inner-spin-button {
 
 /*---------------------------------------------*/
 .block1-txt:hover {
-  background-color: rgba(103,117,214,0.8);
+  background-color: rgba(205, 210, 242, 0.475);
 }
 
 .block1-txt:hover .block1-txt-child2 {

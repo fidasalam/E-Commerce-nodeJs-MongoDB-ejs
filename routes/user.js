@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { isAuth } = require('../middleware/isAuth');
-const  preventLoginPageCaching = require('../middleware/back');
+const  noLoginPageCaching = require('../middleware/noLoginPageCache');
 const { getUser } = require('../middleware/getUser');
 
 
@@ -16,7 +16,7 @@ router.get('/productdetails/:productId', getUser, userController.renderProductDe
 
 // Authentication Routes
 router.get('/login', getUser, userController.renderLoginPage);
-router.post('/login', getUser,  preventLoginPageCaching, userController.handleLogin);
+router.post('/login', getUser,  noLoginPageCaching, userController.handleLogin);
 router.get('/logout', getUser, userController.handleLogout);
 router.get('/register', getUser, userController.renderRegisterPage);
 router.post('/register', getUser, userController.handleRegister);
@@ -89,6 +89,6 @@ router.post('/cashOnDelivery', getUser, userController.handleCashOnDelivery);
 
 // Thank You and Order History Routes
 router.get('/thankyou', getUser, userController.renderThankyou);
-router.get('/orders', getUser, userController.renderOrderPage);
+router.get('/orders', getUser, isAuth, userController.renderOrderPage);
 
 module.exports = router;

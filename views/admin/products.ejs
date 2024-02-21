@@ -19,14 +19,14 @@
               <tr>
                 <th scope="col">&nbsp;</th>
                 <th scope="col">&nbsp;</th>
-                <th scope="col">PRODUCT NAME</th>
+                <th scope="col">PRODUCT</th>
                 <th scope="col">CATEGORY</th>
                 <th scope="col">IN STOCK</th>
                 <th scope="col">PRICE</th>
                 <th scope="col">COUPON</th>
                 <th scope="col">ADD COUPON</th>
                 <th scope="col">&nbsp;</th>
-                <select id="categorySelect" class="form-control form-control-sm" onchange="filterByCategory(this.value)">
+                <select style="padding: 10px;"  id="categorySelect" class="form-control form-control-sm " onchange="filterByCategory(this.value)">
                   <option value="All">Select Categories</option>
                   <option value="All">All Categories</option>
                   <option value="Men">Men</option>
@@ -40,7 +40,7 @@
               <!-- Loop through products and generate table rows -->
               <% products.forEach(product => { %>
                 <tr>
-                  <th scope="row"><input type="checkbox" name="productIds" value="<%= product._id %>"/></th>
+                  
                   <% if (product.images && product.images.length > 0) { %>
                     <td><img src="<%= product.images[0] %>" alt="<%= product.name %>" width="50" height="50"></td>
                   <% } else { %>

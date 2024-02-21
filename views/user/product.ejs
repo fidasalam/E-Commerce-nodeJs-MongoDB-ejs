@@ -105,6 +105,13 @@
                             <div class="block2-pic hov-img0">
                                 <a href="/user/productdetails/<%= product._id %>">
                                     <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="IMG-PRODUCT">
+                                    <% if (product.avgRating) { %>
+                                        <div class="rating-container">
+                                            <span>&#9733;</span> <!-- Display a filled star -->
+                                            <!-- Display the numeric average rating -->
+                                            <span class="numeric-rating"><%= product.avgRating.toFixed(1) %></span>
+                                        </div>
+                                    <% } %>
                                 </a>
                             </div>
                             <div class="block2-txt flex-w flex-t p-t-14">
@@ -287,6 +294,7 @@ function addToWishlist(productId) {
                         <div class="block2-pic hov-img0">
                             <a href="/user/productdetails/${product._id}">
                                 <img src="${product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg'}" alt="IMG-PRODUCT">
+                                
                             </a>
                             <a href="/user/productdetails/${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                 Quick View
@@ -327,6 +335,32 @@ function addToWishlist(productId) {
     }
 </script>
 <style>
+    .rating-container {
+    position: absolute;
+    bottom: 10px; /* Adjust the distance from the bottom */
+    left: 10px; /* Adjust the distance from the left */
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 10px;
+}
+
+.rating-container span {
+    margin-right: 5px; /* Add space between the star and numeric rating */
+}
+
+.product-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.block2-pic {
+    position: relative;
+    overflow: hidden;
+}
+
       /* Hamburger menu icon style */
       .toggle-menu-icon {
         text-align: left;

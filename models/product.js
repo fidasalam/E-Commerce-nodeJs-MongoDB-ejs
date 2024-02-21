@@ -58,6 +58,10 @@ const productSchema = mongoose.Schema({
         min: 0,
         max: 5,
     },
+    AvgRating: {
+        type: Number,
+      
+    },
 })
 
 

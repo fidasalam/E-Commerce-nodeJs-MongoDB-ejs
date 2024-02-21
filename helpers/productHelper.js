@@ -18,30 +18,79 @@ module.exports = {
 
   getAllProducts: async () => {
     try {
-      const result = await Product.find({}).populate('category').limit(10).lean();
+      const result = await Product.find({}).populate('category').populate('coupon').lean();
       return result;
     } catch (error) {
       throw new Error('Error fetching all products');
     }
   },
-  getFewProducts: async () => {
-    try {
-      const result = await Product.find({})
-                                    .limit(10) // Adjust the limit as needed
-                                    .populate('category') // If needed
-                                    .lean();
   
-      return result;
+ calculateAverageRating : async (productId) => {
+    try {
+    
+      const ratings = await Rating.find({ product: productId }).lean();
+  
+      if (ratings.length > 0) {
+
+        const totalRating = ratings.reduce((acc, rating) => acc + rating.value, 0);
+        const averageRating = totalRating / ratings.length;
+        
+        return averageRating;
+      } else {
+        return null;
+      }
     } catch (error) {
-      throw new Error('Error fetching few products');
+      throw new Error('Error calculating average rating');
     }
   },
+  
+  getTopRatedProducts: async () => {
+    try {
+        // Aggregate ratings to calculate average rating for each product
+        const topRatedProducts = await Rating.aggregate([
+            {
+                $group: {
+                    _id: "$product", // Group by product
+                    averageRating: { $avg: "$value" } // Calculate average rating
+                }
+            },
+            { $sort: { averageRating: -1 } }, // Sort by average rating in descending order
+            { $limit: 12 } // Limit the result to top 10 products, adjust as needed
+        ]);
+
+        // Extract product IDs and average ratings from the aggregation result
+        const topRatedProductIds = topRatedProducts.map(product => product._id);
+        const productRatingsMap = topRatedProducts.reduce((map, product) => {
+            map[product._id] = product.averageRating;
+            return map;
+        }, {});
+
+        // Fetch details of top-rated products
+        const topRatedProductsDetails = await Product.find({ _id: { $in: topRatedProductIds } })
+            .populate('category') // If needed
+            .lean();
+
+        // Add average rating to each top-rated product
+        const result = topRatedProductsDetails.map(product => {
+            return {
+                ...product,
+                averageRating: productRatingsMap[product._id] // Add average rating
+            };
+        });
+
+        // Return the top-rated products with their details and average ratings
+        return result;
+    } catch (error) {
+        throw new Error('Error fetching top-rated products');
+    }
+},
+
   
   
   
   getAllCategories : async () => {
     try {
-      const categories = await Category.find({}).populate('name').lean();
+      const categories = await Category.find({}).populate('name');
       return categories;
     } catch (error) {
       throw new Error('Error fetching all categories');
@@ -62,12 +111,14 @@ module.exports = {
   getProductsByCategoryName: async (categoryName) => {
     try {
       const selectedCategory = await Category.findOne({ name: categoryName });
-
+     console.log('sel:',selectedCategory)
       if (!selectedCategory) {
         return [];
       }
 
       const products = await Product.find({ category: selectedCategory._id }).limit(12).lean().populate('coupon');
+      console.log('sel:',selectedCategory._id)
+    
       return products;
     } catch (error) {
       throw new Error('Error fetching products by category');
@@ -192,6 +243,33 @@ getProductRatings: async ( productId) => {
     return null;
   }
 },
+
+getAverageRating: async function(productIds) {
+  try {
+    const averageRatings = await Rating.aggregate([
+      {
+        $match: { product: { $in: productIds.map(id => mongoose.Types.ObjectId(id)) } } // Match ratings for the given product IDs
+      },
+      {
+        $group: {
+          _id: "$product", // Group by product ID
+          averageRating: { $avg: "$value" } // Calculate average rating for each product
+        }
+      }
+    ]);
+
+    const averageRatingsMap = averageRatings.reduce((map, rating) => {
+      map[rating._id] = rating.averageRating; // Map product ID to average rating
+      return map;
+    }, {});
+
+    return averageRatingsMap;
+  } catch (error) {
+    console.error('Error getting average ratings:', error);
+    return null; // Return null or handle the error appropriately
+  }
+}
+
 
 
 

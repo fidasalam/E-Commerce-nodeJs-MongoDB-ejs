@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
+const logger = require('morgan');
 const path = require('path'); 
 const connectToDatabase = require('./config/db');
 const session = require('express-session');
@@ -17,8 +17,8 @@ const adminRouter = require('./routes/admin');
 
 
 // Middleware
+app.use(logger('dev'));
 app.use(bodyParser.raw({ type: 'application/json' }));
-app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(flash());

@@ -57,6 +57,15 @@ module.exports = {
         return false; // Return false in case of an error
     }
 },
+getTotalUsers:async()=>{
+  try {
+    const totalUsers = await User.countDocuments();
+    return totalUsers;
+} catch (error) {
+    console.error('Error fetching total user data:', error);
+    throw error;
+
+}},
 
 
   registerUser: async (userData) => {
@@ -218,6 +227,7 @@ verifyOTP: async (email, otp) => {
     }
 
     if (otp === user.otp) {
+        await user.save();
       return true; // Return true if OTP matches
     } else {
       return false; // Return false if OTP doesn't match

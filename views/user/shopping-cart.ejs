@@ -384,7 +384,27 @@
 .ml-auto {
     margin-left: auto;
 }
-    /* Customize modal appearance */
+        /* Customize modal coupon content */
+        .coupon-box {
+        background-color: #f5f5f5; /* Light gray background */
+        padding: 20px; /* Add padding for better appearance */
+        border-radius: 10px; /* Add border-radius for rounded corners */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    }
+
+    .coupon-box p {
+        color: #333; /* Dark text color */
+        margin-bottom: 10px; /* Add some space between paragraphs */
+    }
+
+    #applyCouponBtn {
+        color: #fff;
+        background-color: #2a7cbf; /* Blue background color */
+        border-color: #000000;
+        padding: 10px 20px; /* Adjust padding for better appearance */
+        border-radius: 5px; /* Add border-radius for rounded corners */
+        cursor: pointer;
+    }
     .modal-content {
         background-color: #ffffff;
         border-radius: 10px;
@@ -407,16 +427,7 @@
     .modal-body {
         padding: 10px;
     }
-    #applyCouponBtn{
-    
-        color: #fff;
-    background-color: #2a7cbf;
-    border-color: #000000;
-    padding: 10px 20px; /* Adjust padding for better appearance */
-    border-radius: 5px; /* Add border-radius for rounded corners */
-    cursor: pointer; /
-    }
-
+  
     /* Customize modal footer */
     .modal-footer {
         border-top: none;
@@ -449,6 +460,34 @@
 .discount-percentage {
     color: red;
 }
+    /* Breadcrumb container */
+    .breadcrumb-container {
+        margin-top: 30px; /* Adjust spacing as needed */
+    }
+
+    /* Breadcrumb list */
+    .breadcrumb {
+        background-color: #f5f5f50c; /* Set background color */
+        padding: 10px; /* Add padding around the breadcrumb */
+        border-radius: 5px; /* Add border radius for rounded corners */
+    }
+
+    /* Breadcrumb items */
+    .breadcrumb-item {
+        font-size: 14px; /* Set font size */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb-item a {
+        color: #333; /* Set link color */
+        text-decoration: none; /* Remove default underline */
+    }
+
+    /* Active/current page indicator */
+    .breadcrumb-item.active {
+        color: #555; /* Set color for active page */
+        font-weight: bold; /* Make active page text bold */
+    }
  
 </style>
 
