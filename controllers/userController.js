@@ -19,12 +19,19 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
   //home page
-  displayHomepage: async (req, res) => {
-    let categories = await ProductHelper.getAllCategories();
-    let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
-    productsWithAvgRating = await Product.populate(productsWithAvgRating, { path: 'coupon' });
-    res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
-  },
+displayHomepage: async (req, res) => {
+    try {
+        let categories = await ProductHelper.getAllCategories();
+        let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
+        productsWithAvgRating = await Product.populate(productsWithAvgRating, { path: 'coupon' });
+        res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
+    } catch (error) {
+        // Handle the error appropriately, such as logging it or rendering an error page
+        console.error("Error rendering homepage:", error);
+        res.status(500).render('error', { message: "Internal Server Error" });
+    }
+},
+
 
   //login page
   renderLoginPage: async (req, res) => {
