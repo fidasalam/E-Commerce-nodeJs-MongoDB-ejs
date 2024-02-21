@@ -232,7 +232,15 @@
                 <!-- Block2 -->
                 <div class="block2">
                     <div class="block2-pic hov-img0">
-                      
+                        <a href="/user/productdetails/<%= product._id %>">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>"
+                                alt="IMG-PRODUCT" class="product-image">
+                                <div class="rating-container">
+                                    <span>&#9733;</span> <!-- Display a filled star -->
+                                    <!-- Display the numeric average rating -->
+                                    <span class="numeric-rating"><%= product.averageRating.toFixed(1) %></span>
+                                </div>
+                        </a>
                     </div>
                     <div class="block2-txt flex-w flex-t p-t-14">
                         <div class="block2-txt-child1 flex-col-l">
