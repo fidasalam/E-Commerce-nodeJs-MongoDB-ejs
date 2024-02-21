@@ -236,8 +236,12 @@
                             <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>"
                                 alt="IMG-PRODUCT" class="product-image">
                                 <div class="rating-container">
-                                    <span>&#9733;</span> <!-- Display a filled star -->
-                                    <!-- Display the numeric average rating -->
+                                    <span>&#9733;</span> 
+                                    <% if (product.averageRating !== undefined) { %>
+                                        <%= product.averageRating.toFixed(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
                                     <span class="numeric-rating"></span>
                                 </div>
                         </a>

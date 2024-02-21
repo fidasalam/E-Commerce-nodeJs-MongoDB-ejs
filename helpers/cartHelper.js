@@ -8,46 +8,62 @@ const Coupon = require('../models/coupon');
 
 
 
-async function addToCart(userId, productId, quantity) {
+async function addToCart(userId, productId, quantity, req) {
   try {
-    let cart = await Cart.findOne({ user: userId }).populate({
-      path: 'items.product',
-      model: 'Product',
-    }).exec();
+    let cart;
 
-    if (!cart) {
-      cart = new Cart({ user: userId, items: [] });
+    // If userId is present, retrieve user's cart from the database
+    if (userId) {
+      cart = await Cart.findOne({ user: userId }).populate({
+        path: 'items.product',
+        model: 'Product',
+      }).exec();
+    } else {
+      // If user is a guest, get the cart from the session or create a new one
+      cart = req.session.guestCart || { items: [] };
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
 
-    const existingProduct = cart.items.find(item => item.product._id.toString() === productId);
+    const existingProductIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
 
-   
-
-    if (existingProduct) {
-      existingProduct.quantity += quantityToAdd;
+    if (existingProductIndex !== -1) {
+      // If the product already exists in the cart, update the quantity
+      cart.items[existingProductIndex].quantity += quantityToAdd;
 
       // Remove the item from the cart if the updated quantity is zero
-      if (existingProduct.quantity <= 0) {
-        cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+      if (cart.items[existingProductIndex].quantity <= 0) {
+        cart.items.splice(existingProductIndex, 1);
       }
     } else {
+      // If the product doesn't exist in the cart, add it
       const product = await Product.findById(productId);
       cart.items.push({
         product: { ...product.toJSON(), image: product.image },
         quantity: quantityToAdd,
-        
       });
     }
-   
-    const savedCart = await cart.save();
-    return savedCart;
+
+    // If user is a guest, update the cart in the session
+    if (!userId) {
+      req.session.guestCart = cart;
+    }
+
+    // If user is logged in, save the cart to the database
+    if (userId) {
+      const savedCart = await cart.save();
+      console.log('savecart:', savedCart);
+      return savedCart;
+    } else {
+      console.log('guestCart:', req.session.guestCart);
+      return cart;
+    }
   } catch (error) {
     console.error('Error adding to cart:', error);
-    throw error; // Rethrow the error for better handling in the calling function
+    throw error;
   }
-};
+}
+
 
 
 async function findCouponByCode(couponCode){
@@ -148,8 +164,9 @@ return subtotal;
 
     // Merge guestCart items into userCart
     guestCart.items.forEach(guestCartItem => {
-      const existingProduct = userCart.items.find(item => item.product._id.toString() === guestCartItem.product._id.toString());
-
+      const existingProduct = userCart.items.find(item => 
+        item.product?._id?.toString() === guestCartItem.product?._id?.toString()
+      );
       if (existingProduct) {
         // If the product already exists in the user's cart, update the quantity
         existingProduct.quantity += guestCartItem.quantity;
@@ -164,12 +181,13 @@ return subtotal;
 
     // Save the updated userCart to the database
     const updatedUserCart = await userCart.save();
-    await Cart.findByIdAndDelete(guestCart._id);
+    
 
     console.log('User cart updated in the database:', updatedUserCart);
     return updatedUserCart;
 
   };
+  
   async function updateCart(cart) {
     try {
       // Assuming that cart has a valid _id field

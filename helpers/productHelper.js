@@ -67,7 +67,8 @@ module.exports = {
 
         // Fetch details of top-rated products
         const topRatedProductsDetails = await Product.find({ _id: { $in: topRatedProductIds } })
-            .populate('category') // If needed
+            .populate('category')
+            .populate('coupon') // If needed
             .lean();
 
         // Add average rating to each top-rated product

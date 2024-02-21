@@ -19,19 +19,13 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
   //home page
-displayHomepage: async (req, res) => {
-    try {
-        let categories = await ProductHelper.getAllCategories();
-        let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
-        productsWithAvgRating = await Product.populate(productsWithAvgRating, { path: 'coupon' });
-        res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
-    } catch (error) {
-        // Handle the error appropriately, such as logging it or rendering an error page
-        console.error("Error rendering homepage:", error);
-        res.status(500).render('error', { message: "Internal Server Error" });
-    }
-},
-
+  displayHomepage: async (req, res) => {
+    let categories = await ProductHelper.getAllCategories();
+    let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
+    console.log('rated:',productsWithAvgRating)
+    
+    res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
+  },
 
   //login page
   renderLoginPage: async (req, res) => {
@@ -39,28 +33,30 @@ displayHomepage: async (req, res) => {
   },
 
 
-  // user login
-  handleLogin: async (req, res) => {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    const guestUserId = null;
-    const guestCart = await cartHelper.getCart(guestUserId);
-        
+// user login
+handleLogin: async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  const guestCart = req.session.guestCart;
+  console.log('guestjhk,hk,jhkjhkjhkjhjh:', guestCart);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      req.flash('error', 'Invalid credentials');
-      return res.redirect('/user/login');
-    }
-    if (user.isBlocked) {
-      req.flash('error', 'Your account is blocked. Please contact support for assistance.');
-    }
-    userHelper.generateTokenAndSetSession(user, req);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    req.flash('error', 'Invalid credentials');
+    return res.redirect('/user/login');
+  }
+  if (user.isBlocked) {
+    req.flash('error', 'Your account is blocked. Please contact support for assistance.');
+  }
+  userHelper.generateTokenAndSetSession(user, req);
 
-    if(guestCart){
-    await cartHelper.mergecart(user, guestCart);
-    }
-    res.redirect('/user/index');
-  },
+  if (guestCart) {
+    await cartHelper.mergecart(user, guestCart); // Pass req here
+  
+  }
+
+  res.redirect('/user/index');
+},
+
 
 
 
@@ -297,24 +293,37 @@ handleRegister: async (req, res) => {
   
 
 
-  //cart
-  renderShoppingCart: async (req, res) => {
-    const cart = await cartHelper.getCart(req.userId);
+//cart
+renderShoppingCart: async (req, res) => {
+  let cart;
+
+  if (req.userId) {
+    cart = await cartHelper.getCart(req.userId);
+  } else {
+    cart = req.session.guestCart || { items: [] }; // Retrieve guest cart from session or create a new one
+  }
+
+  if (!cart || cart.items.length === 0) {
+    if (cart) { 
+      await cartHelper.deleteCart(cart._id);
+    }
+    return res.render('user/empty-cart', { userDetails: req.userDetails });
+  }
+
+  let subtotal = cartHelper.calculateSubtotal(cart);
+  let discountedTotal = subtotal;
   
-    if (!cart || cart.items.length === 0) {
-      if (cart) { 
-        await cartHelper.deleteCart(cart._id);
-      }
-      return res.render('user/empty-cart', { userDetails: req.userDetails });
-    }
-    let subtotal = cartHelper.calculateSubtotal(cart);
-    let discountedTotal=subtotal;
-    if(cart.appliedCoupon){
-      discountedTotal=cart.total;
-    }
+  if (cart.appliedCoupon) {
+    discountedTotal = cart.total;
+  }
+
+  // Update cart totals only if it's not a guest cart
+  if (req.userId) {
     await cartHelper.updateCartTotals(cart, subtotal, discountedTotal);
-    res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal })
-  },
+  }
+
+  res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal });
+},
 
 
   //  empty cart page
@@ -332,7 +341,8 @@ handleRegister: async (req, res) => {
         req.flash('error', 'Product is out of stock.');
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
       }
-      await cartHelper.addToCart(userId, productId, 1);
+   
+      await cartHelper.addToCart(userId, productId, 1,req);
       
       return res.redirect(`/user/productdetails/${productId}?addedToCart=true`);
     },
