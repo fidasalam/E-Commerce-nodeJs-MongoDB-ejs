@@ -6,18 +6,12 @@ const Order = require('../models/order');
 const Rating = require('../models/rating');
 const Product = require('../models/product');
 const orderHelper = require('../helpers/orderHelper');
-const logger = require('../util/winston');
 const userHelper = require('../helpers/userHelper');
 const ProductHelper = require('../helpers/productHelper');
 const cartHelper = require('../helpers/cartHelper');
 const productHelper = require('../helpers/productHelper');
 const paymentHelper = require('../helpers/paymentHelper');
 const bcrypt = require('bcryptjs');
-const nodemailerConfig=require('../config/nodemailerConfig')
-const nodemailer = require('nodemailer');
-const otpGenerator = require('otp-generator');
-const product = require('../models/product');
-const transporter = nodemailer.createTransport(nodemailerConfig);
 
 
 
@@ -42,7 +36,6 @@ module.exports = {
   handleLogin: async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
-  
     const guestUserId = null;
     const guestCart = await cartHelper.getCart(guestUserId);
         
@@ -77,6 +70,7 @@ module.exports = {
       }
     });
   },
+
 
   // register page
   renderRegisterPage: async (req, res) => {
@@ -113,8 +107,7 @@ handleRegister: async (req, res) => {
 
       // Send registration email with redirect link
      const otp = await userHelper.sendRegistrationEmail(email);
-      
-      await userHelper.registerUser({
+        await userHelper.registerUser({
         username,
         email,
         password,
@@ -127,12 +120,10 @@ handleRegister: async (req, res) => {
     res.render('user/enterOTP',{userDetails:req.userDetails,email,action})
   } catch (error) {
       console.error(error);
-
-      if (error.code === 11000) {
+        if (error.code === 11000) {
           return res.status(400).send('Username or email already in use.');
       }
-
-      res.status(500).send('Internal Server Error');
+    res.status(500).send('Internal Server Error');
   }
 },
 
@@ -152,16 +143,13 @@ handleRegister: async (req, res) => {
     if (!isPasswordValid) {
       req.flash('error', 'Invalid old password');
      }
-         // Validate new password and confirm password
     if (newPassword && newPassword !== confirmPassword) {
       req.flash('error','New password and confirm password do not match' );
     }
     req.userDetails.username = username;
     req.userDetails.email = email;
     req.userDetails.name = name;
-    req.userDetails.phone = phone;
-
-      
+    req.userDetails.phone = phone; 
     if (newPassword) {
       req.userDetails.password = await bcrypt.hash(newPassword, 10);
     }
@@ -189,11 +177,9 @@ handleRegister: async (req, res) => {
     } ,
 
 
-    //
     verifyOtp: async (req, res) => {
       try {
         const { email, otp, action } = req.body;
-        console.log('Action:', action); 
         const success = await userHelper.verifyOTP(email, otp);
     
         if (success) {
@@ -205,23 +191,21 @@ handleRegister: async (req, res) => {
             res.redirect('/user/login');
           } 
         } else {
-
           req.flash('error', 'Incorrect OTP. Please try again.');
           res.redirect('/user/enter-otp'); // Redirect back to OTP verification page
         }
       } catch (error) {
-        console.error(error);
         res.status(500).send('Internal Server Error');
       }
     },
     
-  
 
   resetPassword:async (req, res) => {
         const { email, newPassword } = req.body;
         await userHelper.updateUserPassword(email, newPassword);
          res.redirect('/user/index')
         } ,
+
 
   renderEnterOTPPage: async(req,res)=>{
           res.render('user/enterOTP', { userDetails: req.userDetails });
@@ -232,33 +216,28 @@ handleRegister: async (req, res) => {
         //  product details page
       renderProductDetail: async (req, res) => {
         const productId = req.params.productId;
-        
         const product = await Product.findById(productId).populate('coupon');
         const ratingData = await productHelper.getProductRatings(productId);
-        console.log('rating:',ratingData);
         if (!product) {
             return res.status(404).render('error', { message: 'Product not found' });
         }
             res.render('user/productdetails', { product, userDetails: req.userDetails,rating:ratingData });
       },
 
+
     // products by category
     renderProductsByCategory: async (req, res) => {
       let categories = await ProductHelper.getAllCategories();
       const selectedCategory = req.query.categoryId;
-      logger.info('cat:', selectedCategory);
       let products;
       if (!selectedCategory) {
         products = await productHelper.getAllProducts()
       } else {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
-  
       for (let product of products) {
         product.avgRating = await productHelper.calculateAverageRating(product._id);
       }
-
-
       res.render('user/product', {
           selectedCategory,
           products,
@@ -299,6 +278,7 @@ handleRegister: async (req, res) => {
   renderContact: async (req, res) => {
     res.render('user/contact', { userDetails: req.userDetails });
   },
+
 
   handleContact:async (req, res) => {
     
@@ -341,7 +321,6 @@ handleRegister: async (req, res) => {
       const { productId } = req.body;
       const userId = req.session.userId;
       const product = await Product.findById(productId);
-      
       if (!product || product.inStock <= 0) {
         req.flash('error', 'Product is out of stock.');
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
@@ -414,8 +393,6 @@ filterProducts: async (req, res) => {
           break;
       }
     }
-    
-  
     const products = await Product.find(filterCriteria).sort(sortCriteria).limit(12).lean();
     res.setHeader('Cache-Control', 'no-store');
     res.json({ products });
@@ -471,7 +448,6 @@ filterProducts: async (req, res) => {
    if (!wishlistItem) {
       return res.status(404).json({ error: 'Product not found in the wishlist' });
     }
-
     await cartHelper.addToCart(req.userDetails, productId, 1);
     await Wishlist.findOneAndDelete({ user: req.userDetails, product: productId });
     res.redirect('/user/wishlist');
@@ -496,7 +472,6 @@ filterProducts: async (req, res) => {
     cart.total=roundedDiscountedTotal;
     cart.appliedCoupon=coupon;
     await cart.save();
-    console.log('cart',cart);
     res.json({ message: 'Cart updated successfully' });
   
   },
@@ -517,9 +492,9 @@ filterProducts: async (req, res) => {
 
 removeCoupon: async (req, res) => {
 const cart = await cartHelper.getCart(req.userId);
- const discountedTotal=cart.subtotal;
+const discountedTotal=cart.subtotal;
 cart.appliedCoupon=null;
- cart.total=discountedTotal;
+cart.total=discountedTotal;
 await cart.save();
   res.json({ success: true ,discountedTotal});
 },
@@ -532,7 +507,6 @@ await cart.save();
     const latestOrder = await Order.findOne({ user: req.userDetails._id }).sort({ createdAt: -1 });
     const hasAddress = req.userDetails.shippingAddresses && req.userDetails.shippingAddresses.length > 0;
     if (hasAddress) {
-      // If the user has an address, render the checkout page
       return res.render('user/checkout', {
         userDetails: req.userDetails,
         cart,
@@ -540,10 +514,10 @@ await cart.save();
       });
     } else {
       res.redirect('/user/add-address')
-    }
-    
+    }   
   },
 
+  //address
   getAddAddress: async (req, res) => {
    res.render('user/editAddress',{ userDetails: req.userDetails});
   },
@@ -572,8 +546,6 @@ await cart.save();
       state: req.body.state || userDetails.shippingAddresses[index].state,
       postalCode: req.body.postalCode || userDetails.shippingAddresses[index].postalCode
     };
-
-    console.log('addressindex:',userDetails.shippingAddresses[index])
     await userDetails.save();
     res.redirect('/user/add-address')
     },
@@ -689,19 +661,17 @@ renderOrderPage: async (req, res) => {
       const productRatings = {};
       for (const order of orders) {
         for (const item of order.items) {
-            // Query the ratings for the product
             const ratings = await Rating.find({ product: item.product._id });
-
-            // Attach the ratings to the product item
             item.product.ratings = ratings;
             productRatings[item.product._id] = ratings;
 
         }
     }
-    console.log('productrating:',productRatings)
       res.render('user/orderHistory', { orderHistory: orders, userDetails: req.userDetails,productrating:productRatings });
     },
 
+
+    //rating
     submitRating: async (req, res) => {
       const userDetails= req.userDetails;
       const { productId, rating } = req.body;
