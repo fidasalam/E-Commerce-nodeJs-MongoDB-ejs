@@ -46,45 +46,53 @@ module.exports = {
   
   getTopRatedProducts: async () => {
     try {
-        // Aggregate ratings to calculate average rating for each product
-        const topRatedProducts = await Rating.aggregate([
-            {
-                $group: {
-                    _id: "$product", // Group by product
-                    averageRating: { $avg: "$value" } // Calculate average rating
-                }
-            },
-            { $sort: { averageRating: -1 } }, // Sort by average rating in descending order
-            { $limit: 12 } // Limit the result to top 10 products, adjust as needed
-        ]);
+        // Find all ratings
+        const ratings = await Rating.find();
 
-        // Extract product IDs and average ratings from the aggregation result
-        const topRatedProductIds = topRatedProducts.map(product => product._id);
-        const productRatingsMap = topRatedProducts.reduce((map, product) => {
-            map[product._id] = product.averageRating;
-            return map;
-        }, {});
+        // Calculate average rating for each product
+        const productRatingsMap = {};
+        const productRatingCount = {};
+        ratings.forEach(rating => {
+            if (!productRatingsMap[rating.product]) {
+                productRatingsMap[rating.product] = 0;
+                productRatingCount[rating.product] = 0;
+            }
+            productRatingsMap[rating.product] += rating.value;
+            productRatingCount[rating.product]++;
+        });
+
+        // Calculate average rating
+        const averageRatings = {};
+        for (const productId in productRatingsMap) {
+            averageRatings[productId] = productRatingsMap[productId] / productRatingCount[productId];
+        }
+
+        // Sort products by average rating
+        const sortedProductIds = Object.keys(averageRatings).sort((a, b) => averageRatings[b] - averageRatings[a]);
+
+        // Limit to top 10 products
+        const topRatedProductIds = sortedProductIds.slice(0, 10);
 
         // Fetch details of top-rated products
         const topRatedProductsDetails = await Product.find({ _id: { $in: topRatedProductIds } })
             .populate('category')
-            .populate('coupon') // If needed
+            .populate('coupon')
             .lean();
 
         // Add average rating to each top-rated product
         const result = topRatedProductsDetails.map(product => {
             return {
                 ...product,
-                averageRating: productRatingsMap[product._id] // Add average rating
+                averageRating: averageRatings[product._id] || 0 // Set default rating to 0 if not available
             };
         });
 
-        // Return the top-rated products with their details and average ratings
         return result;
     } catch (error) {
         throw new Error('Error fetching top-rated products');
     }
 },
+
 
   
   
