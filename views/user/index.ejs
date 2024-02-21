@@ -237,8 +237,12 @@
                                 alt="IMG-PRODUCT" class="product-image">
                                 <div class="rating-container">
                                     <span>&#9733;</span> <!-- Display a filled star -->
-                                    <!-- Display the numeric average rating -->
-                                    <span class="numeric-rating"><%= product.averageRating.toFixed(1) %></span>
+                                    <% if (product && product.averageRating !== undefined) { %>
+                                        <span class="numeric-rating"><%= product.averageRating.toFixed(1) %></span>
+                                    <% } else { %>
+                                        <!-- Handle the case where product or product.averageRating is undefined -->
+                                    <% } %>
+                                    
                                 </div>
                         </a>
                     </div>
