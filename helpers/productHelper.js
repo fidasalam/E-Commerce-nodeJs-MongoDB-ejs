@@ -71,7 +71,7 @@ module.exports = {
         const sortedProductIds = Object.keys(averageRatings).sort((a, b) => averageRatings[b] - averageRatings[a]);
 
         // Limit to top 10 products
-        const topRatedProductIds = sortedProductIds.slice(0, 10);
+        const topRatedProductIds = sortedProductIds.slice(0, 12);
 
         // Fetch details of top-rated products
         const topRatedProductsDetails = await Product.find({ _id: { $in: topRatedProductIds } })

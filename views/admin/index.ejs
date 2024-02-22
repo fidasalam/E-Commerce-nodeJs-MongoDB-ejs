@@ -5,42 +5,20 @@
     <div class="col">
       <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
     
-      <!-- Total Orders, Total Profit, User Registrations -->
-      <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-4">
-          <div class="box tm-bg-primary-dark tm-rounded-corner">
-            <h2 class="tm-block-title">Total Orders</h2>
-            <p class="tm-block-text"> <%= totalOrders %> </p>
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-6 col-lg-4">
-          <div class="box tm-bg-primary tm-rounded-corner">
-            <h2 class="tm-block-title">Total Revenue</h2>
-            <p class="tm-block-text"> <%= totalRevenue %> </p>
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-6 col-lg-4">
-          <div class="box tm-bg-primary-light tm-rounded-corner">
-            <h2 class="tm-block-title">User Registrations</h2>
-            <p class="tm-block-text"> <%= users %> </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-          <div class="box tm-bg-secondary-dark tm-rounded-corner">
-            <h2 class="tm-block-title">Sales Chart</h2>
-            <!-- Render canvas for the sales chart -->
-            <canvas id="salesChart"></canvas>
-          </div>
+      <div class="row tm-content-row">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col ">
+            <div class="tm-bg-primary-dark tm-block">
+                <h2 class="tm-block-title">Sales Chart</h2>
+                <!-- Render canvas for the sales chart -->
+                <canvas id="salesChart"></canvas>
+            </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-          <div class="box tm-bg-secondary tm-rounded-corner">
-            <h2 class="tm-block-title">Income Chart</h2>
-            <!-- Render canvas for the income chart -->
-            <canvas id="incomeChart"></canvas>
-          </div>
+            <div class="tm-bg-primary-dark tm-block">
+                <h2 class="tm-block-title">Income Chart</h2>
+                <!-- Render canvas for the income chart -->
+                <canvas id="incomeChart"></canvas>
+            </div>
         </div>
       </div>
       
@@ -140,36 +118,5 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Income chart created:', incomeChart);
 });
 </script>
-<style>
-  /* Custom styles for the boxes */
-  .box {
-    border-radius: 10px; /* Add some border radius for rounded corners */
-    padding: 10px; /* Add some padding inside the box */
-    margin-bottom: 20px; /* Add some margin to separate the boxes */
-    color: #ffffff; /* Set the text color */
-    font-size: 16px; /* Set the font size */
-  }
-
-  /* Custom background colors for different boxes */
-  .tm-bg-primary-dark {
-    background-color: #3f51b5; /* Dark primary color */
-  }
-
-  .tm-bg-primary {
-    background-color: #2196f3; /* Primary color */
-  }
-
-  .tm-bg-primary-light {
-    background-color: #9fa8da; /* Light primary color */
-  }
-
-  .tm-bg-secondary-dark {
-    background-color: #d5e1dc; /* Dark secondary color */
-  }
-
-  .tm-bg-secondary {
-    background-color: #f8e7e7; /* Secondary color */
-  }
-</style>
 
 <%- include('../partials/adminfooter') %>
