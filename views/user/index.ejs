@@ -235,15 +235,13 @@
                         <a href="/user/productdetails/<%= product._id %>">
                             <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>"
                                 alt="IMG-PRODUCT" class="product-image">
-                                <div class="rating-container">
-                                    <span>&#9733;</span> 
-                                    <% if (product.averageRating !== undefined) { %>
+                                <% if (product.averageRating !== undefined) { %>
+                                    <div class="rating-container">
+                                        <span>&#9733;</span> 
                                         <%= product.averageRating.toFixed(1) %>
-                                    <% } else { %>
-                                        N/A
-                                    <% } %>
-                                    <span class="numeric-rating"></span>
-                                </div>
+                                        <span class="numeric-rating"></span>
+                                    </div>
+                                <% } %>
                         </a>
                     </div>
                     <div class="block2-txt flex-w flex-t p-t-14">
