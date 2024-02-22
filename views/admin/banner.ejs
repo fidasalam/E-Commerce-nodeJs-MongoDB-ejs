@@ -1,0 +1,40 @@
+<!-- views/admin/add-banner.ejs -->
+
+<%- include('../partials/adminheader') %>
+
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Add Banner</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-12">
+                        <form action="/admin/banners" method="post" enctype="multipart/form-data" class="tm-edit-product-form">
+                            <div class="form-group mb-3">
+                                <label for="bannerImage">Banner Image</label>
+                                <input type="file" id="bannerImage" name="bannerImage" class="form-control-file" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="bannerDescription">Banner Title</label>
+                                <textarea id="bannerDescription" name="title" class="form-control" rows="5" placeholder="Enter description for the banner"></textarea>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="bannerDescription">Banner Description</label>
+                                <textarea id="bannerDescription" name="description" class="form-control" rows="5" placeholder="Enter description for the banner"></textarea>
+                            </div>
+                            <div class="col-6 col-xl-12 col-lg-12">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Add Banner</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/adminfooter') %>

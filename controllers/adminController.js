@@ -3,6 +3,7 @@ const Product = require('../models/product');
 const Category = require('../models/category');
 const DeletedUser = require('../models/deletedUser');
 const Coupon = require('../models/coupon')
+const Banner = require('../models/banner');
 const Order = require('../models/order');
 const ProductHelper = require('../helpers/productHelper');
 const orderHelper = require('../helpers/orderHelper');
@@ -183,6 +184,26 @@ exports.postProductCoupon = async(req, res) => {
   return res.status(200).json({ message: 'Coupon added to product successfully' });
 };
 
+exports.getBanner = async (req, res) => {
+  res.render('admin/banner');
+} ;
+
+exports.postBanner = async (req, res) => {
+  upload.single('bannerImage')(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    const {  description ,title} = req.body;
+    const imagePath = `/uploads/product-images/${req.file.filename}`; // Path to the uploaded banner image
+    const newBanner = new Banner({
+      bannerImage: imagePath,
+      bannerTitle:title,
+      bannerDescription:description,
+    });
+    await newBanner.save();
+    return res.redirect('/admin/banner');
+  });
+} ;
 
 exports.renderUsersList = async (req, res) => {
     const users = await User.find();

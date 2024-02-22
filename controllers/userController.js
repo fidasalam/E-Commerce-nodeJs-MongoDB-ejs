@@ -5,6 +5,7 @@ const Coupon = require('../models/coupon');
 const Order = require('../models/order');
 const Rating = require('../models/rating');
 const Product = require('../models/product');
+const Banner = require('../models/banner');
 const orderHelper = require('../helpers/orderHelper');
 const userHelper = require('../helpers/userHelper');
 const ProductHelper = require('../helpers/productHelper');
@@ -21,10 +22,12 @@ module.exports = {
   //home page
   displayHomepage: async (req, res) => {
     let categories = await ProductHelper.getAllCategories();
+    let banners = await Banner.find();
+    console.log('banner:',banners)
     let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
-    console.log('rated:',productsWithAvgRating)
+    // console.log('rated:',productsWithAvgRating)
     
-    res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails });
+    res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails,banners });
   },
 
   //login page

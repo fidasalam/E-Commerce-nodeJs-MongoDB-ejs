@@ -22,6 +22,12 @@ router.get('/coupen', adminController.getAddCoupon);
 router.post('/add-coupon', adminController.postAddCoupon);
 router.post('/add-productCoupon', adminController.postProductCoupon);
 
+
+router.get('/banner', adminController.getBanner);
+router.post('/banners', adminController.postBanner);
+
+
+
 // User Management Routes
 router.get('/userlist', adminController.renderUsersList);
 router.get('/delete-user/:id', adminController.deleteUser);
