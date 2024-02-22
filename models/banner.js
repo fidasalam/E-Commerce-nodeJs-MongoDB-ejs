@@ -13,7 +13,7 @@ const bannerSchema = new mongoose.Schema({
     bannerDescription: {
         type: String
     }
-});
+},{ autoCreate: true });
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
