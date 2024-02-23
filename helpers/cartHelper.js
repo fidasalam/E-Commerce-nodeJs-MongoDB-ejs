@@ -8,6 +8,7 @@ const Coupon = require('../models/coupon');
 
 
 
+
 async function addToCart(userId, productId, quantity, req) {
   try {
     let cart;
@@ -21,6 +22,7 @@ async function addToCart(userId, productId, quantity, req) {
     } else {
       // If user is a guest, get the cart from the session or create a new one
       cart = req.session.guestCart || { items: [] };
+      
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
@@ -63,7 +65,6 @@ async function addToCart(userId, productId, quantity, req) {
     throw error;
   }
 }
-
 
 
 async function findCouponByCode(couponCode){
