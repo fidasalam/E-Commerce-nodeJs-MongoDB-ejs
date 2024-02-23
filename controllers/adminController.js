@@ -184,6 +184,8 @@ exports.postProductCoupon = async(req, res) => {
   return res.status(200).json({ message: 'Coupon added to product successfully' });
 };
 
+
+
 exports.getBanner = async (req, res) => {
   res.render('admin/banner');
 } ;

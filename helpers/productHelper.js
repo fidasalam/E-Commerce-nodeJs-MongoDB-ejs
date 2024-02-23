@@ -99,7 +99,7 @@ module.exports = {
   
   getAllCategories : async () => {
     try {
-      const categories = await Category.find({}).populate('name');
+      const categories = await Category.find({}).populate('name').lean();
       return categories;
     } catch (error) {
       throw new Error('Error fetching all categories');

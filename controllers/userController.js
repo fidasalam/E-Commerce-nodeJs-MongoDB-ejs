@@ -22,11 +22,8 @@ module.exports = {
   //home page
   displayHomepage: async (req, res) => {
     let categories = await ProductHelper.getAllCategories();
-    let banners = await Banner.find();
-    console.log('banner:',banners)
+    let banners = await Banner.find({}).lean();
     let productsWithAvgRating = await ProductHelper.getTopRatedProducts();
-    // console.log('rated:',productsWithAvgRating)
-    
     res.render('user/index', { products: productsWithAvgRating, categories, userDetails: req.userDetails,banners });
   },
 
@@ -41,7 +38,6 @@ handleLogin: async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
   const guestCart = req.session.guestCart;
-  console.log('guestjhk,hk,jhkjhkjhkjhjh:', guestCart);
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     req.flash('error', 'Invalid credentials');

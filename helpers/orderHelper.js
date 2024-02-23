@@ -194,19 +194,19 @@ async function getNextStatus(currentStatus) {
                 }
             },
             {
-                $sort: { '_id': 1 } // Sort the results by month in ascending order
+                $sort: { '_id': 1 } 
             }
         ]);
 
-        // Create an array of all months
+      
         const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
 
-        // Merge the sales data with all months
+        
         const formattedSalesData = allMonths.map(month => {
             const salesInMonth = salesData.find(item => item._id === month);
             return {
                 month: month,
-                totalSales: salesInMonth ? salesInMonth.totalSales : 0 // Set totalSales to 0 if there are no sales for that month
+                totalSales: salesInMonth ? salesInMonth.totalSales : 0 
             };
         });
 
@@ -221,7 +221,7 @@ async function getTotalRevenue() {
   try {
       const totalRevenueData = await Order.aggregate([
           {
-              $unwind: '$items' // Unwind the items array to work with each product separately
+              $unwind: '$items' 
           },
           {
               $lookup: {
@@ -237,12 +237,12 @@ async function getTotalRevenue() {
           {
               $group: {
                   _id: null,
-                  totalRevenue: { $sum: { $multiply: ['$items.quantity', '$productInfo.price'] } } // Calculate the total revenue by multiplying product quantity with their respective prices and summing them up
+                  totalRevenue: { $sum: { $multiply: ['$items.quantity', '$productInfo.price'] } } 
               }
           }
       ]);
 
-      // Extract the total revenue from the aggregation result
+
       const totalRevenue = totalRevenueData.length > 0 ? totalRevenueData[0].totalRevenue : 0;
 
       return totalRevenue;
