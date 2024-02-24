@@ -119,13 +119,13 @@ module.exports = {
 
   getProductsByCategoryName: async (categoryName) => {
     try {
-      const selectedCategory = await Category.findOne({ name: categoryName });
+      const selectedCategory = await Category.findOne({ name: categoryName }).lean();
      console.log('sel:',selectedCategory)
       if (!selectedCategory) {
         return [];
       }
 
-      const products = await Product.find({ category: selectedCategory._id }).limit(12).lean().populate('coupon');
+      const products = await Product.find({ category: selectedCategory._id }).limit(12).populate('coupon').lean();
       console.log('sel:',selectedCategory._id)
     
       return products;
@@ -265,7 +265,7 @@ getAverageRating: async function(productIds) {
           averageRating: { $avg: "$value" } // Calculate average rating for each product
         }
       }
-    ]);
+    ]).lean();
 
     const averageRatingsMap = averageRatings.reduce((map, rating) => {
       map[rating._id] = rating.averageRating; // Map product ID to average rating

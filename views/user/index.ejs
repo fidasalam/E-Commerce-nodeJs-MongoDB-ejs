@@ -350,6 +350,25 @@
     z-index: 1;
 }
 
+/* Your existing CSS styles */
+
+/* Media query for small devices (up to 768px) */
+@media only screen and (max-width: 768px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 50%; /* Make columns take up 50% width on small screens */
+        flex: 0 0 50%; /* Prevent columns from shrinking and expanding */
+    }
+}
+
+/* Media query for extra small devices (up to 576px) */
+@media only screen and (max-width: 576px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 100%; /* Make columns take up 100% width on extra small screens */
+        flex: 0 0 100%; /* Prevent columns from shrinking and expanding */
+    }
+}
 
 </style>
 
