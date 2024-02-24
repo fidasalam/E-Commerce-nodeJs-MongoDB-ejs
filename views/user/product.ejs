@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
-<!-- Product -->
+
 <div class="container mt-5">
-    <section class="bg0 p-t-23 p-b-140">
+    <section class="bg0 p-t-23 ">
         <div class="flex-w flex-sb-m p-b-52 justify-content-end">
             <div class="flex-w flex-c-m m-tb-10">
                 <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
@@ -29,9 +29,7 @@
 				</div>
             </div>
             </div>
-
-            
-            
+        </div>
          
             
             <!-- Filter -->
@@ -97,9 +95,11 @@
             </div>
             
          
-            <div class="row isotope-grid ">
+            <section class="bg0 p-t-23 p-b-140">
+                <div class="container">
+                    <div class="row">
                 <% products.forEach(product => { %>
-                    <div class="col-6 col-md-2 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
+                    <div class="col-6 col-md-4 col-lg-3 p-b-35 isotope-item category-<%= product.category %>">
                         <!-- Block2 -->
                         <div class="block2">
                             <div class="block2-pic hov-img0">
@@ -149,9 +149,11 @@
                     </div>
                 <% }) %>
             </div>
+            </div>
+            </section>
             
             <!-- Load more -->
-            <div class="flex-c-m flex-w w-full p-t-45 text-center">
+            <div class="flex-c-m flex-w w-full p-t-45 text-center mb-5">
                 <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
                     Load More
                 </a>
@@ -351,9 +353,11 @@ function addToWishlist(productId) {
 }
 
 .product-image {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .block2-pic {
