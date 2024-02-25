@@ -54,6 +54,7 @@
                             <option value="priceLowToHigh">Price: Low to High</option>
                             <option value="priceHighToLow">Price: High to Low</option>
                         </select>
+                     
                     </div>
                 </div>
             </div>
@@ -96,10 +97,10 @@
             
          
             <section class="bg0 p-t-23 p-b-140">
-                <div class="container">
-                    <div class="row">
+                <div class="container  ">
+                    <div class="row isotope-grid ">
                 <% products.forEach(product => { %>
-                    <div class="col-6 col-md-4 col-lg-3 p-b-35 isotope-item category-<%= product.category %>">
+                    <div class="col-6 col-md-4 col-lg-2 p-b-35 isotope-item category-<%= product.category %>">
                         <!-- Block2 -->
                         <div class="block2">
                             <div class="block2-pic hov-img0">
@@ -152,112 +153,16 @@
             </div>
             </section>
             
-            <!-- Load more -->
-            <div class="flex-c-m flex-w w-full p-t-45 text-center mb-5">
+    
+            <!-- <div class="flex-c-m flex-w w-full p-t-45 text-center mb-5">
                 <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
                     Load More
                 </a>
-            </div>
+            </div> -->
         </section>
     </div>
 </div>
 
-
-
-<script>
-   $(document).ready(function() {
-    // Function to fetch search suggestions
-    function fetchSuggestions(query) {
-        $.ajax({
-            method: 'POST',
-            url: '/user/search/suggestions',
-            data: { query: query },
-            success: function(response) {
-                // Clear previous suggestions
-                $('#searchSuggestionsContainer').empty();
-
-                // Append new suggestions to the container
-                response.forEach(suggestion => {
-                    // Create suggestion element and append to container
-                    const $suggestion = $('<div class="suggestion">' + suggestion + '</div>');
-                    $('#searchSuggestionsContainer').append($suggestion);
-
-                    // Handle click on suggestion
-                    $suggestion.click(function() {
-                        // Fill input field with suggestion text
-                        $('#searchSuggestions').val(suggestion);
-
-                        // Clear suggestions container
-                        $('#searchSuggestionsContainer').empty();
-                    });
-                });
-            },
-            error: function(error) {
-                console.error('Error fetching suggestions:', error);
-            }
-        });
-    }
-
-    // Handle input event on the search input field for fetching suggestions
-    $('#searchSuggestions').on('input', function() {
-        const query = $(this).val();
-        fetchSuggestions(query);
-    });
-
-    // Handle form submission for search
-    $('#searchForm').submit(function(event) {
-        event.preventDefault(); // Prevent default form submission
-        const query = $('#searchSuggestions').val().trim();
-        if (query.length > 0) {
-            $(this).unbind('submit').submit();
-        } else {
-            console.log('Search query is empty.');
-        }
-    });
-
-    $('#searchSuggestions').on('keypress', function(event) {
-        // Check if the pressed key is Enter (key code 13)
-        if (event.which === 13) {
-            // If Enter was pressed, trigger the form submission
-            $('#searchForm').submit();
-        }
-    });
-});
-
-</script>
-<script>
-    // Remove the existing JavaScript code related to the search button
-    $(document).ready(function() {
-        // You can still keep this event listener for handling form submission
-        $('form[name="searchForm"]').submit(function(event) {
-            // The rest of your logic for handling the form submission
-            // ...
-        });
-
-        $('.js-addwish-b2').click(function(event) {
-        event.preventDefault();
-        var productId = $(this).data('product-id');
-        addToWishlist(productId);
-    });
-});
-
-function addToWishlist(productId) {
-    // Send an AJAX request to add the product to the wishlist
-    $.ajax({
-        type: 'POST',
-        url: `/user/wishlist/${productId}`,
-        success: function (data) {
-            console.log('Successfully added to wishlist');
-            // Optionally, you can update the UI here to reflect the changes
-        },
-        error: function (error) {
-            console.error('Error adding to wishlist:', error);
-        }
-    });
-}
-    
-</script>
-<!-- Add this within your HTML file, preferably at the end before the closing body tag -->
 <script>
     $(document).ready(function () {
         // Define a function to filter and update the product list
@@ -269,7 +174,7 @@ function addToWishlist(productId) {
             // Make an AJAX request to your server to fetch filtered products
             $.ajax({
                 type: 'GET',
-                url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&timestamp=${new Date().getTime()}`,
+                url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&category=${category}&timestamp=${new Date().getTime()}`,
                 success: function (data) {
                     // Assuming data is an array of filtered products
                     updateProductList(data.products);
@@ -280,14 +185,15 @@ function addToWishlist(productId) {
             });
         }
     
-        // Handle change events for price range and sorting options
-        $('#priceRange, #sortBy,#selectedCategory').change(function () {
+        // Handle change events for price range, sorting options, and category
+        $('#priceRange, #sortBy, #selectedCategory').change(function () {
             filterProducts();
         });
     
         // Implement the updateProductList function
         function updateProductList(products) {
-            $('.row.isotope-grid').empty(); // Clear the existing product list
+            const grid = $('.row.isotope-grid');
+    grid.empty();
     
             products.forEach(product => {
                 const productHtml = `
@@ -325,17 +231,24 @@ function addToWishlist(productId) {
                 `;
     
                 // Append the new product HTML to the container
-                $('.row.isotope-grid').append(productHtml);
+                grid.append(productHtml);
             });
+            grid.isotope({
+        itemSelector: '.isotope-item',
+        layoutMode: 'fitRows' // Choose the layout mode that fits your design
+    });
+    grid.isotope('layout');
         }
     });
-</script>
-<script>
+
+    // Function to toggle categories menu
     function toggleMenu() {
         var categoriesContainer = document.querySelector('.categories-container');
         categoriesContainer.classList.toggle('show-categories');
     }
 </script>
+
+<%- include('../partials/footer') %>
 <style>
     .rating-container {
     position: absolute;
@@ -352,18 +265,7 @@ function addToWishlist(productId) {
     margin-right: 5px; /* Add space between the star and numeric rating */
 }
 
-.product-image {
-    height: auto;
-    max-width: 100%;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
 
-.block2-pic {
-    position: relative;
-    overflow: hidden;
-}
 
       /* Hamburger menu icon style */
       .toggle-menu-icon {
@@ -433,7 +335,9 @@ function addToWishlist(productId) {
         font-size: 16px;
         color: #333;
     }
-
+   /* .isotope-grid{
+    height: 500px !important;
+   } */
     /* Adjustments for the product items */
     .isotope-item {
         margin-bottom: 20px; /* Add some margin at the bottom of each item */
@@ -461,9 +365,11 @@ function addToWishlist(productId) {
     overflow: hidden; /* Ensure that overflow is hidden */
 }
 .product-image {
-    height: 100%; /* Set a fixed height for the images */
-    width: 100%; /* Ensure the image takes the full width of its container */
-    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;/* Maintain the aspect ratio and cover the container */
 }
 .category-name {
     position: absolute;
@@ -477,7 +383,13 @@ function addToWishlist(productId) {
     border-top-right-radius: 5px; /* Rounded corners */
     z-index: 1; /* Ensure the category name is above the image */
 }
- /* Show the hamburger menu icon only for small devices */
+@media only screen and (max-width: 576px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 100%; /* Make columns take up 100% width on extra small screens */
+        flex: 0 0 100%; /* Prevent columns from shrinking and expanding */
+    }
+}
  @media screen and (max-width: 767px) {
         .toggle-menu-icon {
             display: block;
@@ -492,7 +404,11 @@ function addToWishlist(productId) {
             display:inline /* Show on small devices when toggled */
         }
     
-
+        .col-md-2,
+    .col-lg-3 {
+        width: 50%; /* Make columns take up 50% width on small screens */
+        flex: 0 0 50%; /* Prevent columns from shrinking and expanding */
+    }
 
         /* Adjustments for the product items on small devices */
         .isotope-item {
@@ -538,5 +454,3 @@ function addToWishlist(productId) {
     }
 
 </style>
-
-<%- include('../partials/footer') %> 
