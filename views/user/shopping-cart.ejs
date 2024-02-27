@@ -70,7 +70,7 @@
 
                 
                     <div class="col-md-4 ">
-                        <% if (cart.user) { %>
+                        
                         <p class="card-text"><strong>Total: </strong>
                             <% if (cart.items[i].product && cart.items[i].product.coupon) { %>
                                 ₹ <%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) * cart.items[i].quantity %>
@@ -78,7 +78,7 @@
                                 ₹ <%= (cart.items[i].product.price * cart.items[i].quantity).toFixed(0) %>
                             <% } %>
                         </p>
-                        <% } %>
+            
                      
                     </div>
                 </div>

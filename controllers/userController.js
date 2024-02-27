@@ -302,12 +302,7 @@ renderShoppingCart: async (req, res) => {
     cart = req.session.guestCart || { items: [] };
 
     await Promise.all(cart.items.map(async (item) => {
-      const product = await Product.findById(item.product._id)
-  .populate('category')
-  .populate('coupon')
-  .lean()
-  .exec();
-
+      const product = await Product.findById(item.product._id).populate('coupon').exec();
       item.product = { ...product.toJSON(), image: product.image };
   }));
   req.session.guestCart = cart;
