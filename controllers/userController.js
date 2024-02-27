@@ -299,7 +299,14 @@ renderShoppingCart: async (req, res) => {
   if (req.userId) {
     cart = await cartHelper.getCart(req.userId);
   } else {
-    cart = req.session.guestCart || { items: [] }; // Retrieve guest cart from session or create a new one
+    cart = req.session.guestCart || { items: [] };
+
+    await Promise.all(cart.items.map(async (item) => {
+      const product = await Product.findById(item.product._id).populate('coupon').exec();
+      item.product = { ...product.toJSON(), image: product.image };
+  }));
+  req.session.guestCart = cart;
+    console.log('gcart',cart.items) // Retrieve guest cart from session or create a new one
   }
 
   if (!cart || cart.items.length === 0) {
@@ -341,7 +348,8 @@ renderShoppingCart: async (req, res) => {
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
       }
    
-      await cartHelper.addToCart(userId, productId, 1,req);
+      let cart =await cartHelper.addToCart(userId, productId, 1,req);
+      console.log('sdfdssfd',cart)
       
       return res.redirect(`/user/productdetails/${productId}?addedToCart=true`);
     },
@@ -351,12 +359,18 @@ renderShoppingCart: async (req, res) => {
   updateQuantity: async (req, res) => {
     const itemIndex = req.body.itemIndex;
     const newQuantity = req.body.newQuantity;
-    const cart = await cartHelper.getCart(req.userDetails);
-    if(cart.appliedCoupon){
-      return res.json({ message: 'Remove Coupon and update your cart.' });
-  
-    }
-    const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity);
+    let cart;
+    if (req.userDetails) {
+       cart = await cartHelper.getCart(req.userDetails);
+      if (cart.appliedCoupon) {
+          return res.json({ message: 'Remove Coupon and update your cart.' });
+      }}
+      else {
+        cart = req.session.guestCart || { items: [] };
+        console.log('cart',cart)
+
+      }
+    const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity,req.userDetails);
     const updatedSubtotal = cartHelper.calculateSubtotal(updatedCart);
     res.json({ newTotal: updatedSubtotal });
   },
@@ -365,19 +379,28 @@ renderShoppingCart: async (req, res) => {
   // Remove product from the cart
   removeProduct: async (req, res) => {
     const productId = req.body.productId;
-
+    let cart;
     if (!productId) {
       return res.status(400).json({ error: 'Missing or invalid product ID' });
     }
-    const cart = await cartHelper.getCart(req.userDetails);
-    await cartHelper.removeProductFromCart(cart, productId);
+    if (req.userDetails) {
+      cart = await cartHelper.getCart(req.userDetails);
+    } else {
+      cart = req.session.guestCart || { items: [] };
+    }
+    await cartHelper.removeProductFromCart(cart, productId,req.userDetails);
+    if (req.userDetails) {
     await cartHelper.updateCart(cart);
+    }
     const subtotal = cartHelper.calculateSubtotal(cart);
     if (cart.items.length === 0) {
+      if (req.userDetails) {
       await cartHelper.deleteCart(cart);
+      await cartHelper.updateCart(cart);
+      }
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }
-    await cartHelper.updateCart(cart);
+   
     res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal: subtotal });
   },
 

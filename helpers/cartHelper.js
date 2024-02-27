@@ -266,12 +266,14 @@ async function updateCartTotals(cart, subtotal, discountedTotal){
   }
 };
 
-async function updateItemQuantity (cart, itemIndex, newQuantity) {
+async function updateItemQuantity (cart, itemIndex, newQuantity,user) {
   try {
  
     const cartItem = cart.items[itemIndex - 1];
     cartItem.quantity = newQuantity;
+    if (user){
     await cart.save();
+    }
     console.log('Cart item quantity updated:', cartItem);
     return cart; // Return the updated cart
   } catch (error) {
@@ -280,11 +282,13 @@ async function updateItemQuantity (cart, itemIndex, newQuantity) {
   }
 };
 
-const removeProductFromCart = async (cart, productId) => {
+const removeProductFromCart = async (cart, productId,user) => {
   try {
     // Filter out the product with the given productId from the cart items
     cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+    if(user){
     await cart.save();
+    }
     console.log('Product removed from cart:', productId);
     return cart; // Return the updated cart
   } catch (error) {
