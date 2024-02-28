@@ -247,6 +247,67 @@
         categoriesContainer.classList.toggle('show-categories');
     }
 </script>
+<script>
+    $(document).ready(function() {
+     // Function to fetch search suggestions
+     function fetchSuggestions(query) {
+         $.ajax({
+             method: 'POST',
+             url: '/user/search/suggestions',
+             data: { query: query },
+             success: function(response) {
+                 // Clear previous suggestions
+                 $('#searchSuggestionsContainer').empty();
+ 
+                 // Append new suggestions to the container
+                 response.forEach(suggestion => {
+                     // Create suggestion element and append to container
+                     const $suggestion = $('<div class="suggestion">' + suggestion + '</div>');
+                     $('#searchSuggestionsContainer').append($suggestion);
+ 
+                     // Handle click on suggestion
+                     $suggestion.click(function() {
+                         // Fill input field with suggestion text
+                         $('#searchSuggestions').val(suggestion);
+ 
+                         // Clear suggestions container
+                         $('#searchSuggestionsContainer').empty();
+                     });
+                 });
+             },
+             error: function(error) {
+                 console.error('Error fetching suggestions:', error);
+             }
+         });
+     }
+ 
+     // Handle input event on the search input field for fetching suggestions
+     $('#searchSuggestions').on('input', function() {
+         const query = $(this).val();
+         fetchSuggestions(query);
+     });
+ 
+     // Handle form submission for search
+     $('#searchForm').submit(function(event) {
+         event.preventDefault(); // Prevent default form submission
+         const query = $('#searchSuggestions').val().trim();
+         if (query.length > 0) {
+             $(this).unbind('submit').submit();
+         } else {
+             console.log('Search query is empty.');
+         }
+     });
+ 
+     $('#searchSuggestions').on('keypress', function(event) {
+         // Check if the pressed key is Enter (key code 13)
+         if (event.which === 13) {
+             // If Enter was pressed, trigger the form submission
+             $('#searchForm').submit();
+         }
+     });
+ });
+ 
+ </script>
 
 <%- include('../partials/footer') %>
 <style>
@@ -389,22 +450,6 @@
         width: 100%; /* Make columns take up 100% width on extra small screens */
         flex: 0 0 100%; /* Prevent columns from shrinking and expanding */
     }
-    .isotope-item {
-        margin-bottom: 10px; /* Reduce margin */
-    }
-    .price-container {
-        font-size: 14px; /* Reduce font size for price */
-        margin-top: 5px; /* Adjust margin */
-    }
-
-    .original-price {
-        margin-right: 5px; /* Adjust margin */
-    }
-
-    .discount-percentage {
-        font-size: 12px; /* Reduce font size for discount percentage */
-    }
-
 }
  @media screen and (max-width: 767px) {
         .toggle-menu-icon {
@@ -419,7 +464,6 @@
         .categories-container.show-categories {
             display:inline /* Show on small devices when toggled */
         }
-
     
         .col-md-2,
     .col-lg-3 {

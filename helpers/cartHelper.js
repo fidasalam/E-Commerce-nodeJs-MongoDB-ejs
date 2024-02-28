@@ -133,6 +133,7 @@ async function getCart(userId) {
 
 
   function calculateSubtotal(cart) {
+    console.log('caerfffffff',cart)
     let subtotal = 0;
     for (const item of cart.items) {
       // Ensure both quantity and price are present and are numbers
