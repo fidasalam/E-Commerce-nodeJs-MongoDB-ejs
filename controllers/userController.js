@@ -233,7 +233,8 @@ handleRegister: async (req, res) => {
       const selectedCategory = req.query.categoryId;
       let products;
       if (!selectedCategory) {
-        products = await productHelper.getAllProducts()
+        // products = await productHelper.getAllProducts()
+        products=await Product.find().populate('coupon').lean().limit(12);
       } else {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
