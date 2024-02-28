@@ -232,10 +232,11 @@ handleRegister: async (req, res) => {
       let categories = await ProductHelper.getAllCategories();
       const selectedCategory = req.query.categoryId;
       let products;
-      if (!selectedCategory) {
-        // products = await productHelper.getAllProducts()
-        products=await Product.find().populate('coupon').lean().limit(12);
-      } else {
+      // if (!selectedCategory) {
+      //   // products = await productHelper.getAllProducts()
+      //   products=await Product.find().populate('coupon').lean().limit(12);
+      // } else
+       {
           products = await productHelper.getProductsByCategoryName(selectedCategory);
       }
       for (let product of products) {
