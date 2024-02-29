@@ -695,12 +695,12 @@ renderThankyou: async (req, res) => {
   
     // Render order history page
 renderOrderPage: async (req, res) => {
-      const orders = await Order.find({ user: req.userDetails }).populate('items.product');
+      const orders = await Order.find({ user: req.userDetails }).populate('items.product').lean();
       console.log('Order History:', orders);
       const productRatings = {};
       for (const order of orders) {
         for (const item of order.items) {
-            const ratings = await Rating.find({ product: item.product._id });
+            const ratings = await Rating.find({ product: item.product._id }).lean();
             item.product.ratings = ratings;
             productRatings[item.product._id] = ratings;
 

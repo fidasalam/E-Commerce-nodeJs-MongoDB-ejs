@@ -38,7 +38,15 @@
 	<script src="https://js.stripe.com/v3/"></script>
 
 <!--===============================================================================================-->
+<style>
+	/* Add background color to dropdown menu */
+	.dropdown-menu {
+	font-size: 30px !important;
+		z-index: 9999;
+	}
+</style>
 </head>
+
 <body class="animsition">
 	
 	<!-- Header -->
@@ -66,10 +74,9 @@
 							</a>
 							<div class="dropdown-menu">
 							 
-							  <a href="/user/logout" class="dropdown-item">Status</a>
-							  <a href="/user/profile" class="dropdown-item">Recent</a>
-							  <a href="/user/orders" class="dropdown-item">Orders</a>
-							  <a href="/user/profile" class="dropdown-item">Profile</a>
+							
+							  <a href="/user/orders" class="dropdown-item text-dark">Orders</a>
+							  <a href="/user/profile" class="dropdown-item text-dark">Profile</a>
 							
 							</div>
 						  
@@ -210,8 +217,7 @@
 							</a>
 							<div class="dropdown-menu">
 							 
-							  <a href="/user/logout" class="dropdown-item">Status</a>
-							  <a href="/user/profile" class="dropdown-item">Recent</a>
+							 
 							  <a href="/user/orders" class="dropdown-item">Orders</a>
 							  <a href="/user/profile" class="dropdown-item">Profile</a>
 							  
