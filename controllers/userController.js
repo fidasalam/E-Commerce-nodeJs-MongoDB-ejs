@@ -302,8 +302,8 @@ renderShoppingCart: async (req, res) => {
     cart = req.session.guestCart || { items: [] };
 
     await Promise.all(cart.items.map(async (item) => {
-      const product = await Product.findById(item.product._id).populate('coupon').exec();
-      item.product = { ...product.toJSON(), image: product.image };
+      const product = await Product.findById(item.product._id).populate('coupon').lean().exec();
+      item.product = { ...product, image: product.image };
   }));
   req.session.guestCart = cart;
     console.log('gcart',cart.items) // Retrieve guest cart from session or create a new one
