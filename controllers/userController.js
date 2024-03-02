@@ -33,28 +33,29 @@ module.exports = {
   },
 
 
-  // user login
-  handleLogin: async (req, res) => {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    const guestUserId = null;
-    const guestCart = await cartHelper.getCart(guestUserId);
-    
+// user login
+handleLogin: async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  const guestCart = req.session.guestCart;
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      req.flash('error', 'Invalid credentials');
-      return res.redirect('/user/login');
-    }
-    if (user.isBlocked) {
-      req.flash('error', 'Your account is blocked. Please contact support for assistance.');
-    }
-    userHelper.generateTokenAndSetSession(user, req);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    req.flash('error', 'Invalid credentials');
+    return res.redirect('/user/login');
+  }
+  if (user.isBlocked) {
+    req.flash('error', 'Your account is blocked. Please contact support for assistance.');
+  }
+  userHelper.generateTokenAndSetSession(user, req);
 
-    if(guestCart){
-    await cartHelper.mergecart(user, guestCart);
-    }
-    res.redirect('/user/index');
-  },
+  if (guestCart) {
+    await cartHelper.mergecart(user, guestCart); // Pass req here
+  
+  }
+
+  res.redirect('/user/index');
+},
+
 
 
 
@@ -292,24 +293,44 @@ handleRegister: async (req, res) => {
 
 
 //cart
-  //cart
-  renderShoppingCart: async (req, res) => {
-    const cart = await cartHelper.getCart(req.userId);
+renderShoppingCart: async (req, res) => {
+  let cart;
+
+  if (req.userId) {
+    cart = await cartHelper.getCart(req.userId);
+  } else {
+    cart = req.session.guestCart || { items: [] };
+
+    await Promise.all(cart.items.map(async (item) => {
+      const product = await Product.findById(item.product._id).populate('coupon').lean().exec();
+      item.product = { ...product, image: product.image };
+  }));
+  req.session.guestCart = cart;
+    console.log('gcart',cart.items) // Retrieve guest cart from session or create a new one
+  }
+
+  if (!cart || cart.items.length === 0) {
+    if (cart) { 
+      await cartHelper.deleteCart(cart._id);
+    }
+    return res.render('user/empty-cart', { userDetails: req.userDetails });
+  }
+
+  let subtotal = cartHelper.calculateSubtotal(cart);
+  let discountedTotal = subtotal;
   
-    if (!cart || cart.items.length === 0) {
-      if (cart) { 
-        await cartHelper.deleteCart(cart._id);
-      }
-      return res.render('user/empty-cart', { userDetails: req.userDetails });
-    }
-    let subtotal = cartHelper.calculateSubtotal(cart);
-    let discountedTotal=subtotal;
-    if(cart.appliedCoupon){
-      discountedTotal=cart.total;
-    }
+  if (cart.appliedCoupon) {
+    discountedTotal = cart.total;
+  }
+
+  // Update cart totals only if it's not a guest cart
+  if (req.userId) {
     await cartHelper.updateCartTotals(cart, subtotal, discountedTotal);
-    res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal })
-  },
+  }
+
+  res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal });
+},
+
 
   //  empty cart page
   renderEmptyCart: async (req, res) => {
@@ -334,18 +355,22 @@ handleRegister: async (req, res) => {
     },
 
     
-
-
   // Update product quantity in the cart
   updateQuantity: async (req, res) => {
     const itemIndex = req.body.itemIndex;
     const newQuantity = req.body.newQuantity;
-    const cart = await cartHelper.getCart(req.userDetails);
-    if(cart.appliedCoupon){
-      return res.json({ message: 'Remove Coupon and update your cart.' });
-  
-    }
-    const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity);
+    let cart;
+    if (req.userDetails) {
+       cart = await cartHelper.getCart(req.userDetails);
+      if (cart.appliedCoupon) {
+          return res.json({ message: 'Remove Coupon and update your cart.' });
+      }}
+      else {
+        cart = req.session.guestCart || { items: [] };
+        console.log('cart',cart)
+
+      }
+    const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity,req.userDetails);
     const updatedSubtotal = cartHelper.calculateSubtotal(updatedCart);
     res.json({ newTotal: updatedSubtotal });
   },
@@ -354,19 +379,28 @@ handleRegister: async (req, res) => {
   // Remove product from the cart
   removeProduct: async (req, res) => {
     const productId = req.body.productId;
-
+    let cart;
     if (!productId) {
       return res.status(400).json({ error: 'Missing or invalid product ID' });
     }
-    const cart = await cartHelper.getCart(req.userDetails);
-    await cartHelper.removeProductFromCart(cart, productId);
+    if (req.userDetails) {
+      cart = await cartHelper.getCart(req.userDetails);
+    } else {
+      cart = req.session.guestCart || { items: [] };
+    }
+    await cartHelper.removeProductFromCart(cart, productId,req.userDetails);
+    if (req.userDetails) {
     await cartHelper.updateCart(cart);
+    }
     const subtotal = cartHelper.calculateSubtotal(cart);
     if (cart.items.length === 0) {
+      if (req.userDetails) {
       await cartHelper.deleteCart(cart);
+      await cartHelper.updateCart(cart);
+      }
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }
-    await cartHelper.updateCart(cart);
+   
     res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal: subtotal });
   },
 
