@@ -304,9 +304,12 @@ renderShoppingCart: async (req, res) => {
     await Promise.all(cart.items.map(async (item) => {
       const product = await Product.findById(item.product._id).populate('coupon').lean().exec();
       item.product = { ...product, image: product.image };
+      if (product.coupon) {
+        item.product.coupon = product.coupon;
+      }
   }));
   req.session.guestCart = cart;
-    console.log('gcart',cart.items) // Retrieve guest cart from session or create a new one
+ console.log('Guest Cart:', JSON.stringify(cart, null, 2));
   }
 
   if (!cart || cart.items.length === 0) {
