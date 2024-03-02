@@ -140,7 +140,7 @@ async function getCart(userId) {
       if (typeof item.quantity === 'number' && typeof item.product.price === 'number') {
         if (item.product.coupon) {
           const coupon = await Coupon.findById(item.product.coupon).lean().exec();
-            const discountedPrice = item.product.price - (item.product.price * coupon.discountPercentage / 100);
+            const discountedPrice = await item.product.price - (item.product.price * coupon.discountPercentage / 100);
             subtotal +=await item.quantity * discountedPrice;
         } else {
             subtotal +=await item.quantity * item.product.price;
