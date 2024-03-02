@@ -323,10 +323,8 @@ renderShoppingCart: async (req, res) => {
     discountedTotal = cart.total;
   }
 
-  // Update cart totals only if it's not a guest cart
-  if (req.userId) {
-    await cartHelper.updateCartTotals(cart, subtotal, discountedTotal);
-  }
+    await cartHelper.updateCartTotals(cart, subtotal, discountedTotal,req.userDetails);
+   console.log('gcart',cart.items)
 
   res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal });
 },
