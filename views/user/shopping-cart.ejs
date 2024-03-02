@@ -36,8 +36,9 @@
                     </div>
                     <div class="col-md-6">
                         <h5 class="card-title"><%= cart.items[i].product ? cart.items[i].product.name : '' %></h5>
+
                         <p class="card-text">
-                            <% if (cart.items[i].product.coupon) { %>
+                            <% if (cart.user && cart.items[i].product.coupon) { %>
                                 <span class="original-price">₹<%= cart.items[i].product.price %></span>
                                 <br>
                                 <span class="discounted-price">₹<%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) %></span>
@@ -46,6 +47,8 @@
                                 <span>₹<%= cart.items[i].product.price %></span>
                             <% } %>
                         </p>
+                        
+
                         <% if (cart.user) { %>
                             <p class="card-text">
                                 <% const itemIndex = i + 1; %>
