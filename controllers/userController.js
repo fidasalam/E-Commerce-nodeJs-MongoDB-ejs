@@ -317,14 +317,17 @@ renderShoppingCart: async (req, res) => {
   }
 
   let subtotal = cartHelper.calculateSubtotal(cart);
+  console.log('sub',subtotal)
   let discountedTotal = subtotal;
   
   if (cart.appliedCoupon) {
     discountedTotal = cart.total;
   }
 
-    await cartHelper.updateCartTotals(cart, subtotal, discountedTotal,req.userDetails);
-   console.log('gcart',cart.items)
+  // Update cart totals only if it's not a guest cart
+  if (req.userId) {
+    await cartHelper.updateCartTotals(cart, subtotal, discountedTotal);
+  }
 
   res.render('user/shopping-cart', { userDetails: req.userDetails, cart, subtotal, discountedTotal });
 },

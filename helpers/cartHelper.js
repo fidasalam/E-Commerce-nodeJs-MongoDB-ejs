@@ -21,7 +21,7 @@ async function addToCart(userId, productId, quantity, req) {
       }).exec();
     } else {
       // If user is a guest, get the cart from the session or create a new one
-      cart = req.session.guestCart || { items: [], subtotal: 0, total: 0 };
+      cart = req.session.guestCart || { items: [] };
       
     }
 
@@ -255,13 +255,11 @@ async function deleteCart(cart){
   await Cart.findByIdAndDelete(cart);
 };
 
-async function updateCartTotals(cart, subtotal, discountedTotal,user){
+async function updateCartTotals(cart, subtotal, discountedTotal){
   try {
     cart.subtotal = subtotal;
     cart.total = discountedTotal;
-    if(user){
     await cart.save();
-    }
     console.log('Cart updated with subtotal and discounted total:', cart);
   } catch (error) {
     console.error('Error updating cart with subtotal and discounted total:', error);
