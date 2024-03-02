@@ -36,7 +36,7 @@ router.get('/contact', getUser, userController.renderContact);
 router.post('/contact', getUser, userController.handleContact);
 
 // Cart Routes
-router.get('/cart', getUser, userController.renderShoppingCart);
+router.get('/cart', getUser,isAuth, userController.renderShoppingCart);
 router.post('/cart',isAuth, getUser, userController.removeProduct);
 router.get('/empty-cart', getUser, userController.renderEmptyCart);
 router.post('/cart/update-quantity',isAuth, getUser, userController.updateQuantity);
