@@ -36,10 +36,10 @@ router.get('/contact', getUser, userController.renderContact);
 router.post('/contact', getUser, userController.handleContact);
 
 // Cart Routes
-router.get('/cart',isAuth, getUser, userController.renderShoppingCart);
-router.post('/cart',isAuth, getUser, userController.removeProduct);
+router.get('/cart', getUser, userController.renderShoppingCart);
+router.post('/cart', getUser, userController.removeProduct);
 router.get('/empty-cart', getUser, userController.renderEmptyCart);
-router.post('/cart/update-quantity',isAuth, getUser, userController.updateQuantity);
+router.post('/cart/update-quantity', getUser, userController.updateQuantity);
 router.post('/cart/remove-product', getUser, userController.removeProduct);
 
 //Product Routes

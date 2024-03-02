@@ -9,62 +9,47 @@ const Coupon = require('../models/coupon');
 
 
 
-async function addToCart(userId, productId, quantity, req) {
+async function addToCart(userId, productId, quantity) {
   try {
-    let cart;
+    let cart = await Cart.findOne({ user: userId }).populate({
+      path: 'items.product',
+      model: 'Product',
+    }).exec();
 
-    // If userId is present, retrieve user's cart from the database
-    if (userId) {
-      cart = await Cart.findOne({ user: userId }).populate({
-        path: 'items.product',
-        model: 'Product',
-      }).exec();
-    } else {
-      // If user is a guest, get the cart from the session or create a new one
-      cart = req.session.guestCart || { items: [] };
-      
+    if (!cart) {
+      cart = new Cart({ user: userId, items: [] });
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
 
-    const existingProductIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
+    const existingProduct = cart.items.find(item => item.product._id.toString() === productId);
 
-    if (existingProductIndex !== -1) {
-      // If the product already exists in the cart, update the quantity
-      cart.items[existingProductIndex].quantity += quantityToAdd;
+   
+
+    if (existingProduct) {
+      existingProduct.quantity += quantityToAdd;
 
       // Remove the item from the cart if the updated quantity is zero
-      if (cart.items[existingProductIndex].quantity <= 0) {
-        cart.items.splice(existingProductIndex, 1);
+      if (existingProduct.quantity <= 0) {
+        cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
       }
     } else {
-      // If the product doesn't exist in the cart, add it
       const product = await Product.findById(productId);
       cart.items.push({
         product: { ...product.toJSON(), image: product.image },
         quantity: quantityToAdd,
+        
       });
     }
-
-    // If user is a guest, update the cart in the session
-    if (!userId) {
-      req.session.guestCart = cart;
-    }
-
-    // If user is logged in, save the cart to the database
-    if (userId) {
-      const savedCart = await cart.save();
-      console.log('savecart:', savedCart);
-      return savedCart;
-    } else {
-      console.log('guestCart:', req.session.guestCart);
-      return cart;
-    }
+   
+    const savedCart = await cart.save();
+    return savedCart;
   } catch (error) {
     console.error('Error adding to cart:', error);
-    throw error;
+    throw error; // Rethrow the error for better handling in the calling function
   }
-}
+};
+
 
 
 async function findCouponByCode(couponCode){
@@ -149,6 +134,7 @@ async function getCart(userId) {
 return subtotal;
   };
 
+
   async function mergecart(user, guestCart) {
     const userId = user._id;
     
@@ -166,9 +152,8 @@ return subtotal;
 
     // Merge guestCart items into userCart
     guestCart.items.forEach(guestCartItem => {
-      const existingProduct = userCart.items.find(item => 
-        item.product?._id?.toString() === guestCartItem.product?._id?.toString()
-      );
+      const existingProduct = userCart.items.find(item => item.product._id.toString() === guestCartItem.product._id.toString());
+
       if (existingProduct) {
         // If the product already exists in the user's cart, update the quantity
         existingProduct.quantity += guestCartItem.quantity;
@@ -183,7 +168,7 @@ return subtotal;
 
     // Save the updated userCart to the database
     const updatedUserCart = await userCart.save();
-    
+    await Cart.findByIdAndDelete(guestCart._id);
 
     console.log('User cart updated in the database:', updatedUserCart);
     return updatedUserCart;
@@ -267,14 +252,12 @@ async function updateCartTotals(cart, subtotal, discountedTotal){
   }
 };
 
-async function updateItemQuantity (cart, itemIndex, newQuantity,user) {
+async function updateItemQuantity (cart, itemIndex, newQuantity) {
   try {
  
     const cartItem = cart.items[itemIndex - 1];
     cartItem.quantity = newQuantity;
-    if (user){
     await cart.save();
-    }
     console.log('Cart item quantity updated:', cartItem);
     return cart; // Return the updated cart
   } catch (error) {
