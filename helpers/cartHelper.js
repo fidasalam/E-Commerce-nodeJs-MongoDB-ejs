@@ -132,26 +132,22 @@ async function getCart(userId) {
 
 
 
-  function calculateSubtotal(cart, user) {
+  function calculateSubtotal(cart) {
+    console.log('caerfffffff',cart)
     let subtotal = 0;
     for (const item of cart.items) {
       // Ensure both quantity and price are present and are numbers
       if (typeof item.quantity === 'number' && typeof item.product.price === 'number') {
-        if (user) {
-          if (item.product.coupon) {
+        if (item.product.coupon) {
             const discountedPrice = item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100);
             subtotal += item.quantity * discountedPrice;
-          } else {
-            subtotal += item.quantity * item.product.price;
-          }
         } else {
-          subtotal += item.quantity * item.product.price;
+            subtotal += item.quantity * item.product.price;
         }
-      }
     }
-    return subtotal;
-  }
-  
+}
+return subtotal;
+  };
 
   async function mergecart(user, guestCart) {
     const userId = user._id;
