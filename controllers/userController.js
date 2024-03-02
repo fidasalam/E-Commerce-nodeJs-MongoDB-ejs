@@ -317,7 +317,6 @@ renderShoppingCart: async (req, res) => {
   }
 
   let subtotal = cartHelper.calculateSubtotal(cart);
-  console.log('sub',subtotal)
   let discountedTotal = subtotal;
   
   if (cart.appliedCoupon) {
