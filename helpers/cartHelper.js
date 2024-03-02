@@ -132,18 +132,16 @@ async function getCart(userId) {
 
 
 
- async function calculateSubtotal(cart) {
-    console.log('caerfffffff',cart)
+  function calculateSubtotal(cart) {
     let subtotal = 0;
     for (const item of cart.items) {
       // Ensure both quantity and price are present and are numbers
       if (typeof item.quantity === 'number' && typeof item.product.price === 'number') {
         if (item.product.coupon) {
-          const coupon = await Coupon.findById(item.product.coupon).lean().exec();
-            const discountedPrice = await item.product.price - (item.product.price * coupon.discountPercentage / 100);
-            subtotal +=await item.quantity * discountedPrice;
+            const discountedPrice = item.product.price - (item.product.price * item.product.coupon.discountPercentage / 100);
+            subtotal += item.quantity * discountedPrice;
         } else {
-            subtotal +=await item.quantity * item.product.price;
+            subtotal += item.quantity * item.product.price;
         }
     }
 }
