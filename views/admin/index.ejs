@@ -74,67 +74,7 @@
               </div>
             </div>
            
-           
-            <div class="row">
-              <div class="col-12 grid-margin">
-                  <div class="card">
-                      <div class="card-body">
-                          <h4 class="card-title">Recent Orders</h4>
-                          <div class="table-responsive">
-                              <table class="table">
-                                  <thead>
-                                      <tr>
-                                          <th> # </th>
-                                          <th> Order ID </th>
-                                          <th> User </th>
-                                          <!-- <th> Payment ID </th> -->
-                                          <th> Payment Method </th>
-                                          <th> Status </th>
-                                          <th> Shipping Address </th>
-                                          <th> Order Date </th>
-                                          <th> Actions </th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <% orders.forEach((order, index) => { %>
-                                          <tr>
-                                              <td><%= index + 1 %></td>
-                                              <td><%= order.payment.orderId %></td>
-                                              <td><%=  order.user.username %></td>
-                                              <!-- <td><%=  %></td> -->
-                                              <td><%= order.payment.paymentMethod %></td>
-                                              <td>
-                                                <% if(order.payment.status === 'placed') { %>
-                                                    <label class="badge badge-warning">Placed</label>
-                                                <% } else if(order.payment.status === 'shipping') { %>
-                                                    <label class="badge badge-orange">Shipping</label>
-                                                <% } else if(order.payment.status === 'delivered') { %>
-                                                    <label class="badge badge-success">Delivered</label>
-                                                <% } %>
-                                            </td>
-                                              <td><%= order.shippingAddress.addressLine1 %> <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>,  <%= order.shippingAddress.postalCode %></td>
-                                              <td><%=  order.payment.orderDate.toDateString() %></td>
-                                              <td>
-                                                <div  class="form-check form-check-inline">
-                                                    <input type="radio" class="form-check-input status-radio placed" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="placed" <% if(order.payment.status === 'placed') { %>checked<% } %>>
-                                                    <label class="form-check-label">Placed</label>
-                                                </div>
-                                                
-                                                <div class="form-check form-check-inline">
-                                                    <input type="radio" class="form-check-input status-radio shipped" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>
-                                                    <label class="form-check-label">Shipped</label>
-                                                </div>
-                                              
-                                                <div class="form-check form-check-inline">
-                                                    <input type="radio" class="form-check-input status-radio delivered" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="delivered" <% if(order.payment.status === 'delivered') { %>checked<% } %>>
-                                                    <label class="form-check-label">Delivered</label>
-                                                </div>
-                                            </td>
-                                          </tr>
-                                      <% }) %>
-                                  </tbody>
-                              </table>
-                          </div>
+<!--          -->
                       </div>
                   </div>
               </div>

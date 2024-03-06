@@ -1,88 +1,92 @@
-<!-- views/admin/orderlist.ejs -->
+<%- include('../partials/admin-header') %>
 
-<%- include('../partials/adminheader') %>
-
-<div class="container mt-5">
-    <div class="row tm-content-row">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
-            <div class="tm-bg-primary-dark tm-block tm-block-products">
-                <div class="tm-product-table-container">
-                    <table class="table table-hover tm-table-small tm-product-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">User</th>
-                                <!-- <th scope="col">Payment ID</th> -->
-                                <th scope="col">Payment Method</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Shipping Address</th>
-                                <th scope="col">Order Date</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% orders.forEach((order, index) => { %>
-                                <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td>
-                                        <a href="#" class="show-details-link" data-bs-toggle="modal" data-bs-target="#orderDetailsModal<%= order._id %>" style="text-decoration: none;color: #ffffff;">
-                                            <%= order.payment.orderId %>
-                                        </a>
-                                    </td>
-                                    <td><%= order.user.username %></td>
-                                    <!-- <td><%= order.payment.paymentId %></td> -->
-                                    <td><%= order.payment.paymentMethod %></td>
-                                    <td class="order-status"><%= order.payment.status %></td>
-                                    <td><%= order.shippingAddress.addressLine1 %> <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>,  <%= order.shippingAddress.postalCode %></td>
-                                    <td><%= order.payment.orderDate.toDateString() %></td>
-                                    <td>
-                                        <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input status-radio placed" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="placed" <% if(order.payment.status === 'placed') { %>checked<% } %>>
-                                            <label class="form-check-label">Placed</label>
-                                        </div>
-                                        <br>
-                                        <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input status-radio shipped" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>
-                                            <label class="form-check-label">Shipped</label>
-                                        </div>
-                                        <br>
-                                        <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input status-radio delivered" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="delivered" <% if(order.payment.status === 'delivered') { %>checked<% } %>>
-                                            <label class="form-check-label">Delivered</label>
-                                        </div>
-                                    </td>
-
-                                    <!-- Modal for order details -->
-                                    <div class="modal fade" id="orderDetailsModal<%= order._id %>" tabindex="-1" aria-labelledby="orderDetailsModalLabel<%= order._id %>" aria-hidden="true">
-                                        <!-- ... (rest of your modal content) -->
-                                    </div>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="page-header">
+      
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="page-title mb-3">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                            <i class="mdi mdi-package menu-icon"></i>
+                        </span>Orders
+                      </h3>
+                    
+                      <div class="table-responsive">
+                          <table class="table">
+                              <thead>
+                                  <tr>
+                                      <th> # </th>
+                                      <th> Order ID </th>
+                                      <th> User </th>
+                                      <!-- <th> Payment ID </th> -->
+                                      <th> Payment Method </th>
+                                      <th> Status </th>
+                                      <th> Shipping Address </th>
+                                      <th> Order Date </th>
+                                      <th> Actions </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <% orders.forEach((order, index) => { %>
+                                      <tr>
+                                          <td><%= index + 1 %></td>
+                                          <td><%= order.payment.orderId %></td>
+                                          <td><%=  order.user.username %></td>
+                                          <!-- <td><%=  %></td> -->
+                                          <td><%= order.payment.paymentMethod %></td>
+                                          <td>
+                                            <% if(order.payment.status === 'placed') { %>
+                                                <label class="badge badge-warning">Placed</label>
+                                            <% } else if(order.payment.status === 'shipping') { %>
+                                                <label class="badge badge-orange">Shipping</label>
+                                            <% } else if(order.payment.status === 'delivered') { %>
+                                                <label class="badge badge-success">Delivered</label>
+                                            <% } %>
+                                        </td>
+                                          <td><%= order.shippingAddress.addressLine1 %> <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>,  <%= order.shippingAddress.postalCode %></td>
+                                          <td><%=  order.payment.orderDate.toDateString() %></td>
+                                          <td>
+                                            <div  class="form-check form-check-inline">
+                                                <input type="radio" class="form-check-input status-radio placed" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="placed" <% if(order.payment.status === 'placed') { %>checked<% } %>>
+                                                <label class="form-check-label">Placed</label>
+                                            </div>
+                                            
+                                            <div class="form-check form-check-inline">
+                                                <input type="radio" class="form-check-input status-radio shipped" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="shipping" <% if(order.payment.status === 'shipping') { %>checked<% } %>>
+                                                <label class="form-check-label">Shipped</label>
+                                            </div>
+                                          
+                                            <div class="form-check form-check-inline">
+                                                <input type="radio" class="form-check-input status-radio delivered" data-order-id="<%= order._id %>" name="status<%= order._id %>" value="delivered" <% if(order.payment.status === 'delivered') { %>checked<% } %>>
+                                                <label class="form-check-label">Delivered</label>
+                                            </div>
+                                        </td>
+                                      </tr>
+                                  <% }) %>
+                              </tbody>
+                          </table>
+                      </div>
+   
     </div>
 </div>
-
-<!-- Add this script at the bottom of your order list view -->
-
-<script>
+</div>
+</div>
+</div><script>
     document.addEventListener('DOMContentLoaded', function () {
     const statusRadios = document.querySelectorAll('.status-radio');
-
+  
     statusRadios.forEach(radio => {
         radio.addEventListener('change', async function () {
             const orderId = radio.getAttribute('data-order-id');
             const status = document.querySelector(`input[name="status${orderId}"]:checked`).value;
             const currentDate = new Date().toISOString();
-
+  
             // Get the index of the current status
             const statuses = ['placed', 'shipping', 'delivered'];
             const currentIndex = statuses.indexOf(status);
-
+  
             // Check if the status is in sequential order and not reverse
             const sequential = Array.from(statusRadios)
                 .filter(radio => radio.getAttribute('data-order-id') === orderId)
@@ -91,14 +95,14 @@
                     const radioIndex = statuses.indexOf(radioStatus);
                     return (currentIndex === 0 && radioIndex === 0) || (currentIndex > 0 && radioIndex <= currentIndex);
                 });
-
+  
             if (!sequential) {
                 // If status is not in sequential order or reverse, display an alert
                 alert('Please update the status sequentially without going back.');
                 this.checked = false; // Uncheck the current radio button
                 return;
             }
-
+  
             try {
                 const response = await fetch(`/admin/updateStatus/${orderId}`, {
                     method: 'POST',
@@ -107,13 +111,13 @@
                     },
                     body: JSON.stringify({ status, currentDate }),
                 });
-
+  
                 if (!response.ok) {
                     throw new Error('Failed to update order status');
                 }
-
+  
                 const updatedOrder = await response.json();
-
+  
                 // Update the displayed status on the client side
                 const statusCell = document.querySelector(`[data-order-id="${orderId}"] .order-status`);
                 if (statusCell) {
@@ -124,33 +128,12 @@
             }
         });
     });
-});
-
-</script>
-<script>
-    
-</script>
-
-<style>
-    /* Add this CSS to your existing styles */
-
-    /* Styles for placed status */
-    input.status-radio.placed:checked + .form-check-label::before {
-        background-color: #9be64d;
-        border-color: #9be64d;
+  });
+  
+  </script>
+ <style>
+    .form-check{
+    margin: 2px !important;
     }
-
-    /* Styles for shipped status */
-    input.status-radio.shipped:checked + .form-check-label::before {
-        background-color: #efc54b;
-        border-color: #efc54b;
-    }
-
-    /* Styles for delivered status */
-    input.status-radio.delivered:checked + .form-check-label::before {
-        background-color: #da534f;
-        border-color: #da534f;
-    }
-</style>
-
-<%- include('../partials/adminfooter') %>
+  </style>
+<%- include('../partials/admin-footer') %>
