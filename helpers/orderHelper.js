@@ -152,26 +152,21 @@ async function getNextStatus(currentStatus) {
   } ;
 
     
-  async function getTotalOrdersByMonth() {
+  async function getTotalOrders() {
     try {
-      const orderData = await Order.aggregate([
-        {
-          $group: {
-            _id: { $month: '$payment.orderDate' },
-            totalOrders: { $sum: 1 } // Count the number of orders for each month
-          }
-        },
-        {
-          $sort: { '_id': 1 } // Sort the results by month in ascending order
-        }
-      ]);
-  
-      return orderData;
+        const totalOrders = await Order.aggregate([
+            {
+                $count: "totalOrders" // Count all orders without grouping
+            }
+        ]);
+
+        return totalOrders[0]?.totalOrders ?? 0; // Return the total number of orders, or 0 if no orders exist
     } catch (error) {
-      console.error('Error fetching total orders data:', error);
-      throw error;
+        console.error('Error fetching total orders data:', error);
+        throw error;
     }
-  };
+};
+
     
   async function getProductSalesByMonth() {
     try {
@@ -255,7 +250,7 @@ async function getTotalRevenue() {
   
 
 module.exports = {
-  submitRating,getTotalOrdersByMonth,getTotalRevenue,
+  submitRating,getTotalOrders,getTotalRevenue,
     getNextStatus,getProductSalesByMonth,getProductIncomeByMonth
     };
     

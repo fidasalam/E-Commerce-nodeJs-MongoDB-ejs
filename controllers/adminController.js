@@ -20,10 +20,13 @@ exports.displayAdmin = async (req, res) => {
      const totalSalesArray = salesData.map(item => item.totalSales); 
      const incomeData = await orderHelper.getProductIncomeByMonth();
      const totalIncomeArray = incomeData.map(item => item.totalIncome);
-     const orderData = await orderHelper.getTotalOrdersByMonth();
+     const orderData = await orderHelper.getTotalOrders();
      const totalRevenue= await orderHelper.getTotalRevenue();
     const users=await userHelper.getTotalUsers()
-     res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray,  totalOrders: orderData[0].totalOrders ,totalRevenue,users});
+    const orders = await Order.find().sort({ 'payment.orderDate': -1 }).populate('user'); 
+    console.log("sale:",totalIncomeArray);
+    console.log("rev:",totalSalesArray);
+     res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray,  totalOrders:orderData ,totalRevenue,users,orders});
    } ;
 
 
@@ -83,6 +86,7 @@ exports.postAddProduct = async (req, res) => {
         inStock,
       });
       await newProduct.save();
+      console.log(newProduct)
       return res.redirect('/admin/products');
     });
   } ;

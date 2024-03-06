@@ -392,11 +392,13 @@ renderShoppingCart: async (req, res) => {
     if (req.userDetails) {
     await cartHelper.updateCart(cart);
     }
+
     const subtotal = cartHelper.calculateSubtotal(cart);
+
     if (cart.items.length === 0) {
       if (req.userDetails) {
       await cartHelper.deleteCart(cart);
-      await cartHelper.updateCart(cart);
+      // await cartHelper.updateCart(cart);
       }
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }

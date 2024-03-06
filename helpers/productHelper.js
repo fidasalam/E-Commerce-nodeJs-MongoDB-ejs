@@ -18,7 +18,7 @@ module.exports = {
 
   getAllProducts: async () => {
     try {
-      const result = await Product.find({}).populate('category').populate('coupon').lean().limit(12);
+      const result = await Product.find({}).populate('category').populate('coupon').lean();
       return result;
     } catch (error) {
       throw new Error('Error fetching all products');
@@ -71,7 +71,7 @@ module.exports = {
         const sortedProductIds = Object.keys(averageRatings).sort((a, b) => averageRatings[b] - averageRatings[a]);
 
         // Limit to top 10 products
-        const topRatedProductIds = sortedProductIds.slice(0, 12);
+        const topRatedProductIds = sortedProductIds.slice(0, 13);
 
         // Fetch details of top-rated products
         const topRatedProductsDetails = await Product.find({ _id: { $in: topRatedProductIds } })

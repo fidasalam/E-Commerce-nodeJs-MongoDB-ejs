@@ -25,6 +25,10 @@ async function addToCart(userId, productId, quantity, req) {
       
     }
 
+       if (!cart) {
+      cart = new Cart({ user: userId, items: [] });
+    }
+
     const quantityToAdd = parseInt(quantity, 10) || 1;
 
     const existingProductIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
