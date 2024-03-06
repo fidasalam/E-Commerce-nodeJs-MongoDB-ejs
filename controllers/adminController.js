@@ -23,8 +23,8 @@ exports.displayAdmin = async (req, res) => {
      const orderData = await orderHelper.getTotalOrders();
      const totalRevenue= await orderHelper.getTotalRevenue();
     const users=await userHelper.getTotalUsers()
-    const orders = await Order.find().sort({ 'payment.orderDate': -1 }).populate('user'); 
-    console.log("sale:",totalIncomeArray);
+    const orders = await Order.find().sort({ 'payment.orderDate': -1 }).populate('user').lean(); 
+    console.log("sale:",orders);
     console.log("rev:",totalSalesArray);
      res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray,  totalOrders:orderData ,totalRevenue,users,orders});
    } ;
