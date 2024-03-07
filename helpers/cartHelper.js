@@ -22,7 +22,7 @@ async function addToCart(userId, productId, quantity, req) {
       
     }
        if (!cart) {
-      cart = new Cart({ user: userId, items: [] });
+      cart =await new Cart({ user: userId, items: [] }).save();
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
