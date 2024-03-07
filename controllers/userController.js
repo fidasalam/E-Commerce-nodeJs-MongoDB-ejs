@@ -341,16 +341,13 @@ renderShoppingCart: async (req, res) => {
   // Add product to the cart
   addToCart: async (req, res) => {
       const { productId } = req.body;
-      const userId = req.session.userId;
+      const userId = req.userDetails;
       const product = await Product.findById(productId);
       if (!product || product.inStock <= 0) {
         req.flash('error', 'Product is out of stock.');
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
       }
-   
-      let cart =await cartHelper.addToCart(userId, productId, 1,req);
-      console.log('sdfdssfd',cart)
-      
+      await cartHelper.addToCart(userId, productId, 1,req);
       return res.redirect(`/user/productdetails/${productId}?addedToCart=true`);
     },
 
