@@ -1,7 +1,13 @@
 <%- include('../partials/header') %>
 <!-- breadcrumb -->
-<div class="container">
-    <!-- Your breadcrumb code remains unchanged -->
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/user/product">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Product</li>
+        </ol>
+    </nav>
 </div>
 
 <!-- Product Detail -->
@@ -262,6 +268,38 @@ function toggleWishlist(wishlistButton) {
     margin-top: 10px;
     color: #333; /* Color of the average rating */
 }
+@media screen and (min-width: 768px) {
+    .breadcrumb {
+        display: none; /* Hide breadcrumb on screens larger than 768px */
+    }
+}
+.breadcrumb-container {
+        margin-top: 30px; /* Adjust spacing as needed */
+    }
+
+    /* Breadcrumb list */
+    .breadcrumb {
+        background-color: #f5f5f50c; /* Set background color */
+        padding: 10px; /* Add padding around the breadcrumb */
+        border-radius: 5px; /* Add border radius for rounded corners */
+    }
+
+    /* Breadcrumb items */
+    .breadcrumb-item {
+        font-size: 14px; /* Set font size */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb-item a {
+        color: #333; /* Set link color */
+        text-decoration: none; /* Remove default underline */
+    }
+
+    /* Active/current page indicator */
+    .breadcrumb-item.active {
+        color: #b7b7b7;/* Set color for active page */
+        font-weight: bold; /* Make active page text bold */
+    }
 
 </style>
 

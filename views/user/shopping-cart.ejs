@@ -14,7 +14,7 @@
 <!-- Shopping Cart -->
 
 
-<div class="container mt-4 ">
+<div class="container table mt-5 ">
     <div class="row">
         <!-- Cart items column -->
         <div class="col-md-8 col-12" >
@@ -488,10 +488,17 @@
 
     /* Active/current page indicator */
     .breadcrumb-item.active {
-        color: #555; /* Set color for active page */
+        color: #b7b7b7;
         font-weight: bold; /* Make active page text bold */
     }
- 
+    @media screen and (min-width: 768px) {
+    .breadcrumb {
+        display: none; /* Hide breadcrumb on screens larger than 768px */
+    }
+}
+ .table{
+    margin-top: 100px !important;
+ }
 </style>
 
 
