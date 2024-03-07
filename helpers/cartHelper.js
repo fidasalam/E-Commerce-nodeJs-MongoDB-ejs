@@ -17,12 +17,15 @@ async function addToCart(userId, productId, quantity, req) {
         path: 'items.product',
         model: 'Product',
       }).exec();
+      console.log('acart',cart)
     } else {
       cart = req.session.guestCart || { items: [] };
+      console.log('gcart',cart)
       
     }
        if (!cart) {
-      cart =await new Cart({ user: userId, items: [] }).save();
+      cart = new Cart({ user: userId, cart });
+      console.log('ncart',cart)
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
