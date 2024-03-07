@@ -12,29 +12,33 @@ const Coupon = require('../models/coupon');
 async function addToCart(userId, productId, quantity, req) {
   try {
     let cart;
+
+    // If userId is present, retrieve user's cart from the database
     if (userId) {
       cart = await Cart.findOne({ user: userId }).populate({
         path: 'items.product',
         model: 'Product',
       }).exec();
     } else {
+      // If user is a guest, get the cart from the session or create a new one
       cart = req.session.guestCart || { items: [] };
       
     }
-       if (!cart) {
-      cart = new Cart({ user: userId, items: [] });
-    }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
+
     const existingProductIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
 
     if (existingProductIndex !== -1) {
+      // If the product already exists in the cart, update the quantity
       cart.items[existingProductIndex].quantity += quantityToAdd;
+
+      // Remove the item from the cart if the updated quantity is zero
       if (cart.items[existingProductIndex].quantity <= 0) {
         cart.items.splice(existingProductIndex, 1);
       }
     } else {
-      
+      // If the product doesn't exist in the cart, add it
       const product = await Product.findById(productId);
       cart.items.push({
         product: { ...product.toJSON(), image: product.image },
@@ -42,18 +46,22 @@ async function addToCart(userId, productId, quantity, req) {
       });
     }
 
+    // If user is a guest, update the cart in the session
     if (!userId) {
       req.session.guestCart = cart;
     }
 
+    // If user is logged in, save the cart to the database
     if (userId) {
       const savedCart = await cart.save();
+      console.log('savecart:', savedCart);
       return savedCart;
     } else {
+      console.log('guestCart:', req.session.guestCart);
       return cart;
     }
   } catch (error) {
-
+    console.error('Error adding to cart:', error);
     throw error;
   }
 }
@@ -125,7 +133,7 @@ async function getCart(userId) {
 
 
   function calculateSubtotal(cart) {
-    console.log('caerfffffff',cart)
+   
     let subtotal = 0;
     for (const item of cart.items) {
       // Ensure both quantity and price are present and are numbers

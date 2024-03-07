@@ -341,13 +341,16 @@ renderShoppingCart: async (req, res) => {
   // Add product to the cart
   addToCart: async (req, res) => {
       const { productId } = req.body;
-      const userId = req.userDetails;
+      const userId = req.session.userId;
       const product = await Product.findById(productId);
       if (!product || product.inStock <= 0) {
         req.flash('error', 'Product is out of stock.');
         return res.redirect(`/user/productdetails/${productId}?addedToCart=false`);
       }
-      await cartHelper.addToCart(userId, productId, 1,req);
+   
+      let cart =await cartHelper.addToCart(userId, productId, 1,req);
+      console.log('sdfdssfd',cart)
+      
       return res.redirect(`/user/productdetails/${productId}?addedToCart=true`);
     },
 
@@ -364,11 +367,13 @@ renderShoppingCart: async (req, res) => {
       }}
       else {
         cart = req.session.guestCart || { items: [] };
-        console.log('cart',cart)
+       
 
       }
     const updatedCart = await cartHelper.updateItemQuantity(cart, itemIndex, newQuantity,req.userDetails);
+    console.log('uc',updatedCart)
     const updatedSubtotal = cartHelper.calculateSubtotal(updatedCart);
+    console.log('us',updatedSubtotal)
     res.json({ newTotal: updatedSubtotal });
   },
 
@@ -389,13 +394,11 @@ renderShoppingCart: async (req, res) => {
     if (req.userDetails) {
     await cartHelper.updateCart(cart);
     }
-
     const subtotal = cartHelper.calculateSubtotal(cart);
-
     if (cart.items.length === 0) {
       if (req.userDetails) {
       await cartHelper.deleteCart(cart);
-      // await cartHelper.updateCart(cart);
+      await cartHelper.updateCart(cart);
       }
       return res.render('user/empty-cart', { userDetails: req.userDetails });
     }
