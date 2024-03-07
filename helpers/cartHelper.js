@@ -17,22 +17,12 @@ async function addToCart(userId, productId, quantity, req) {
         path: 'items.product',
         model: 'Product',
       }).exec();
-  
     } else {
       cart = req.session.guestCart || { items: [] };
-  
       
     }
-    if (!cart) {
-      // Assuming Cart constructor is asynchronous and returns a Promise
-      try {
-        cart = await new Cart({ user: userId, items: [] }).save();
-        console.log('New cart created:', cart);
-      } catch (error) {
-        console.error('Error creating new cart:', error);
-        // Handle error appropriately
-      }
-    }
+       if (!cart) {
+      cart = new Cart({ user: userId, items: [] });
     }
 
     const quantityToAdd = parseInt(quantity, 10) || 1;
