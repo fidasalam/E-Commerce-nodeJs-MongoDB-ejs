@@ -25,7 +25,7 @@
                                             <th scope="col">Email</th>
                                             <th scope="col">Role</th>
                                             <th scope="col">Block/Unblock</th>
-                                            <th scope="col">Actions</th>
+                                            <!-- <th scope="col">Actions</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -42,16 +42,17 @@
                                             <td><%= user.email %></td>
                                             <td><%= user.role %></td>
                                             <td>
-                                                <button class=" btn-light"
-                                                    data-user-id="<%= user._id %>">
-                                                    <%= user.isBlocked ? 'Unblock' : 'Block' %>
-                                                </button>
+                                            
+                                                    <button class="toggle-block-btn" data-user-id="<%= user._id %>">
+                                                        <%= user.isBlocked ? 'Unblock' : 'Block' %>
+                                                    </button>
+                                                
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 <a style="text-decoration: none;" href="/admin/delete-user/<%= user._id %>"
                                                     class="toggle-block-btn btn-danger btn-sm"
                                                     onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
-                                            </td>
+                                            </td> -->
                                             <!-- Modal for user details -->
                                             <div class="modal fade" id="userDetailsModal<%= user._id %>" tabindex="-1"
                                                 aria-labelledby="userDetailsModalLabel<%= user._id %>"
@@ -94,11 +95,39 @@
 </div>
 
 <script>
-    // JavaScript code remains the same
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleButtons = document.querySelectorAll('.toggle-block-btn');
+        const showDetailsLinks = document.querySelectorAll('.show-details-link');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', async function () {
+                const userId = button.getAttribute('data-user-id');
+
+                try {
+                    const response = await fetch(`/admin/block-user/${userId}`, {
+                        method: 'POST',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to block/unblock user');
+                    }
+
+                    const user = await response.json();
+                    // Update the button text based on the new user status
+                    button.textContent = user.isBlocked ? 'Unblock' : 'Block';
+                } catch (error) {
+                    console.error('Error:', error.message);
+                }
+            });
+        });
+
+        showDetailsLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                // Modal will be triggered automatically
+            });
+        });
+    });
 </script>
 
-<style>
-    /* CSS styles remain the same */
-</style>
 
 <%- include('../partials/admin-footer') %>
