@@ -47,7 +47,7 @@ This is a E-COMMERCE project created using Node.js, MongoDB, EJS.
 ![Admin Screenshot](https://github.com/fidasalam/E-Commerce-nodeJs-MongoDB-ejs/raw/main/public/screenshots/admin.jpg)
 ## Installation
 To install this project, follow these steps:
-1. Clone the repository: `git clone https://github.com/username/repository.git`
+1. Clone the repository: `git clone https://github.com/fidasalam/E-Commerce-nodeJs-MongoDB-ejs.git`
 2. Install dependencies: `npm install`
 3. Configure environment variables.
 4. Start the server: `npm start`
