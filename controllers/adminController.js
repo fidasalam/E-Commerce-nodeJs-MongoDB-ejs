@@ -17,17 +17,14 @@ const userHelper = require('../helpers/userHelper');
 exports.displayAdmin = async (req, res) => {
 
     const salesData = await orderHelper.getProductSalesByMonth();
-    console.log(salesData)
      const totalSalesArray = salesData.map(item => item.totalSales); 
-     console.log(totalSalesArray)
      const incomeData = await orderHelper.getProductIncomeByMonth();
      const totalIncomeArray = incomeData.map(item => item.totalIncome);
      const orderData = await orderHelper.getTotalOrders();
      const totalRevenue= await orderHelper.getTotalRevenue();
     const users=await userHelper.getTotalUsers()
     const orders = await Order.find().sort({ 'payment.orderDate': -1 }).populate('user').lean(); 
-    const coupons = await Coupon.find();
-     res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray,  totalOrders:orderData ,totalRevenue,users,orders,coupons});
+     res.render('admin/index', { salesData: totalSalesArray, incomeData: totalIncomeArray,  totalOrders:orderData ,totalRevenue,users,orders});
    } ;
 
 
