@@ -22,15 +22,17 @@ This is a E-COMMERCE project created using Node.js, MongoDB, EJS.
 - **User Profile**: Users have profiles showing their orders and account information.
 - **Save Cart**: Ability to save a cart for later.
 - **Delete Cart**: Ability to delete a saved cart.
+- **Coupon Codes:** Apply discount coupons during checkout.
+- **Product Discounts:** Apply discounts for products.
 - **Choose Quantity**: Users can select the quantity of items to order.
 - **Checkout Process**: Users can go through a complete checkout process including shipping and payment method selection.
 - **Order Summary**: Users can view a summary of their order before confirming.
 - **Payment Integrations**: Supports Razor Payment, Stripe Payment.
 
-- **New Features (Added)**: Additional features including printing user orders, user lists, and order lists as PDFs.
+  
 
 ## Admin Features
-
+- **Visual Reports:** 3D Pie Chart and Line Graph for sales data visualization.
 - **Product Management**: Admins can manage products including adding, editing, and deleting.
 
 - **User Management**: Admins can manage users, including viewing profiles and deleting accounts.
@@ -38,6 +40,8 @@ This is a E-COMMERCE project created using Node.js, MongoDB, EJS.
 - **Order Management**: Admins can manage orders, mark them as delivered, and view order details.
 
 - **Order Details Page**: Provides a detailed view of each order.
+- **Coupon Management:** Create, edit, and delete discount coupons.
+- **Banner Management:** Manage promotional banners.
 
 ## Screenshots
 ![Admin Screenshot](https://github.com/fidasalam/E-Commerce-nodeJs-MongoDB-ejs/raw/main/public/screenshots/cart.jpg)
