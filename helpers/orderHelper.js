@@ -135,7 +135,7 @@ async function getNextStatus(currentStatus) {
     async function submitRating(user,productId,rating){
      
     try {
-       const existingRating = await Rating.findOneAndDelete({ user: user.id, product: productId });
+       await Rating.findOneAndDelete({ user: user.id, product: productId });
       const newRating = new Rating({
         user: user.id,
         product: productId,
