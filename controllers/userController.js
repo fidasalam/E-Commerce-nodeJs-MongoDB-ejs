@@ -702,7 +702,7 @@ renderOrderPage: async (req, res) => {
       const productRatings = {};
       for (const order of orders) {
         for (const item of order.items) {
-            const ratings = await Rating.find({ product: item.product._id }).lean();
+            const ratings = await Rating.find({ product: item.product._id,user: req.userDetails._id  }).lean();
             item.product.ratings = ratings;
             productRatings[item.product._id] = ratings;
 

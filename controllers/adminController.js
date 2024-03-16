@@ -169,8 +169,7 @@ exports.getUpdateProduct = async (req, res) => {
 exports.postProductCoupon = async(req, res) => {
   const productId = req.body.productId;
   const couponCode = req.body.couponCode;
-  console.log('prod',productId)
-  console.log('coup',couponCode)
+
 
   const product = await Product.findById(productId);
   const coupon = await Coupon.findOne({ code: couponCode });
