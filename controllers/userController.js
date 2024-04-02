@@ -81,54 +81,45 @@ handleLogin: async (req, res) => {
   },
 
 
-
-// user registration
-handleRegister: async (req, res) => {
-  try {
+  handleRegister: async (req, res) => {
+    try {
       const { username, email, password, name, phone } = req.body;
+  
+      // Validation checks for username, password, phone number, and name
       if (!userHelper.isValidPasswordFormat(password)) {
-          req.flash('error', 'Invalid password format');
-          return res.redirect('/user/register');
+        req.flash('error', 'Invalid password format');
+        return res.redirect('/user/register');
       }
-
+  
       if (!userHelper.isValidPhoneNumberFormat(phone)) {
-          req.flash('error', 'Invalid phone number format');
-          return res.redirect('/user/register');
+        req.flash('error', 'Invalid phone number format');
+        return res.redirect('/user/register');
       }
-
+  
       if (!userHelper.isValidUsernameFormat(username)) {
-          req.flash('error', 'Invalid username format. Only alphabets are allowed.');
-          return res.redirect('/user/register');
+        req.flash('error', 'Invalid username format. Only alphabets are allowed.');
+        return res.redirect('/user/register');
       }
-
+  
       if (!userHelper.isValidUsernameFormat(name)) {
-          req.flash('error', 'Invalid name format. Only alphabets are allowed.');
-          return res.redirect('/user/register');
+        req.flash('error', 'Invalid name format. Only alphabets are allowed.');
+        return res.redirect('/user/register');
       }
-;
-
-      // Send registration email with redirect link
-     const otp = await userHelper.sendRegistrationEmail(email);
-        await userHelper.registerUser({
-        username,
-        email,
-        password,
-        name,
-        phone,
-        otp
-    })
-
-    const action ='Register';
-    res.render('user/enterOTP',{userDetails:req.userDetails,email,action})
-  } catch (error) {
+  
+      // Register the user
+      await userHelper.registerUser({ username, email, password, name, phone });
+  
+      // Redirect to the homepage after successful registration
+      return res.redirect('/user/login');
+    } catch (error) {
       console.error(error);
-        if (error.code === 11000) {
-          return res.status(400).send('Username or email already in use.');
+      if (error.code === 11000) {
+        return res.status(400).send('Username or email already in use.');
       }
-    res.status(500).send('Internal Server Error');
-  }
-},
-
+      return res.status(500).send('Internal Server Error');
+    }
+  },
+  
 
   // profile page
   renderProfilePage: async (req, res) => {

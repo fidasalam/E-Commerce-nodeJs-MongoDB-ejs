@@ -77,7 +77,7 @@ getTotalUsers:async()=>{
       password: hashedPassword,
       name,
       phone,
-      otp
+      
     
     
     });
