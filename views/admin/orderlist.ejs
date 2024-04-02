@@ -67,64 +67,21 @@
         </div>
     </div>
 </div>
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const statusRadios = document.querySelectorAll('.status-radio');
-  
-    statusRadios.forEach(radio => {
-        radio.addEventListener('change', async function () {
-            const orderId = radio.getAttribute('data-order-id');
-            const status = document.querySelector(`input[name="status${orderId}"]:checked`).value;
-            const currentDate = new Date().toISOString();
-  
-            // Get the index of the current status
-            const statuses = ['placed', 'shipping', 'delivered'];
-            const currentIndex = statuses.indexOf(status);
-  
-            // Check if the status is in sequential order and not reverse
-            const sequential = Array.from(statusRadios)
-                .filter(radio => radio.getAttribute('data-order-id') === orderId)
-                .every((radio, index) => {
-                    const radioStatus = radio.value;
-                    const radioIndex = statuses.indexOf(radioStatus);
-                    return (currentIndex === 0 && radioIndex === 0) || (currentIndex > 0 && radioIndex <= currentIndex);
-                });
-  
-            if (!sequential) {
-                // If status is not in sequential order or reverse, display an alert
-                alert('Please update the status sequentially without going back.');
-                this.checked = false; // Uncheck the current radio button
-                return;
-            }
-  
-            try {
-                const response = await fetch(`/admin/updateStatus/${orderId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ status, currentDate }),
-                });
-  
-                if (!response.ok) {
-                    throw new Error('Failed to update order status');
-                }
-  
-                const updatedOrder = await response.json();
-  
-                // Update the displayed status on the client side
-                const statusCell = document.querySelector(`[data-order-id="${orderId}"] .order-status`);
-                if (statusCell) {
-                    statusCell.textContent = status;
-                }
-            } catch (error) {
-                console.error('Error:', error.message);
-            }
+        const statusRadios = document.querySelectorAll('.status-radio');
+
+        statusRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                // Display an alert for all changes
+                alert('Status cannot be changed. Please contact administrator for order status updates.');
+                this.checked = false;
+                location.reload();
+            });
         });
     });
-  });
-  
-  </script>
+</script> -->
+
  <style>
     .form-check{
     margin: 2px !important;
