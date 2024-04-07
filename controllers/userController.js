@@ -109,8 +109,10 @@ handleLogin: async (req, res) => {
       // Register the user
       await userHelper.registerUser({ username, email, password, name, phone });
   
+      const user = await User.findOne({ username });
+      userHelper.generateTokenAndSetSession(user, req);
       // Redirect to the homepage after successful registration
-      return res.redirect('/user/login');
+      return res.redirect('/user/index');
     } catch (error) {
       console.error(error);
       if (error.code === 11000) {
@@ -159,51 +161,78 @@ handleLogin: async (req, res) => {
     res.render('user/forgotPassword',{userDetails:req.userDetails})
   },
 
-  //handle forgotpassword
-  forgotpassword: async (req, res) => {
-    const { email } = req.body;
-    const user =  await User.findOne({ email });
-   await userHelper.sendRegistrationOTP(email);
-   const action ='forgotPassword';
-    res.render('user/enterOTP',{userDetails:req.userDetails,email:user.email,action})
-    
-    } ,
+// handle forgotpassword
+forgotpassword: async (req, res) => {
+  try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        req.flash('error', 'User not found. Please check the email address.');
+            return res.redirect('/user/forgot-password');
+    }
 
+      await userHelper.sendRegistrationOTP(email);
+      res.render('user/enterOTP', { userDetails: req.userDetails, email: email });
+  } catch (error) {
+      console.error("Error in forgotpassword:", error);
+      res.status(500).send('Internal Server Error');
+  }
+},
 
-    verifyOtp: async (req, res) => {
-      try {
-        const { email, otp, action } = req.body;
-        const success = await userHelper.verifyOTP(email, otp);
-    
-        if (success) {
-          if (action === 'forgotPassword') {
-            const userDetails = await userHelper.getUserByEmail(email);
-            res.render('user/passwordreset', { userDetails, email });
-          } else if (action === 'Register') {
-            req.flash('success', 'Successfully registered. Please log in.');
-            res.redirect('/user/login');
-          } 
-        } else {
+// handle resendOTP
+resendOTP: async (req, res) => {
+  try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      await userHelper.sendRegistrationOTP(email);
+      res.redirect('/user/enter-otp');
+  } catch (error) {
+      console.error("Error in resendOTP:", error);
+      res.status(500).send('Internal Server Error');
+  }
+},
+
+// handle verifyOtp
+verifyOtp: async (req, res) => {
+  try {
+      const { email, otp } = req.body;
+      const success = await userHelper.verifyOTP(email, otp);
+
+      if (success) {
+          const userDetails = await userHelper.getUserByEmail(email);
+          res.render('user/passwordreset', { userDetails, email });
+      } else {
           req.flash('error', 'Incorrect OTP. Please try again.');
-          res.redirect('/user/enter-otp'); // Redirect back to OTP verification page
-        }
-      } catch (error) {
-        res.status(500).send('Internal Server Error');
+          res.render('user/enterOTP', { userDetails: req.userDetails, email: email });
       }
-    },
-    
+  } catch (error) {
+      console.error("Error in verifyOtp:", error);
+      res.status(500).send('Internal Server Error');
+  }
+},
 
-  resetPassword:async (req, res) => {
-        const { email, newPassword } = req.body;
-        await userHelper.updateUserPassword(email, newPassword);
-         res.redirect('/user/index')
-        } ,
+// handle resetPassword
+resetPassword: async (req, res) => {
+  try {
+      const { email, newPassword } = req.body;
+      await userHelper.updateUserPassword(email, newPassword);
+      res.redirect('/user/login');
+  } catch (error) {
+      console.error("Error in resetPassword:", error);
+      res.status(500).send('Internal Server Error');
+  }
+},
 
-
-  renderEnterOTPPage: async(req,res)=>{
-          res.render('user/enterOTP', { userDetails: req.userDetails });
-        },
-        
+// renderEnterOTPPage
+renderEnterOTPPage: async (req, res) => {
+  try {
+      res.render('user/enterOTP', { userDetails: req.userDetails });
+  } catch (error) {
+      console.error("Error in renderEnterOTPPage:", error);
+      res.status(500).send('Internal Server Error');
+  }
+}
+,
 
 
         //  product details page
@@ -713,6 +742,3 @@ renderOrderPage: async (req, res) => {
      },
   
 };
-
-
-

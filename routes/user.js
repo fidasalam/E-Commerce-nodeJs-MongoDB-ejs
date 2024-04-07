@@ -31,6 +31,8 @@ router.post('/forgot-password', getUser, userController.forgotpassword);
 router.post('/verify-otp', getUser, userController.verifyOtp);
 router.post('/reset-password', getUser, userController.resetPassword);
 router.get('/enter-otp', userController.renderEnterOTPPage);
+router.post('/resend-otp', userController.resendOTP);
+
 // Contact Routes
 router.get('/contact', getUser, userController.renderContact);
 router.post('/contact', getUser, userController.handleContact);
