@@ -302,8 +302,9 @@ async function applyCouponToCart(userId, cart){
   try {
     
   
-
+console.log(cart)
     const userOrders = await Order.find({ user: userId });
+   
     const hasOrderHistory = userOrders.length > 0;
     const subtotal = calculateSubtotal(cart);
     const subtotalGreaterThan1000 = parseFloat(subtotal) > 1000;
@@ -314,15 +315,15 @@ async function applyCouponToCart(userId, cart){
     if (!hasUsedCoupon) {
     // Check conditions and select appropriate coupon
     if (!hasOrderHistory && subtotalGreaterThan1000) {
-      coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
+      coupon = await Coupon.findOne({ code: 'FIRSTORDER20' });
+
     } else if (!hasOrderHistory) {
-      coupon = await Coupon.findOne({ code: 'FIRSTORDER20', validityPeriod: { $gte: new Date() } });
+      coupon = await Coupon.findOne({ code: 'FIRSTORDER20'});
     } else if (subtotalGreaterThan1000) {
-      coupon = await Coupon.findOne({ code: 'DISCOUNT10', validityPeriod: { $gte: new Date() } });
+      coupon = await Coupon.findOne({ code: 'DISCOUNT10'});
     }}
 
    
-  
 
     return coupon;
   } catch (error) {
