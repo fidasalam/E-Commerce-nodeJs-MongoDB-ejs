@@ -13798,7 +13798,7 @@ dl {
             display: none; } }
       @media (max-width: 991px) {
         .navbar .navbar-menu-wrapper .navbar-toggler.navbar-toggler-right {
-          padding-left: 15px;
+          padding-left: 50px;
           padding-right: 11px;
           border-right: none; } }
     .navbar .navbar-menu-wrapper .search-field .input-group input {

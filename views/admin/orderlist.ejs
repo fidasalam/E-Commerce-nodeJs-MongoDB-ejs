@@ -67,24 +67,24 @@
         </div>
     </div>
 </div>
-<!-- <script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const statusRadios = document.querySelectorAll('.status-radio');
 
         statusRadios.forEach(radio => {
             radio.addEventListener('change', function () {
-                // Display an alert for all changes
-                alert('Status cannot be changed. Please contact administrator for order status updates.');
-                this.checked = false;
+                // Reload the page after changing any status radio button
                 location.reload();
             });
         });
     });
-</script> -->
+</script>
 
- <style>
-    .form-check{
-    margin: 2px !important;
+<style>
+    .form-check {
+        margin: 2px !important;
     }
-  </style>
+</style>
+
 <%- include('../partials/admin-footer') %>
