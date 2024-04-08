@@ -19,6 +19,11 @@ async function addToCart(userId, productId, quantity, req) {
         path: 'items.product',
         model: 'Product',
       }).exec();
+
+      if (!cart) {
+        // Create a new cart for the user
+        cart = new Cart({ user: userId, items: [] });
+      }
     } else {
       // If user is a guest, get the cart from the session or create a new one
       cart = req.session.guestCart || { items: [] };
