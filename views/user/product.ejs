@@ -158,24 +158,24 @@
                 <% }) %>
             </div>
             </div>
-            <div class="flex-c-m flex-w w-full  text-center mb-5">
-                
-                <% if (page > 1) { %>
-                    <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) - 1 %>" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                        Prev
-                    </a>
-                <% } %>
-            
-                <% if (products.length === perPage) { %>
-                    <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) + 1 %>" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                        Next
-                    </a>
-                <% } %>
-            </div>
+           
           
             </section>
+  <div class="flex-c-m flex-w w-full text-center mb-5">
+    <% if (page > 1) { %>
+        <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) - 1 %>" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04" style="width: 30px; height: 30px; border-radius: 50%; display: inline-block; text-align: center; line-height: 30px;">
+            <span style="font-size: 16px;">&#8249;</span>
+        </a>
+    <% } %>
+
+    <% if (products.length === perPage) { %>
+        <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) + 1 %>" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04" style="width: 30px; height: 30px; border-radius: 50%; display: inline-block; text-align: center; line-height: 30px;">
+            <span style="font-size: 16px;">&#8250;</span>
+        </a>
+    <% } %>
+</div>
+
             
-    
             <!-- <div class="flex-c-m flex-w w-full p-t-45 text-center mb-5">
                 <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
                     Load More
