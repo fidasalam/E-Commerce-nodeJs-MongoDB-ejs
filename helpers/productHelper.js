@@ -16,14 +16,16 @@ module.exports = {
     return await Product.findById(productId);
   },
 
-  getAllProducts: async () => {
+  getAllProducts: async (page = 1, perPage = 12) => {
     try {
-      const result = await Product.find({}).populate('category').populate('coupon').lean().limit(12);
-      return result;
+        const skip = (page - 1) * perPage;
+        const result = await Product.find({}).populate('category').populate('coupon').lean().skip(skip).limit(perPage);
+        return result;
     } catch (error) {
-      throw new Error('Error fetching all products');
+        throw new Error('Error fetching all products');
     }
-  },
+},
+
   
  calculateAverageRating : async (productId) => {
     try {
@@ -117,22 +119,23 @@ module.exports = {
   },
 
 
-  getProductsByCategoryName: async (categoryName) => {
+  getProductsByCategoryName: async (categoryName, page, perPage) => {
     try {
-      const selectedCategory = await Category.findOne({ name: categoryName }).lean();
-     console.log('sel:',selectedCategory)
-      if (!selectedCategory) {
-        return [];
-      }
+        const selectedCategory = await Category.findOne({ name: categoryName }).lean();
+        console.log('sel:',selectedCategory)
+        if (!selectedCategory) {
+            return [];
+        }
 
-      const products = await Product.find({ category: selectedCategory._id }).limit(12).populate('coupon').lean();
-      console.log('sel:',selectedCategory._id)
-    
-      return products;
+        const skip = (page - 1) * perPage;
+        const products = await Product.find({ category: selectedCategory._id }).skip(skip).limit(perPage).populate('coupon').lean();
+        console.log('sel:',selectedCategory._id)
+
+        return products;
     } catch (error) {
-      throw new Error('Error fetching products by category');
+        throw new Error('Error fetching products by category');
     }
-  },
+},
 
 
   addProduct: async (productData) => {

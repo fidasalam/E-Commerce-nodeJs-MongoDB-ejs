@@ -247,26 +247,28 @@ renderEnterOTPPage: async (req, res) => {
       },
 
 
-    // products by category
-    renderProductsByCategory: async (req, res) => {
-      let categories = await ProductHelper.getAllCategories();
-      const selectedCategory = req.query.categoryId;
-      let products;
-      if (!selectedCategory) {
-        products = await productHelper.getAllProducts()
-      } else {
-          products = await productHelper.getProductsByCategoryName(selectedCategory);
-      }
-      for (let product of products) {
-        product.avgRating = await productHelper.calculateAverageRating(product._id);
-      }
-      res.render('user/product', {
-          selectedCategory,
-          products,
-          userDetails: req.userDetails,categories
-      });
-  },
-  
+      renderProductsByCategory: async (req, res) => {
+        let categories = await ProductHelper.getAllCategories();
+        const selectedCategory = req.query.categoryId;
+        let page = parseInt(req.query.page) || 1;
+        let products;
+        const perPage = 8; // Number of products per page
+        if (!selectedCategory) {
+            products = await ProductHelper.getAllProducts(page, perPage);
+        } else {
+            products = await ProductHelper.getProductsByCategoryName(selectedCategory, page, perPage);
+        }
+        for (let product of products) {
+            product.avgRating = await ProductHelper.calculateAverageRating(product._id);
+        }
+        res.render('user/product', {
+            selectedCategory,
+            products,
+            userDetails: req.userDetails,
+            categories, perPage,page
+        });
+    },
+    
 
    // search suggestions
     searchSuggestions: async (req, res) => {
