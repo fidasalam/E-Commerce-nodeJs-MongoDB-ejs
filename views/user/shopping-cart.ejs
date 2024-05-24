@@ -1,0 +1,506 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- breadcrumb -->
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/index">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Shopping Cart -->
+
+
+<div class="container table mt-5 ">
+    <div class="row">
+        <!-- Cart items column -->
+        <div class="col-md-8 col-12" >
+    <div class="card ">
+        <div class="card-body">
+           
+            <% /* Loop through your cart items here */ %>
+            <% for (let i = 0; i < cart.items.length; i++) { %>
+            <div class="mb-4">
+              
+                <div class="row">
+                    <div class="col-md-2 col-4">
+                        <img src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" class="img-fluid" alt="Product Image">
+                        <form action="/user/cart/remove-product" method="post">
+                            <!-- Hidden input field for product ID -->
+                            <input type="hidden" name="productId" value="<%= cart.items[i].product._id %>">
+                            <button type="submit" class="btn btn-sm "> <i class="fa fa-trash"></i> </button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="card-title"><%= cart.items[i].product ? cart.items[i].product.name : '' %></h5>
+                        <p class="card-text">
+                            <% if (cart.items[i].product.coupon) { %>
+                                <span class="original-price">₹<%= cart.items[i].product.price %></span>
+                                <br>
+                                <span class="discounted-price">₹<%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) %></span>
+                                (<span class="discount-percentage"><%= cart.items[i].product.coupon.discountPercentage %>% Off</span>)
+                            <% } else { %>
+                                <span>₹<%= cart.items[i].product.price %></span>
+                            <% } %>
+                        </p>
+                        <% if (cart.user) { %>
+                            <p class="card-text">
+                                <% const itemIndex = i + 1; %>
+                                <% if (cart.items[i].product.inStock > 0) { %>
+                                    <div class="wrap-num-product flex-w">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                            <i class="fs-16 zmdi zmdi-minus" data-index="<%= i %>" data-value="-1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
+                                        </div>
+                                        <input class="mtext-104 cl3 txt-center num-product quantity-input" type="number" name="num-product<%= itemIndex %>" value="<%= cart.items[i].quantity %>" data-item="<%= itemIndex %>" data-unit-in-stock="<%= cart.items[i].product.inStock %>" min="1">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                            <i class="fs-16 zmdi zmdi-plus" data-index="<%= i %>" data-value="1" data-item="<%= itemIndex %>" onclick="updateQuantityFromData(this)"></i>
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    Out of Stock
+                                <% } %>
+                            </p>
+                        <% } %>
+                        
+                       
+                    </div>
+
+                
+                    <div class="col-md-4 ">
+                        
+                        <% if (cart.user) { %>
+                        <p class="card-text"><strong>Total: </strong>
+                            <% if (cart.items[i].product && cart.items[i].product.coupon) { %>
+                                ₹ <%= (cart.items[i].product.price - (cart.items[i].product.price * cart.items[i].product.coupon.discountPercentage / 100)).toFixed(0) * cart.items[i].quantity %>
+                            <% } else { %>
+                                ₹ <%= (cart.items[i].product.price * cart.items[i].quantity).toFixed(0) %>
+                            <% } %>
+                        </p>
+            
+                        <% } %>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <% } /* End of cart items loop */ %>
+        </div>
+    </div>
+</div>
+
+            
+        <div id="popupMessage" class="popup-message">
+            <span id="popupText" class="popup-text"></span>
+        </div>
+        
+    
+        <div class="col-12 col-md-4 mb-4 ">
+            <div class="bor10 p-lr-40 p-t-30 p-b-40  m-r-40 m-lr-0-xl p-lr-15-sm">
+                <h4 class="mtext-109 cl3 p-b-30">
+                    Cart Totals
+                </h4>
+        
+                <!-- Subtotal -->
+                <div class="flex-w flex-t p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl3">
+                            Subtotal:
+                        </span>
+                    </div>
+                    <div class="size-209 ml-auto text-right">
+                        <span id="subtotal" class="stext-101 cl3 size-118" data-subtotal="<%= subtotal.toFixed(0) %>">₹ <%= subtotal.toFixed(0) %></span>
+                    </div>
+                </div>
+           
+                <% if (cart.appliedCoupon) { %>
+                    <div class="flex-w flex-m m-r-8 m-tb-5">
+                        <div class="ml-auto">
+                            <button class="flex-c-m" type="button" id="removeCouponBtn">Remove discount</button>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="flex-w flex-m m-r-8 m-tb-5">
+                        <div class="ml-auto">
+                            <button class="flex-c-m" type="button" id="showCouponModal">Apply discount</button>
+                        </div>
+                    </div>
+                <% } %>
+                
+                            
+                <form  action="/user/checkout" method="post">
+                <!-- Total -->
+                <hr>
+                <div class="flex-w flex-t p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl2">
+                            Total:
+                        </span>
+                    </div>
+                    
+                    <input type="hidden" name="subtotal" value="<%= subtotal.toFixed(0) %>">
+                    <input type="hidden" name="discountedTotal" value="<%= discountedTotal.toFixed(0) %>">
+                    <div class="size-209 ml-auto text-right">
+                        <span id="discountedTotal" class="stext-101 cl2 size-118 m-l-25">₹ <%= discountedTotal.toFixed(0) %></span>
+                    </div>
+                </div>
+       
+                <!-- Hidden input fields -->
+ 
+        
+                <!-- Proceed to checkout button -->
+                <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer mt-5">
+                    Proceed to Checkout
+                </button>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+   
+        
+
+  <!-- Modal -->
+<div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponModalLabel">Coupon Available</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="couponContent">
+                <!-- Coupon information will be dynamically populated here -->
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#showCouponModal').click(function () {
+        // AJAX call to fetch coupons from the server
+        $.ajax({
+            url: '/user/coupons', // Update with your server endpoint
+            type: 'POST',
+            success: function (response) {
+                // Check if a coupon is returned
+                if (response.coupon) {
+                    // Populate the coupon information in the modal
+                    $('#couponContent').html('<div class="coupon-box">' +
+                        '<p><strong>' + response.coupon.code + '</strong></p>' +
+                        '<p>' + response.coupon.description + '</p>'  +
+                        '<button id="applyCouponBtn" data-code="' + response.coupon.code + '">Apply</button>' +
+                        '</div>');
+                    $('#couponModal').modal('show');
+
+                    // Bind click event to apply coupon button
+                    $('#applyCouponBtn').click(function () {
+                        var couponCode = $(this).data('code');
+                        $('#showCouponModal').hide();
+                    
+                    });
+                } else {
+                    showPopupMessage('No coupons available.');
+             } },
+            error: function (error) {
+                console.error('Error fetching coupons:', error);
+            }
+        });
+    });
+    function showPopupMessage(message) {
+        $('#popupText').text(message);
+        $('#popupMessage').fadeIn().delay(3000).fadeOut();
+    }
+
+       // Bind click event to apply coupon button
+       $(document).on('click', '#applyCouponBtn', function () {
+        var couponCode = $(this).data('code');
+        // AJAX call to apply the coupon
+        $.ajax({
+            url: '/user/apply-coupon', // Update with your server endpoint
+            type: 'POST',
+            data: { couponCode: couponCode },
+            success: function (response) {
+                // Handle success response
+                if (response.message) {
+                    // Update the total with the discounted total
+                    // $('#discountedTotal').text('₹' + response.discountedTotal.toFixed(0));
+                    // Hide the modal after applying the coupon
+                    $('#couponModal').modal('hide');
+                    location.reload();
+                }
+                showPopupMessage('Coupon applied');
+               
+            },
+            error: function (error) {
+                console.error('Error applying coupon:', error);
+            }
+        });
+    });
+});
+
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+    // Event listener for the "Remove discount" button
+    $('#removeCouponBtn').click(function () {
+        // Send a POST request to remove the coupon
+        $.ajax({
+            url: '/user/remove-coupon', // Update with your server endpoint
+            type: 'POST',
+            success: function (response) {
+                // Handle success response
+                if (response.success) {
+                    // Update the total with the original subtotal
+                    $('#discountedTotal').text('₹' + response.discountedTotal.toFixed(0));
+                    location.reload();
+                    showPopupMessage('Discount removed');
+                  
+                    $('#showCouponModal').show();
+                }
+              
+             
+            },
+            error: function (error) {
+                console.error('Error removing discount:', error);
+            }
+        });
+    });
+});
+
+</script>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        // Use a conditional (ternary) operator to set a default value for subtotal
+        var subtotal = parseFloat($('#subtotal').data('subtotal'));
+
+        function updateQuantityAndTotal(itemIndex, newQuantity) {
+            console.log('Before AJAX: newQuantity', newQuantity, 'itemIndex', itemIndex);
+            if (newQuantity < 1) {
+        console.log('Quantity cannot be less than 1.');
+        return;
+    }
+   // Check unit in stock before sending AJAX request
+   var stockElement = $('.quantity-input[data-item="' + itemIndex + '"]');
+        var unitInStock = parseInt(stockElement.data('unit-in-stock')) || 0;
+
+        if (newQuantity > unitInStock) {
+            console.log('Quantity exceeds available stock.');
+            alert('Quantity exceeds available stock. Please choose a lower quantity.');
+            
+            return;
+        }
+            
+            $.ajax({
+                async: true,
+                url: '/user/cart/update-quantity',
+                type: 'POST',
+                data: { itemIndex: itemIndex, newQuantity: newQuantity },
+                success: function (response) {
+                    if (response.message) {
+                   alert(response.message);
+                       }
+                       else{
+                    console.log('AJAX Success: response', response);
+                    updateSubtotal(response.newTotal);
+                    var totalCell = $('#total' + itemIndex);
+                    totalCell.text('₹ ' + response.newTotal.toFixed(2));
+                    location.reload();
+                       }
+                },
+                error: function (error) {
+                    console.error('Error updating quantity:', error);
+                }
+            });
+        }
+
+        // Function to update the subtotal
+        function updateSubtotal(newTotal) {
+            console.log('Updating Subtotal: newTotal', newTotal);
+            $('#subtotal').text('₹ ' + newTotal.toFixed(2));
+        }
+
+        // Event handler for quantity input change
+        $('.quantity-input').on('change', function () {
+            var newQuantity = parseInt($(this).val()) || 0;
+            var itemIndex = $(this).data('item');
+            updateQuantityAndTotal(itemIndex, newQuantity);
+            
+            
+        });
+
+        // Event handler for plus and minus buttons
+        $('.btn-num-product-down, .btn-num-product-up').on('click', function () {
+        var quantityInput = $(this).closest('.wrap-num-product').find('.quantity-input');
+        var currentQuantity = parseInt(quantityInput.val()) || 0;
+        var itemIndex = quantityInput.data('item');
+        var valueChange = parseInt($(this).data('value')) || 0;
+        var newQuantity = currentQuantity + valueChange;
+          if (newQuantity < 1) {
+        newQuantity = 1;
+    }
+
+        quantityInput.val(newQuantity); // Update quantity input
+        updateQuantityAndTotal(itemIndex, newQuantity);
+    });
+
+ 
+    });
+
+
+</script>
+
+<style>
+    /* Popup message styles */
+.popup-message {
+    display: none;
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 9999;
+}
+
+.popup-text {
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+        /* Customize modal coupon content */
+        .coupon-box {
+        background-color: #f5f5f5; /* Light gray background */
+        padding: 20px; /* Add padding for better appearance */
+        border-radius: 10px; /* Add border-radius for rounded corners */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    }
+
+    .coupon-box p {
+        color: #333; /* Dark text color */
+        margin-bottom: 10px; /* Add some space between paragraphs */
+    }
+
+    #applyCouponBtn {
+        color: #fff;
+        background-color: #2a7cbf; /* Blue background color */
+        border-color: #000000;
+        padding: 10px 20px; /* Adjust padding for better appearance */
+        border-radius: 5px; /* Add border-radius for rounded corners */
+        cursor: pointer;
+    }
+    .modal-content {
+        background-color: #ffffff;
+        border-radius: 10px;
+        color: #000000;
+    }
+
+    /* Customize modal header */
+    .modal-header {
+        border-bottom: none;
+    }
+
+    /* Customize modal title */
+    .modal-title {
+        color: #000000;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    /* Customize modal body */
+    .modal-body {
+        padding: 10px;
+    }
+  
+    /* Customize modal footer */
+    .modal-footer {
+        border-top: none;
+        justify-content: flex-end;
+    }
+
+    .modal-dialog {
+    position: absolute;
+    left: 20%;
+    top: 20%;
+    right: 20%;
+    transform: translate(-50%, -50%);
+}
+    /* Customize modal close button */
+    .close {
+        color: #333;
+        font-size: 1.5rem;
+    }
+
+    
+.price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    color: gray;
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    color: red;
+}
+    /* Breadcrumb container */
+    .breadcrumb-container {
+        margin-top: 30px; /* Adjust spacing as needed */
+    }
+
+    /* Breadcrumb list */
+    .breadcrumb {
+        background-color: #f5f5f50c; /* Set background color */
+        padding: 10px; /* Add padding around the breadcrumb */
+        border-radius: 5px; /* Add border radius for rounded corners */
+    }
+
+    /* Breadcrumb items */
+    .breadcrumb-item {
+        font-size: 14px; /* Set font size */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb-item a {
+        color: #333; /* Set link color */
+        text-decoration: none; /* Remove default underline */
+    }
+
+    /* Active/current page indicator */
+    .breadcrumb-item.active {
+        color: #b7b7b7;
+        font-weight: bold; /* Make active page text bold */
+    }
+    @media screen and (min-width: 768px) {
+    .breadcrumb {
+        display: none; /* Hide breadcrumb on screens larger than 768px */
+    }
+}
+ .table{
+    margin-top: 100px !important;
+ }
+</style>
+
+
+
+ <%- include('../partials/footer') %>

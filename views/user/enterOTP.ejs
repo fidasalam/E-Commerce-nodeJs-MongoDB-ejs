@@ -1,0 +1,102 @@
+<!-- EJS page for entering OTP -->
+
+<!-- Header -->
+<%- include('../partials/header') %>
+
+<!-- Title page -->
+<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('images/bg-01.jpg');">
+    <h2 class="ltext-105 cl0 txt-center">
+        Enter OTP
+    </h2>
+</section>
+
+<!-- Content page -->
+<section class="bg0 p-t-104 p-b-116">
+    <div class="container">
+        <div class="flex-w flex-tr">
+            <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+                <form id="otpForm" action="/user/verify-otp" method="post">
+                    
+                    <h4 class="mtext-105 cl2 txt-center p-b-30">
+                        Enter the OTP sent to your email
+                    </h4>
+
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+                    <input type="hidden" name="email" value="<%= email %>">
+                    <div class="bor8 m-b-20 how-pos4-parent">
+                        <input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="otp" placeholder="Enter OTP" required>
+                    </div>
+
+                    <!-- Timer for resending OTP -->
+                    <p id="resend-timer">Resend OTP in: <span id="timer"></span></p>
+
+                    <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+                        Verify OTP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>
+
+<script>
+    // JavaScript for Timer
+    var countDownDate = new Date().getTime() + (60 * 1000); // Set timer for 1 minute (60 seconds)
+
+    var x = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("resend-timer").innerHTML = "Resending OTP..."; // Change timer text
+            resendOTP(); // Automatically resend OTP
+        }
+    }, 1000);
+
+    // JavaScript function to resend OTP
+    function resendOTP() {
+        // Make an AJAX request to resend OTP
+        var email = '<%= email %>';
+        $.ajax({
+            type: 'POST',
+            url: '/user/resend-otp',
+            data: { email: email },
+            success: function(data) {
+                alert('OTP resent successfully!'); // Display success message
+                countDownDate = new Date().getTime() + (60 * 1000); // Reset timer
+                var x = setInterval(function() {
+                    var now = new Date().getTime();
+                    var distance = countDownDate - now;
+
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("resend-timer").innerHTML = "Resending OTP..."; // Change timer text
+                        resendOTP(); // Automatically resend OTP
+                    }
+                }, 1000);
+            },
+            error: function(err) {
+                console.log(err.responseText);
+                
+            }
+        });
+    }
+</script>

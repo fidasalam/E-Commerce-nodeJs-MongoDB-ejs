@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+  
+</head>
+<body>
+
+    
+    <div class="header">
+        <h1 class="logo">Checkout</h1>
+    </div>
+
+    <div class="container">
+        <div class="col-md-6">
+            <section class="section">
+                <div class="address">
+                    <h3>Shipping Address</h3>
+                                  <% if (userDetails.shippingAddresses && userDetails.shippingAddresses.length > 0) { %>
+                            <% userDetails.shippingAddresses.forEach(address => { %>
+                                <% if (address.default) { %>
+                                    <p><%= address.street %>, <%= address.city %></p>
+                                    <p><%= address.state %>, <%= address.postalCode %></p>
+                                    <a href="/user/add-address" class="edit-address-btn">Change Address</a>
+                                <% } %>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No shipping address set</p>
+                        <% } %>
+                </div>
+                <hr>
+
+                <div class="cart">
+                    <h3>My Cart</h3>
+                    <% for (let i = 0; i < cart.items.length; i++) { %>
+                        <img class="product-image" src="<%= cart.items[i].product.images && cart.items[i].product.images.length > 0 ? cart.items[i].product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product Image">
+                    <% } %>
+                </div>
+                
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <p><strong>Subtotal:</strong> ₹<%= cart.subtotal.toFixed(0) %></p>
+                    <p><strong>Total: </strong>₹<%= cart.total.toFixed(0)%></p>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-6">
+            <section class="section">
+                <div class="payment-method">
+                    <h3>Payment Method</h3>
+                    <form id="paymentForm" method="post">
+                        <!-- Hidden fields for subtotal, discountedTotal, and other required data -->
+                        <input type="hidden" name="subtotal" value="<%= cart.subtotal.toFixed(2) %>">
+                        <input type="hidden" name="discountedTotal" value="<%= cart.total.toFixed(2) %>">
+                        <!-- Add more hidden fields as needed -->
+                    
+                        <!-- Radio buttons for payment options -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cashOnDelivery">
+                            <label class="form-check-label" for="cashOnDelivery">
+                                Cash on Delivery
+                            </label>
+                        </div>
+                    
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="stripePayment" value="stripePayment">
+                            <label class="form-check-label" for="stripePayment">
+                                Stripe Payment
+                            </label>
+                        </div>
+                    
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="razorPay" value="razorPay">
+                            <label class="form-check-label" for="razorPay">
+                                Razor Pay
+                            </label>
+                        </div>
+                        <div class="flex-c-m flex-w p-b-18 mt-5">
+                            <!-- Add more radio buttons for additional payment options as needed -->
+                        </div>
+                    
+                        <!-- Button to complete the purchase -->
+                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer mt-5" type="submit">Complete Purchase</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            this.action = `/user/${selectedPaymentMethod}`;
+        });
+    </script>
+      <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+       
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Section styles */
+        .section {
+            margin-left: 10px;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Address section styles */
+        .address {
+            text-align: left;
+        }
+
+        .address p {
+            margin-bottom: 10px;
+        }
+
+        .edit-address-btn {
+            color: #5c5c5c;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .edit-address-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Cart section styles */
+        .cart {
+            text-align: left;
+        }
+
+        .cart .product-image {
+            max-width: 50px;
+            height: auto;
+            margin: 0 10px 10px 0;
+        }
+
+        /* Order summary styles */
+        .order-summary {
+            text-align: left;
+        }
+
+        .order-summary p {
+            margin-bottom: 10px;
+        }
+       
+        hr {
+        border: none;
+        height: 1px; 
+        background-color: rgb(214, 214, 214); 
+    }
+     
+        .payment-method button[type="submit"] {
+            margin-top: 10px;
+            background-color: #000000;
+            color: #fff;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        .payment-method button[type="submit"]:hover {
+            background-color: #464646;
+        }
+
+        /* Form check alignment */
+        .form-check {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .section {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .section {
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .col-md-6 {
+                display: inline-block;
+                width: 48%; /* Adjust as needed */
+                vertical-align: top;
+            }
+        }
+    </style>
+</body>
+</html>
+

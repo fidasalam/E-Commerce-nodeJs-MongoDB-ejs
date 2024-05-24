@@ -1,0 +1,171 @@
+<!-- Font Awesome library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<%- include('../partials/header') %>
+
+<div class="container mt-5 mb-5">
+    <section class="bg-light p-4 rounded">
+        <div class="text-center mb-4">
+            <h2>Delivery Addresses</h2>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <% userDetails.shippingAddresses.forEach((address, index) => { %>
+                <div class="col">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Address <%= index + 1 %></h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Street Address:</strong> <%= address.street %></li>
+                                <li><strong>City:</strong> <%= address.city %></li>
+                                <li><strong>State:</strong> <%= address.state %></li>
+                                <li><strong>Postal Code:</strong> <%= address.postalCode %></li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="form-check ml-3">
+                                    <input type="checkbox" class="form-check-input" id="default-address-<%= index %>" name="defaultAddress" <%= address.default ? 'checked' : '' %> onclick="setDefaultAddress(<%= index %>)">
+                                    <label class="form-check-label" for="default-address-<%= index %>">Default</label>
+                                </div>
+                                <div class="action-icons">
+                                    <button type="button" class="btn btn-link text-primary edit-address-btn" onclick="displayEditForm(<%= index %>)"><i class="fas fa-edit"></i></button>
+                                    <a href="/user/delete-address/<%= index %>" class="btn btn-link  delete-address-btn" title="Delete"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form action="/user/updateAddress" method="POST" style="display: none;" class="edit-address-form" id="edit-address-form-<%= index %>">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Edit Address <%= index + 1 %></h5>
+                            <input type="hidden" name="index" value="<%= index %>">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="edit-street-<%= index %>" name="street" placeholder="Street Address" value="<%= address.street %>" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="edit-city-<%= index %>" name="city" placeholder="City" value="<%= address.city %>" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="edit-state-<%= index %>" name="state" placeholder="State" value="<%= address.state %>" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="edit-postalCode-<%= index %>" name="postalCode" placeholder="Postal Code" value="<%= address.postalCode %>" required>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary ml-2" onclick="closeEditForm(<%= index %>)">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            <% }); %>
+        </div>
+
+        <!-- Add Address Button -->
+        <div class="text-center mt-4">
+            <button type="button" id="addAddressBtn" class="btn btn-primary">Add New Address</button>
+        </div>
+
+        <!-- Form to add new address -->
+        <div id="addAddressForm" style="display: none;" class="mt-4">
+            <form action="/user/add-address" method="POST">
+                <h2 class="text-primary mb-3">Add New Address</h2>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="street" name="street" placeholder="Street Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="Postal Code" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-secondary ml-2" onclick="closeAddAddressForm()">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Back to Checkout Button -->
+        <div class="text-center mt-4">
+            <a href="/user/checkout" onclick="return checkDefaultAddress()" class="btn btn-secondary">Go To Checkout</a>
+        </div>
+    </section>
+</div>
+
+<%- include('../partials/footer') %>
+
+<!-- Script to toggle visibility of add address form -->
+<script>
+    document.getElementById('addAddressBtn').addEventListener('click', function() {
+        document.getElementById('addAddressForm').style.display = 'block';
+    });
+
+    async function setDefaultAddress(index) {
+        // Uncheck all other default address checkboxes
+        const defaultCheckboxes = document.querySelectorAll('input[name="defaultAddress"]');
+        defaultCheckboxes.forEach((checkbox, i) => {
+            if (i !== index) {
+                checkbox.checked = false;
+            }
+        });
+
+        // Make a POST request to set the default address
+        const response = await fetch(`/user/set-default-address/${index}`, {
+            method: 'POST'
+        });
+        if (response.ok) {
+            console.log('Default address set successfully.');
+        } else {
+            console.error('Failed to set default address.');
+        }
+    }
+
+    function displayEditForm(index) {
+        // Hide all other edit forms before displaying the current one
+        const editForms = document.querySelectorAll('.edit-address-form');
+        editForms.forEach(form => {
+            form.style.display = 'none';
+        });
+
+        // Display the edit form for the selected address
+        const editForm = document.getElementById('edit-address-form-' + index);
+        editForm.style.display = 'block';
+    }
+
+    function closeAddAddressForm() {
+        document.getElementById('addAddressForm').style.display = 'none';
+    }
+
+    function closeEditForm(index) {
+        const editForm = document.getElementById('edit-address-form-' + index);
+        editForm.style.display = 'none';
+    }
+
+    function checkDefaultAddress() {
+        const defaultCheckboxes = document.querySelectorAll('input[name="defaultAddress"]');
+        let defaultAddressSet = false;
+        defaultCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                defaultAddressSet = true;
+            }
+        });
+        if (!defaultAddressSet) {
+            alert("Please set at least one address as default before proceeding to checkout.");
+            return false; // Prevent the link from navigating if no default address is set
+        }
+        return true; // Allow navigation if at least one default address is set
+    }
+</script>
+
+<style>
+    .card {
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>

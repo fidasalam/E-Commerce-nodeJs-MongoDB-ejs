@@ -1,0 +1,306 @@
+<%- include('../partials/header') %>
+<!-- breadcrumb -->
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/user/product">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Product</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Product Detail -->
+<section class="sec-product-detail bg0 p-t-65 p-b-60">
+    <div class="container productdetails">
+        <div class="row">
+            <div class="col-md-6 col-lg-7 p-b-30">
+                <div class="p-l-25 p-r-30 p-lr-0-lg">
+                    <div class="wrap-slick3 flex-sb flex-w">
+                        <div class="wrap-slick3-dots"></div>
+                        <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
+                        <div class="slick3 gallery-lb">
+                            <!-- Iterate through each image in the product.images array -->
+                            <% product.images.forEach((image, index) => { %>
+                                <div class="item-slick3" data-thumb="<%= image %>">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="<%= image %>" alt="IMG-PRODUCT">
+
+                                        <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="<%= image %>">
+                                            <i class="fa fa-expand"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Popup Message -->
+<div id="wishlistPopupMessage" class="popup-message"></div>
+
+            <div class="col-md-6 col-lg-5 p-b-30">
+                <div class="p-r-50 p-t-5 p-lr-0-lg">
+                    <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                        <%= product.name %>
+                    </h4>
+
+                    <div class="price-container">
+                        <% if (product.coupon) { %>
+                            <span class="stext-105 cl3 original-price">
+                                ₹<%= product.price %>
+                            </span>
+                            <br>
+                            <span class="stext-105 cl3 discount-info">
+                                ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                (<span class="discount-percentage"> <%= product.coupon.discountPercentage %>% Off</span>)
+                            </span>
+                        <% } else { %>
+                            <span class="stext-105 cl3">
+                                ₹<%= product.price %>
+                            </span>
+                        <% } %>
+                    </div>
+                    
+
+                    <p class="stext-102 cl3 p-t-23">
+                        <%= product.description %>
+                    </p>
+                  
+        
+
+          <!-- Product Detail -->
+<section class="sec-product-detail bg0 ">
+    <div class="container productdetails">
+        <!-- ... (other code remains unchanged) ... -->
+        <form id="addToCartForm" action="/user/addToCart/<%= product._id %>" method="POST">
+            <!-- Hidden input for product ID -->
+            <input type="hidden" name="productId" value="<%= product._id %>">
+            <!-- Hidden input for quantity -->
+            <input type="hidden" name="quantity" id="quantityInput" value="1">
+            <a href='javascript:void(0);' onclick="toggleWishlist(this)">
+                <i class="zmdi zmdi-favorite-outline heart-icon js-addwish-b2 mt-5" id="wishlistIcon" style="font-size: 24px;"></i>
+            </a>
+            <div class="flex-w flex-r-m p-b-10 mt-5">
+                <div class="size-204 flex-w flex-m respon6-next">
+                    <!-- Wishlist button -->
+                    
+
+                        <button type="submit" id="addToCartBtn" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-add-to-cart mt-3" onclick="toggleButtons()">
+                            Add to Cart
+                        </button>
+            
+                        <% if (messages.error) { %>
+                            <div class="flash error">
+                              <%= messages.error %>
+                            </div>
+                          <% } %>
+                          
+                          <% if (messages.success) { %>
+                            <div class="flash success">
+                              <%= messages.success %>
+                            </div>
+                          <% } %>
+                          
+                </div>
+                
+            </div>
+        </form>
+        
+        </div>
+        
+    </div>
+</section>
+
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+</section>
+<div>
+    <div>
+       <div class="ratings-container mb-4 ">
+        <div class="col-md-4">
+    <h5 class="mtext-105 cl2 js-name-detail p-b-14 mt">Ratings</h5>
+    <% if (rating) { %>
+        <div class="rating-stars">
+            <% Object.entries(rating.ratings).forEach(([stars, count]) => { %>
+                <div class="rating-star">
+                   
+                    
+                    <div class="progress">
+                        <span class="star-count"><%= stars %>  </span>
+                    <span class="star-symbol">&#9733;</span>
+                    
+                        <div class="progress-bar" role="progressbar" style="background-color:#717fe0;width: <%= (count / rating.totalRatings * 100) %>%" aria-valuenow="<%= count %>" aria-valuemin="0" aria-valuemax="<%= rating.totalRatings %>"></div>
+                        <span class="star-count"> <%= count %></span>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        <div class="col-md-6">
+            <% if (rating) { %>
+                <p class="average-rating text-center mt-3"><strong>Average Rating:</strong> <%= rating.averageRating.toFixed(1) %>      <span class="star-symbol">&#9733;</span></p>
+            <% } %>
+        </div>
+    <% } else { %>
+        <p>No ratings available yet.</p>
+    <% } %>
+</div>
+
+    </div>
+    
+     
+<script>
+
+    
+const urlParams = new URLSearchParams(window.location.search);
+    const addedToCart = urlParams.get('addedToCart');
+
+    // Show popup if 'addedToCart' is true
+    if (addedToCart === 'true') {
+        showPopupMessage('Product added to cart successfully');
+    }
+             
+  function showPopupMessage(message) {
+    const wishlistPopupMessage = document.getElementById('wishlistPopupMessage');
+
+    // Set the message content
+    wishlistPopupMessage.textContent = message;
+
+    // Display the popup
+    wishlistPopupMessage.style.display = 'block';
+
+    // Clear the message after a delay (e.g., 3 seconds)
+    setTimeout(() => {
+        wishlistPopupMessage.style.display = 'none';
+        wishlistPopupMessage.textContent = '';
+    }, 3000); // 3000 milliseconds = 3 seconds
+}
+
+async function updateWishlistStatus(productId, addToWishlist) {
+    try {
+        const response = await fetch(`/user/wishlist/${productId}`, {
+            method: addToWishlist ? 'POST' : 'DELETE',
+            // Additional headers and body if needed
+        });
+
+        if (response.ok) {
+            const message = `Product ${addToWishlist ? 'added to' : 'removed from'} wishlist successfully`;
+            showPopupMessage(message);
+        } else {
+            console.error(`Failed to update wishlist status. Status: ${response.status}, ${await response.text()}`);
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+    }
+}
+
+function toggleWishlist(wishlistButton) {
+    const wishlistIcon = wishlistButton.querySelector('i#wishlistIcon');
+
+    // Determine the current state of the wishlist (added or not)
+    const isAdded = wishlistIcon.classList.contains('zmdi-favorite');
+
+    // Toggle the heart icon color
+    wishlistIcon.classList.toggle('zmdi-favorite-outline');
+    wishlistIcon.classList.toggle('zmdi-favorite');
+
+    // Send an AJAX request to the server to update the wishlist status
+    const productId = '<%= product._id %>';
+    updateWishlistStatus(productId, !isAdded);
+
+
+}
+
+    
+</script>
+<style>
+    .popup-message {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #4c54af; /* Green background */
+    color: white; /* White text */
+    padding: 15px; /* Some padding */
+    border-radius: 5px; /* Rounded corners */
+    display: none; /* Initially hidden */
+}
+.price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    color: red;
+}
+
+.ratings-container {
+    margin-top: 20px;
+}
+
+.rating-stars {
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-star {
+    margin-bottom: 5px;
+}
+
+.star-symbol {
+    font-size: 24px;
+    color: #f39c12; /* Color of the star */
+}
+
+.star-count {
+    margin-left: 5px;
+    color: #333; /* Color of the count */
+}
+
+.average-rating {
+    margin-top: 10px;
+    color: #333; /* Color of the average rating */
+}
+@media screen and (min-width: 768px) {
+    .breadcrumb {
+        display: none; /* Hide breadcrumb on screens larger than 768px */
+    }
+}
+.breadcrumb-container {
+        margin-top: 30px; /* Adjust spacing as needed */
+    }
+
+    /* Breadcrumb list */
+    .breadcrumb {
+        background-color: #f5f5f50c; /* Set background color */
+        padding: 10px; /* Add padding around the breadcrumb */
+        border-radius: 5px; /* Add border radius for rounded corners */
+    }
+
+    /* Breadcrumb items */
+    .breadcrumb-item {
+        font-size: 14px; /* Set font size */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb-item a {
+        color: #333; /* Set link color */
+        text-decoration: none; /* Remove default underline */
+    }
+
+    /* Active/current page indicator */
+    .breadcrumb-item.active {
+        color: #b7b7b7;/* Set color for active page */
+        font-weight: bold; /* Make active page text bold */
+    }
+
+</style>
+
+<%- include('../partials/footer') %>

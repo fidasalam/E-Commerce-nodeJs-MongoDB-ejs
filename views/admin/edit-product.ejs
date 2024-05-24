@@ -1,0 +1,89 @@
+<%- include('../partials/admin-header') %>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="page-header">
+      
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="page-title">
+                     
+                          
+                        </span>Edit Product
+                      </h3>
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="card">
+        <div class="card-body">
+            
+             <form action="/admin/edit-product/<%= productId %>" method="post" >
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" class="form-control" id="productName" name="name" placeholder="Product Name" value="<%= existingProduct.name %>">
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea class="form-control" id="productDescription" name="description" rows="5" placeholder="Description"><%= existingProduct.description %></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Category</label>
+                    <select class="form-control" id="productCategory" name="category">
+                        <option value="659e4ec292b59af0e79ed5fb" <%= existingProduct.category === "Men" ? "selected" : "" %>>Men</option>
+                                  <option value="659e4eeb92b59af0e79ed5fc" <%= existingProduct.category === "Women" ? "selected" : "" %>>Women</option>
+                                  <option value="659e4eff92b59af0e79ed5fd" <%= existingProduct.category === "Kids" ? "selected" : "" %>>Kids</option>
+                                  <option value="659e4f1c92b59af0e79ed5fe" <%= existingProduct.category === "Accessories" ? "selected" : "" %>>Accessories</option>
+                                  <option value="659e4f1c92b59af0e79ed5fe" <%= existingProduct.category === "Accessories" ? "selected" : "" %>>Accessories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price</label>
+                    <input type="text" class="form-control" id="productPrice" name="price" placeholder="Price" value="<%= existingProduct.price %>">
+                </div>
+                <div class="form-group">
+                    <label for="productInStock">Units In Stock</label>
+                    <input type="text" class="form-control" id="productInStock" name="inStock" placeholder="Units In Stock" value="<%= existingProduct.inStock %>">
+                </div>
+                <div class="form-group">
+                    <label for="productColor">Color</label>
+                    <select class="form-control" id="productColor" name="color">
+                        <option value="red" <%= existingProduct.color === "red" ? "selected" : "" %>>Red</option>
+                        <option value="blue" <%= existingProduct.color === "blue" ? "selected" : "" %>>Blue</option>
+                        <option value="green" <%= existingProduct.color === "green" ? "selected" : "" %>>Green</option>
+                        <option value="black" <%= existingProduct.color === "black" ? "selected" : "" %>>Black</option>
+                        <option value="white" <%= existingProduct.color === "white" ? "selected" : "" %>>White</option>
+                        <option value="yellow" <%= existingProduct.color === "yellow" ? "selected" : "" %>>Yellow</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productSize">Size</label>
+                    <select class="form-control" id="productSize" name="size">
+                        <option value="S" <%= existingProduct.size === "S" ? "selected" : "" %>>Small</option>
+                        <option value="M" <%= existingProduct.size === "M" ? "selected" : "" %>>Medium</option>
+                        <option value="L" <%= existingProduct.size === "L" ? "selected" : "" %>>Large</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Product Image</label>
+                    <!-- <input type="file" name="image" class="file-upload-default">
+                    <div class="input-group col-xs-12">
+                        <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Image">
+                        <span class="input-group-append">
+                            <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                        </span>
+                    </div> -->
+                    <img src="<%= existingProduct.images && existingProduct.images.length > 0 ? existingProduct.images[0] : '/path/to/placeholder-image.jpg' %>" alt="Product image" class="img-fluid d-block mt-2" style="max-width: 200px;">
+                </div>
+                <button type="submit" class="btn btn-gradient-primary me-2">Update</button>
+                <button class="btn btn-light">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<%- include('../partials/admin-footer') %>
+

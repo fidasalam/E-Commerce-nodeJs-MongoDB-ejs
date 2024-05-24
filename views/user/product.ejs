@@ -1,0 +1,616 @@
+<%- include('../partials/header') %>
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/index">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Shop</li>
+        </ol>
+    </nav>
+</div>
+<div class="container mt-5">
+    <section class="bg0 p-t-23 ">
+        <div class="flex-w flex-sb-m p-b-52 justify-content-end">
+            <div class="flex-w flex-c-m m-tb-10">
+                <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
+                    <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
+                    <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                     Filter
+                </div>
+
+                <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                    <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                    <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                    Search
+                </div>
+                <div class="dis-none panel-search w-full p-t-10 p-b-15">
+					<div class="bor8 dis-flex p-l-15">
+                        <form id="searchForm" method="POST" action="/user/search">
+						
+
+						<input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                         <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
+                        <div id="searchSuggestionsContainer"></div>
+
+                        </form>
+					</div>	
+				</div>
+            </div>
+            </div>
+        </div>
+         
+            
+            <!-- Filter -->
+            <div class="dis-none panel-filter w-full p-t-10">
+                <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
+                    <div class="filter-col1 p-r-15 p-b-27">
+                        <!-- Price Range -->
+                        <select name="priceRange" id="priceRange">
+                            <option value="">Price Range</option>
+                            <option value="0-50">₹0.00 - ₹500.00</option>
+                            <option value="50-1000">₹500.00 - ₹1000.00</option>
+                            <option value="1000-1500">₹1000.00 - ₹1500.00</option>
+                            <option value="1500-5000">₹1500.00 - ₹5000.00</option>
+                            <option value="5000+">₹5000.00+</option>
+                        </select>
+                        
+                        <!-- Sort By -->
+                        <select name="sortBy" id="sortBy">
+                            <option value="">Sort By</option>
+                            <option value="default">Default</option>
+                            <option value="newness">Newness</option>
+                            <option value="priceLowToHigh">Price: Low to High</option>
+                            <option value="priceHighToLow">Price: High to Low</option>
+                        </select>
+                     
+                    </div>
+                </div>
+            </div>
+
+        
+        <div class="container">
+            <div class="p-b-10 text-center">
+                <h3 class="ltext-103 cl5">
+                    <%= selectedCategory ? selectedCategory + ' ' : 'All Products' %>
+                </h3>
+            </div>
+            
+            <div class="toggle-menu-icon">
+                <i class="fa fa-bars" onclick="toggleMenu()"></i>
+            </div>
+            <!-- Categories Section -->
+            <div class="container mt-2 categories-container">
+                <section class="bg0 p-t-23 m-b-20">
+                    <!-- Categories Section -->
+                    <div class="flex-w flex-c-m m-tb-10  categories ">
+                        <a href="/user/product?categoryId=Men" class="category-box men-box">
+                            <span class="category-text">Men</span>
+                        </a>
+                        <a href="/user/product?categoryId=Women" class="category-box women-box">
+                            <span class="category-text">Women</span>
+                        </a>
+                        <a href="/user/product?categoryId=Kids" class="category-box kids-box">
+                            <span class="category-text">Kids</span>
+                        </a>
+                        <a href="/user/product?categoryId=Accessories" class="category-box accessories-box">
+                            <span class="category-text">Accessories</span>
+                        </a>
+                        <a href="/user/product?categoryId=" class="category-box men-box">
+                            <span class="category-text">All Products</span>
+                        </a>
+                    </div>
+                    <!-- ... (rest of your code) ... -->
+                </section>
+            </div>
+            
+         
+            <section class="bg0 p-t-23 p-b-140">
+                <div class="container  ">
+                    <div class="row isotope-grid ">
+                <% products.forEach(product => { %>
+                    <div class="col-6 col-md-3 col-lg-3 p-b-35 isotope-item category-<%= product.category %>">
+                        <!-- Block2 -->
+                        <div class="block2">
+                            <div class="block2-pic hov-img0">
+                                <a href="/user/productdetails/<%= product._id %>">
+                                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>" alt="IMG-PRODUCT">
+                                    <% if (product.avgRating) { %>
+                                        <div class="rating-container">
+                                            <span>&#9733;</span> <!-- Display a filled star -->
+                                            <!-- Display the numeric average rating -->
+                                            <span class="numeric-rating"><%= product.avgRating.toFixed(1) %></span>
+                                        </div>
+                                    <% } %>
+                                </a>
+                            </div>
+                            <div class="block2-txt flex-w flex-t p-t-14">
+                                <div class="block2-txt-child1 flex-col-l">
+                                    <a href="/user/productdetails/<%= product._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                        <%= product.name %>
+                                    </a>
+                                    <div class="price-container">
+                                        <% if (product.coupon) { %>
+                                        
+                                            <span class="stext-105 cl3 original-price ">
+                                                ₹<%= product.price %>
+                                            </span>
+                                            <span class="stext-105 cl3 discount-info">
+                                                ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                                <br>
+                                                <span class="discount-percentage"> (<%= product.coupon.discountPercentage %>% Off)</span>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="stext-105 cl3">
+                                                ₹<%= product.price %>
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                    
+                                </div>
+                                <div class="block2-txt-child2 flex-r p-t-3">
+                                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="<%= product._id %>">
+                                        <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            </div>
+           
+          
+            </section>
+            <div class="flex-c-m flex-w w-full text-center mb-5">
+                <% if (page > 1) { %>
+                    <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) - 1 %>" class="flex-c-m stext-101 cl5 bg2 hov-btn1 p-lr-15 trans-04 mb-5 mr-2" style="width: 30px; height: 30px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center;">
+                        <span style="font-size: 16px;">&#8249;</span>
+                    </a>
+                <% } %>
+            
+                <% if (products.length === perPage) { %>
+                    <a href="/user/product?categoryId=<%= selectedCategory %>&page=<%= parseInt(page) + 1 %>" class="flex-c-m stext-101 cl5 bg2 bor1 hov-btn1 p-lr-15 trans-04 mb-5" style="width: 30px; height: 30px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center;">
+                        <span style="font-size: 16px;">&#8250;</span>
+                    </a>
+                <% } %>
+            </div>
+            
+            
+            
+            <!-- <div class="flex-c-m flex-w w-full p-t-45 text-center mb-5">
+                <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+                    Load More
+                </a>
+            </div> -->
+        </section>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Define a function to filter and update the product list
+        function filterProducts() {
+            const priceRange = $('#priceRange').val();
+            const sortBy = $('#sortBy').val();
+            const category = $('#selectedCategory').val();
+        
+            // Make an AJAX request to your server to fetch filtered products
+            $.ajax({
+                type: 'GET',
+                url: `/user/filter?priceRange=${priceRange}&sortBy=${sortBy}&category=${category}&timestamp=${new Date().getTime()}`,
+                success: function (data) {
+                    // Assuming data is an array of filtered products
+                    updateProductList(data.products);
+                },
+                error: function (error) {
+                    console.error('Error fetching filtered products:', error);
+                },
+            });
+        }
+    
+        // Handle change events for price range, sorting options, and category
+        $('#priceRange, #sortBy, #selectedCategory').change(function () {
+            filterProducts();
+        });
+    
+        // Implement the updateProductList function
+        function updateProductList(products) {
+            const grid = $('.row.isotope-grid');
+    grid.empty();
+    
+            products.forEach(product => {
+                const productHtml = `
+                <div class="col-6 col-md-3 col-lg-3 p-b-35 isotope-item category-${product.category}">
+                    <div class="block2">
+                        <div class="block2-pic hov-img0">
+                            <a href="/user/productdetails/${product._id}">
+                                <img src="${product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg'}" alt="IMG-PRODUCT">
+                                
+                            </a>
+                            <a href="/user/productdetails/${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                                Quick View
+                            </a>
+                        </div>
+                        <div class="block2-txt flex-w flex-t p-t-14">
+                            <div class="block2-txt-child1 flex-col-l">
+                                <a href="/user/productdetails/${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                    ${product.name}
+                                </a>
+                                <span class="stext-105 cl3">
+                                    ₹${product.price}
+                                </span>
+                            </div>
+                            <div class="block2-txt-child2 flex-r p-t-3">
+                                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="${product._id}">
+                                    <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+                                    <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class=mb-5>
+                    </div>
+                `;
+    
+                // Append the new product HTML to the container
+                grid.append(productHtml);
+            });
+            grid.isotope({
+        itemSelector: '.isotope-item',
+        layoutMode: 'fitRows' // Choose the layout mode that fits your design
+    });
+    grid.isotope('layout');
+        }
+    });
+
+    // Function to toggle categories menu
+    function toggleMenu() {
+        var categoriesContainer = document.querySelector('.categories-container');
+        categoriesContainer.classList.toggle('show-categories');
+    }
+</script>
+
+<script>
+    // Remove the existing JavaScript code related to the search button
+    $(document).ready(function () {
+        // You can still keep this event listener for handling form submission
+        $('form[name="searchForm"]').submit(function (event) {
+            // The rest of your logic for handling the form submission
+            // ...
+        });
+        $('form[name="searchForm"]').submit(function (event) {
+            // The rest of your logic for handling the form submission
+            // ...
+        });
+
+        $('.js-addwish-b2').click(function (event) {
+            event.preventDefault();
+            var productId = $(this).data('product-id');
+            addToWishlist(productId);
+        });
+    });
+
+    function addToWishlist(productId) {
+        // Send an AJAX request to add the product to the wishlist
+        $.ajax({
+            type: 'POST',
+            url: `/user/wishlist/${productId}`,
+            success: function (data) {
+                console.log('Successfully added to wishlist');
+                // Optionally, you can update the UI here to reflect the changes
+            },
+            error: function (error) {
+                console.error('Error adding to wishlist:', error);
+            }
+        });
+    }
+
+
+</script>
+<script>
+    $(document).ready(function() {
+     // Function to fetch search suggestions
+     function fetchSuggestions(query) {
+         $.ajax({
+             method: 'POST',
+             url: '/user/search/suggestions',
+             data: { query: query },
+             success: function(response) {
+                 // Clear previous suggestions
+                 $('#searchSuggestionsContainer').empty();
+ 
+                 // Append new suggestions to the container
+                 response.forEach(suggestion => {
+                     // Create suggestion element and append to container
+                     const $suggestion = $('<div class="suggestion">' + suggestion + '</div>');
+                     $('#searchSuggestionsContainer').append($suggestion);
+ 
+                     // Handle click on suggestion
+                     $suggestion.click(function() {
+                         // Fill input field with suggestion text
+                         $('#searchSuggestions').val(suggestion);
+ 
+                         // Clear suggestions container
+                         $('#searchSuggestionsContainer').empty();
+                     });
+                 });
+             },
+             error: function(error) {
+                 console.error('Error fetching suggestions:', error);
+             }
+         });
+     }
+ 
+     // Handle input event on the search input field for fetching suggestions
+     $('#searchSuggestions').on('input', function() {
+         const query = $(this).val();
+         fetchSuggestions(query);
+     });
+ 
+     // Handle form submission for search
+     $('#searchForm').submit(function(event) {
+         event.preventDefault(); // Prevent default form submission
+         const query = $('#searchSuggestions').val().trim();
+         if (query.length > 0) {
+             $(this).unbind('submit').submit();
+         } else {
+             console.log('Search query is empty.');
+         }
+     });
+ 
+     $('#searchSuggestions').on('keypress', function(event) {
+         // Check if the pressed key is Enter (key code 13)
+         if (event.which === 13) {
+             // If Enter was pressed, trigger the form submission
+             $('#searchForm').submit();
+         }
+     });
+ });
+ 
+ </script>
+
+<%- include('../partials/footer') %>
+<style>
+    .rating-container {
+    position: absolute;
+    bottom: 10px; /* Adjust the distance from the bottom */
+    left: 10px; /* Adjust the distance from the left */
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 10px;
+}
+
+.rating-container span {
+    margin-right: 5px; /* Add space between the star and numeric rating */
+}
+
+
+
+      /* Hamburger menu icon style */
+      .toggle-menu-icon {
+        text-align: left;
+        margin-bottom: 20px;
+        cursor: pointer;
+        display: none; /* Hide by default */
+    }
+
+    /* Categories container style */
+    .categories-container {
+        display: block; /* Show by default */
+    }
+
+   
+
+  .categories {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px; /* Add some margin at the bottom */
+    }
+
+    .category-box {
+        width: 150px;
+        height: 50px;
+        background-color: #e6e6e6;
+        color: rgb(0, 0, 0);
+        text-align: center;
+        line-height: 50px;
+        margin: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .category-box:hover {
+        background-color: #000000;
+        color: white;
+    }
+
+    /* Adjustments for the filter and search buttons */
+    .flex-c-m.stext-106 {
+        margin-right: 10px; /* Add some margin to separate the buttons */
+    }
+
+    /* Adjustments for the search input field */
+    .panel-search {
+        margin-top: 20px; /* Add some margin at the top */
+    }
+
+    /* Adjustments for the filter panel */
+    .panel-filter {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .wrap-filter select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        font-size: 16px;
+        color: #333;
+    }
+   /* .isotope-grid{
+    height: 500px !important;
+   } */
+    /* Adjustments for the product items */
+    .isotope-item {
+        margin-bottom: 20px; /* Add some margin at the bottom of each item */
+    }
+
+    /* Adjustments for the load more button */
+    .flex-c-m.flex-w.w-full.p-t-45.text-center {
+        margin-top: 20px; /* Add some margin at the top */
+    }
+.price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+
+.discount-percentage {
+    color: red;
+    font-size: small;
+}
+.block2-pic {
+    position: relative;
+    overflow: hidden; /* Ensure that overflow is hidden */
+}
+.product-image {
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;/* Maintain the aspect ratio and cover the container */
+}
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+    z-index: 1; /* Ensure the category name is above the image */
+}
+.section-slide,
+.sec-banner,
+.bg0 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+@media only screen and (max-width: 576px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 100%; /* Make columns take up 100% width on extra small screens */
+        flex: 0 0 100%; /* Prevent columns from shrinking and expanding */
+    }
+}
+ @media screen and (max-width: 767px) {
+        .toggle-menu-icon {
+            display: block;
+        }
+
+        .categories-container {
+            
+            display: none; /* Hide on small devices initially */
+        }
+
+        .categories-container.show-categories {
+            display:inline /* Show on small devices when toggled */
+        }
+    
+        .col-md-2,
+    .col-lg-3 {
+        width: 50%; /* Make columns take up 50% width on small screens */
+        flex: 0 0 50%; /* Prevent columns from shrinking and expanding */
+    }
+
+        /* Adjustments for the product items on small devices */
+        .isotope-item {
+            margin-bottom: 10px; /* Reduce margin */
+        }
+
+        .price-container {
+            font-size: 10px; /* Reduce font size for price */
+            margin-top: 5px; /* Adjust margin */
+        }
+
+        .original-price {
+            margin-right: 5px; /* Adjust margin */
+        }
+
+        .discount-percentage {
+            font-size: 10px; /* Reduce font size for discount percentage */
+        }
+        .block2-pic {
+    position: relative;
+    overflow: hidden; /* Ensure that overflow is hidden */
+}
+
+.product-image {
+    height: 100%; /* Set a fixed height for the images */
+    width: 100%; /* Ensure the image takes the full width of its container */
+    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+}
+
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+    z-index: 1; /* Ensure the category name is above the image */
+}
+
+    }
+
+@media screen and (min-width: 768px) {
+    .breadcrumb {
+        display: none; /* Hide breadcrumb on screens larger than 768px */
+    }
+}
+.breadcrumb-container {
+        margin-top: 30px; /* Adjust spacing as needed */
+    }
+
+    /* Breadcrumb list */
+    .breadcrumb {
+        background-color: #f5f5f50c; /* Set background color */
+        padding: 10px; /* Add padding around the breadcrumb */
+        border-radius: 5px; /* Add border radius for rounded corners */
+    }
+
+    /* Breadcrumb items */
+    .breadcrumb-item {
+        font-size: 14px; /* Set font size */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb-item a {
+        color: #333; /* Set link color */
+        text-decoration: none; /* Remove default underline */
+    }
+
+    /* Active/current page indicator */
+    .breadcrumb-item.active {
+        color: #b7b7b7; /* Set color for active page */
+        font-weight: bold; /* Make active page text bold */
+    }
+</style>

@@ -1,0 +1,441 @@
+
+
+<%- include('../partials/header') %>
+<!-- Add this near the top of your EJS template -->
+
+
+
+
+<section class="section-slide">
+    <div class="wrap-slick1">
+        <div class="slick1">
+            <% banners.forEach(function(banner) { %>
+                <div class="item-slick1" style="background-image: url(<%= banner.bannerImage %>);">
+
+                    <div class="container h-full">
+                        <div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
+                            <div class="layer-slick1 animated visible-false" data-appear="fadeInDown" data-delay="0">
+                                <span class="ltext-201 cl2 respon2">
+                                    <%= banner.bannerTitle %>
+                                </span>
+                            </div>
+
+                            <div class="layer-slick1 animated visible-false" data-appear="fadeInUp" data-delay="800">
+                                <h2 class="ltext-101 cl2 p-t-19 p-b-43 respon1">
+                                    <%= banner.bannerDescription %>
+                                </h2>
+                            </div>
+                            <div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
+                                <a href="/user/product?categoryId=" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                    Shop Now
+                                </a>
+                            </div>
+                            <!-- You can add additional layers or elements here as needed -->
+
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- Banner -->
+<div class="sec-banner bg0 p-t-95 p-b-55">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 p-b-30 m-lr-auto col-lg-3">
+                <!-- Block1 -->
+                <div class="block1 wrap-pic-w">
+                    <img src="images/banner-04.jpg" alt="IMG-BANNER">
+
+                    <a href="/user/product?categoryId=Women" class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                        <div class="block1-txt-child1 flex-col-l">
+                            <span class="block1-name ltext-102 trans-04 p-b-8">
+                                Women
+                            </span>
+
+                            <span class="block1-info stext-102 trans-04">
+                                New Trend
+                            </span>
+                        </div>
+
+                        <div class="block1-txt-child2 p-b-4 trans-05">
+                            <div class="block1-link stext-101 cl0 trans-09">
+                                Shop Now
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3 p-b-30 m-lr-auto col-lg-3">
+                <!-- Block1 -->
+                <div class="block1 wrap-pic-w">
+                    <img src="images/banner-05.jpg" alt="IMG-BANNER">
+
+                    <a href="/user/product?categoryId=Men" class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                        <div class="block1-txt-child1 flex-col-l">
+                            <span class="block1-name ltext-102 trans-04 p-b-8">
+                                Men
+                            </span>
+
+                            <span class="block1-info stext-102 trans-04">
+                                New Trend
+                            </span>
+                        </div>
+
+                        <div class="block1-txt-child2 p-b-4 trans-05">
+                            <div class="block1-link stext-101 cl0 trans-09">
+                                Shop Now
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6  p-b-30 m-lr-auto col-lg-3">
+                <!-- Block1 -->
+                <div class="block1 wrap-pic-w">
+                    <img src="/uploads/product-images/kidsbanner.png" alt="IMG-BANNER">
+
+                    <a href="/user/product?categoryId=Kids" class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                        <div class="block1-txt-child1 flex-col-l">
+                            <span class="block1-name ltext-102 trans-04 p-b-8">
+                                Kids
+                            </span>
+
+                            <span class="block1-info stext-102 trans-04">
+                                Spring 2024
+                            </span>
+                        </div>
+
+                        <div class="block1-txt-child2 p-b-4 trans-05">
+                            <div class="block1-link stext-101 cl0 trans-09">
+                                Shop Now
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6  p-b-30 m-lr-auto col-lg-3">
+                <!-- Block1 -->
+                <div class="block1 wrap-pic-w">
+                    <img src="images/banner-09.jpg" alt="IMG-BANNER">
+
+                    <a href="/user/product?categoryId=Accessories" class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                        <div class="block1-txt-child1 flex-col-l">
+                            <span class="block1-name ltext-102 trans-04 p-b-8">
+                                Accessories
+                            </span>
+
+                            <span class="block1-info stext-102 trans-04">
+                                Spring 2024
+                            </span>
+                        </div>
+
+                        <div class="block1-txt-child2 p-b-4 trans-05">
+                            <div class="block1-link stext-101 cl0 trans-09">
+                                Shop Now
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product -->
+<!-- Inside your header partial (header.ejs) -->
+
+
+<section class="bg0 p-t-23 p-b-140">
+    <div class="container">
+        <div class="p-b-10 text-center">
+            <h3 class="ltext-103 cl5">
+                Top Rated Products
+            </h3>
+        </div>
+        <div class="flex-w flex-c-m justify-content-end">
+         
+            <div class="flex-w flex-c-m m-tb-10">
+                
+
+                <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                    <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                    <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                    Search
+                </div>
+                <div class="dis-none panel-search w-full p-t-10 p-b-15">
+                    <div class="bor8 dis-flex p-l-15">
+                        <form id="searchForm" method="POST" action="/user/search">
+                        
+
+                        <input id="searchSuggestions" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchProduct" placeholder="Search">
+                        <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
+                        <div id="searchSuggestionsContainer"></div>
+
+                        </form>
+                    </div>	
+                </div>
+            </div>
+            
+    </div>
+    <section class="bg0 p-t-23 p-b-140">
+        <div class="container">
+            <div class="row">
+        <% products.forEach(product => { %>
+            <div class="col-6 col-md-3 col-lg-3 p-b-35 isotope-item category-<%= product.category %>">
+                <!-- Block2 -->
+                <div class="block2">
+                    <div class="block2-pic hov-img0">
+                        <a href="/user/productdetails/<%= product._id %>">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/path/to/placeholder-image.jpg' %>"
+                                alt="IMG-PRODUCT" class="product-image">
+                                <div class="rating-container">
+                                    <span>&#9733;</span> 
+                                    <% if (product.averageRating !== undefined) { %>
+                                        <%= product.averageRating.toFixed(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                    <span class="numeric-rating"></span>
+                                </div>
+                        </a>
+                    </div>
+                    <div class="block2-txt flex-w flex-t p-t-14">
+                        <div class="block2-txt-child1 flex-col-l">
+                            <a href="/user/productdetails/<%= product._id %>"
+                                class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 mb-2">
+                                <%= product.name %>
+                            </a>
+                            
+                            
+                            <div class="price-container flex-w flex-l-m">
+                            
+                                    <% if (product.coupon) { %>
+                                    
+                                        <span class="stext-105 cl3 original-price ">
+                                            ₹<%= product.price %>
+                                        </span>
+                                       
+                                        <span class="stext-105 cl3 discount-info">
+                                            ₹<%= product.price - (product.price * product.coupon.discountPercentage / 100).toFixed(0) %>
+                                            <br>
+                                            <span class="discount-percentage">( <%= product.coupon.discountPercentage %>% Off)</span>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="stext-105 cl3">
+                                            ₹<%= product.price %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                              
+                           </div>
+                           <div class="block2-txt-child2 flex-r p-t-3">
+                            <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" data-product-id="<%= product._id %>">
+                                <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+                                <img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+</section>
+
+</section>
+
+
+<script>
+    // Remove the existing JavaScript code related to the search button
+    $(document).ready(function () {
+        // You can still keep this event listener for handling form submission
+        $('form[name="searchForm"]').submit(function (event) {
+            // The rest of your logic for handling the form submission
+            // ...
+        });
+        $('form[name="searchForm"]').submit(function (event) {
+            // The rest of your logic for handling the form submission
+            // ...
+        });
+
+        $('.js-addwish-b2').click(function (event) {
+            event.preventDefault();
+            var productId = $(this).data('product-id');
+            addToWishlist(productId);
+        });
+    });
+
+    function addToWishlist(productId) {
+        // Send an AJAX request to add the product to the wishlist
+        $.ajax({
+            type: 'POST',
+            url: `/user/wishlist/${productId}`,
+            success: function (data) {
+                console.log('Successfully added to wishlist');
+                // Optionally, you can update the UI here to reflect the changes
+            },
+            error: function (error) {
+                console.error('Error adding to wishlist:', error);
+            }
+        });
+    }
+
+
+</script>
+
+
+<style>
+    
+.rating-container {
+    position: absolute;
+    bottom: 10px; /* Adjust the distance from the bottom */
+    left: 10px; /* Adjust the distance from the left */
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 10px;
+}
+
+.rating-container span {
+    margin-right: 5px; /* Add space between the star and numeric rating */
+}
+
+.product-image {
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.block2-pic {
+    position: relative;
+    overflow: hidden;
+}
+
+.price-container {
+    display: inline-block; /* Make the container inline */
+}
+
+.original-price {
+    color: gray;
+    text-decoration: line-through; /* Apply strike-through */
+    margin-right: 10px; /* Add some space between original and discounted price */
+}
+.discount-percentage {
+    color: red;
+    font-size: 12px;
+}
+
+
+.category-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 12px; /* Adjust font size as needed */
+    font-weight: bold;
+    text-transform: uppercase; /* Convert text to uppercase */
+    border-top-right-radius: 5px; /* Rounded corners */
+    z-index: 1;
+}
+
+.section-slide,
+.sec-banner,
+.bg0 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+/* Your existing CSS styles */
+
+/* Media query for small devices (up to 768px) */
+@media only screen and (max-width: 768px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 50%; /* Make columns take up 50% width on small screens */
+        flex: 0 0 50%; /* Prevent columns from shrinking and expanding */
+    }
+}
+
+/* Media query for extra small devices (up to 576px) */
+@media only screen and (max-width: 576px) {
+    .col-md-2,
+    .col-lg-3 {
+        width: 100%; /* Make columns take up 100% width on extra small screens */
+        flex: 0 0 100%; /* Prevent columns from shrinking and expanding */
+    }
+}
+
+</style>
+
+<%- include('../partials/footer') %>
+<script>
+    $(document).ready(function() {
+     // Function to fetch search suggestions
+     function fetchSuggestions(query) {
+         $.ajax({
+             method: 'POST',
+             url: '/user/search/suggestions',
+             data: { query: query },
+             success: function(response) {
+                 // Clear previous suggestions
+                 $('#searchSuggestionsContainer').empty();
+ 
+                 // Append new suggestions to the container
+                 response.forEach(suggestion => {
+                     // Create suggestion element and append to container
+                     const $suggestion = $('<div class="suggestion">' + suggestion + '</div>');
+                     $('#searchSuggestionsContainer').append($suggestion);
+ 
+                     // Handle click on suggestion
+                     $suggestion.click(function() {
+                         // Fill input field with suggestion text
+                         $('#searchSuggestions').val(suggestion);
+ 
+                         // Clear suggestions container
+                         $('#searchSuggestionsContainer').empty();
+                     });
+                 });
+             },
+             error: function(error) {
+                 console.error('Error fetching suggestions:', error);
+             }
+         });
+     }
+ 
+     // Handle input event on the search input field for fetching suggestions
+     $('#searchSuggestions').on('input', function() {
+         const query = $(this).val();
+         fetchSuggestions(query);
+     });
+ 
+     // Handle form submission for search
+     $('#searchForm').submit(function(event) {
+         event.preventDefault(); // Prevent default form submission
+         const query = $('#searchSuggestions').val().trim();
+         if (query.length > 0) {
+             $(this).unbind('submit').submit();
+         } else {
+             console.log('Search query is empty.');
+         }
+     });
+ 
+     $('#searchSuggestions').on('keypress', function(event) {
+         // Check if the pressed key is Enter (key code 13)
+         if (event.which === 13) {
+             // If Enter was pressed, trigger the form submission
+             $('#searchForm').submit();
+         }
+     });
+ });
+ 
+ </script>
+
